@@ -15,7 +15,6 @@ listing:
 pca_kittens.mp4
 :::
 
-# Team
 :::{.center}
 :::{#team}
 :::
