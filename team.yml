@@ -1,0 +1,6 @@
+- name: Иван Валерьевич Оселедец
+  role: Лектор
+  image: photos/io.jpeg
+- name: Даниил Максимович Меркулов
+  role: Семинарист
+  image: photos/dm.jpeg
