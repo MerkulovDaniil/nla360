@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Seminar 1</title>
+<title>Семинар 1</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -146,14 +146,14 @@ window.Quarto = {
 };
 </script>
 
-<meta property="og:title" content="Seminar 1">
+<meta property="og:title" content="Семинар 1">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://nla360.fmin.xyz/seminars/seminar-1/seminar-1_files/figure-html/cell-12-output-1.png">
+<meta property="og:image" content="https://nla360.fmin.xyz/seminars/seminar-1/seminar-1_files/figure-html/cell-16-output-1.png">
 <meta property="og:image:height" content="351">
 <meta property="og:image:width" content="382">
-<meta name="twitter:title" content="Seminar 1">
+<meta name="twitter:title" content="Семинар 1">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://nla360.fmin.xyz/seminars/seminar-1/seminar-1_files/figure-html/cell-12-output-1.png">
+<meta name="twitter:image" content="https://nla360.fmin.xyz/seminars/seminar-1/seminar-1_files/figure-html/cell-16-output-1.png">
 <meta name="twitter:image-height" content="351">
 <meta name="twitter:image-width" content="382">
 <meta name="twitter:card" content="summary_large_image">
@@ -208,10 +208,68 @@ window.Quarto = {
 </header>
 
 
-<p>Fixed vs Floating point, vector norms, and stability concepts</p>
-<section id="fixed-point" class="level2">
-<h2 class="anchored" data-anchor-id="fixed-point">Fixed point</h2>
-<p>Fixed point contains a 1-bit sign, <span class="math inline">m</span>-bits integer, and <span class="math inline">n</span>-bits fractional part: <span class="math display">
+<p>Фиксированная и плавающая точка, векторные нормы и понятие устойчивости алгоритмов.</p>
+<section id="почему-0.1-0.2-0.3" class="level2">
+<h2 class="anchored" data-anchor-id="почему-0.1-0.2-0.3">🧐 Почему <code>0.1 + 0.2 != 0.3</code>?</h2>
+<p>Числа с плавающей запятой в Python хранятся в формате <strong>IEEE 754</strong>, который использует <strong>бинарное представление</strong> чисел. Однако не все десятичные дроби можно точно представить в двоичной системе. Например:</p>
+<ul>
+<li><p>Десятичное <code>0.1</code> в двоичном формате представляется бесконечной дробью:</p>
+<pre><code>0.0001100110011001100110011001100110011... (повторяется бесконечно)</code></pre></li>
+<li><p>То же самое касается <code>0.2</code>:</p>
+<pre><code>0.001100110011001100110011001100110011... (тоже бесконечная дробь)</code></pre></li>
+</ul>
+<p>Так как компьютер работает с ограниченной точностью, он <strong>усекает</strong> эти дроби, оставляя только конечное число битов. Это приводит к небольшим ошибкам округления.</p>
+<section id="доказательство-в-python" class="level3">
+<h3 class="anchored" data-anchor-id="доказательство-в-python">🧮 Доказательство в Python</h3>
+<p>Если вывести точное двоичное представление <code>0.1</code>, <code>0.2</code> и <code>0.3</code>, можно увидеть разницу:</p>
+<div id="cell-3" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> decimal <span class="im">import</span> Decimal</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(Decimal(<span class="fl">0.1</span>))  <span class="co"># 0.1000000000000000055511151231257827021181583404541015625</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(Decimal(<span class="fl">0.2</span>))  <span class="co"># 0.200000000000000011102230246251565404236316680908203125</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(Decimal(<span class="fl">0.3</span>))  <span class="co"># 0.299999999999999988897769753748434595763683319091796875</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.1000000000000000055511151231257827021181583404541015625
+0.200000000000000011102230246251565404236316680908203125
+0.299999999999999988897769753748434595763683319091796875</code></pre>
+</div>
+</div>
+<p>Теперь сложим <code>0.1 + 0.2</code>:</p>
+<div id="cell-5" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(Decimal(<span class="fl">0.1</span>) <span class="op">+</span> Decimal(<span class="fl">0.2</span>))  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.3000000000000000166533453694</code></pre>
+</div>
+</div>
+<p>А <code>0.3</code> на самом деле:</p>
+<div id="cell-7" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(Decimal(<span class="fl">0.3</span>))  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.299999999999999988897769753748434595763683319091796875</code></pre>
+</div>
+</div>
+<p>Они <strong>не равны</strong> из-за разницы в последних разрядах!</p>
+</section>
+<section id="как-правильно-сравнивать" class="level3">
+<h3 class="anchored" data-anchor-id="как-правильно-сравнивать">🤔 Как правильно сравнивать?</h3>
+<p>Поскольку числа с плавающей запятой содержат небольшие ошибки округления, их <strong>нельзя сравнивать напрямую</strong> с <code>==</code>. Вместо этого используют <strong>погрешность</strong> (<code>epsilon</code>):</p>
+<div id="cell-9" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.2</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(math.isclose(a, b, rel_tol<span class="op">=</span><span class="fl">1e-9</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>True</code></pre>
+</div>
+</div>
+<p>Функция <code>math.isclose()</code> проверяет, находятся ли два числа <strong>достаточно близко</strong> друг к другу с учетом заданной относительной ошибки.</p>
+</section>
+</section>
+<section id="числа-с-фиксированной-точкой" class="level2">
+<h2 class="anchored" data-anchor-id="числа-с-фиксированной-точкой">Числа с фиксированной точкой</h2>
+<p>Число с фиксированной точкой состоит из 1-битного знака, <span class="math inline">m</span>-битного целого и <span class="math inline">n</span>-битного дробного числа: <span class="math display">
 \text{decimal} =
 (-1)^{\text{sign}} \times
 \Big(
@@ -220,61 +278,65 @@ window.Quarto = {
 \Big)
 </span></p>
 <ul>
-<li>range <span class="math inline">[-2^m + 2^{-n}, 2^m - 2^{-n}]</span></li>
-<li>resolution <span class="math inline">2^{-n}</span></li>
-<li>total storage is <span class="math inline">m + n + 1</span> bits</li>
+<li>диапазон <span class="math inline">[-2^m + 2^{-n}, 2^m - 2^{-n}]</span></li>
+<li>разрешение <span class="math inline">2^{-n}</span></li>
+<li>общее количество бит <span class="math inline">m + n + 1</span></li>
 </ul>
-<p><img src="https://i.ibb.co/k0bKtqS/fixedpoint.png" style="width:500px"></p>
-<div id="cell-4" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> binary_fixed_point_to_decimal(x, m<span class="op">=</span><span class="dv">8</span>, n<span class="op">=</span><span class="dv">8</span>):</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">    x - binary string of size 1 + m + n</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">    m - size of an integer part</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">    n - sze of a fractional part</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    sign_part, integer_part, fractional_part <span class="op">=</span> x[<span class="dv">0</span>], x[<span class="dv">1</span>:m<span class="op">+</span><span class="dv">1</span>], x[m<span class="op">+</span><span class="dv">1</span>:m<span class="op">+</span>n<span class="op">+</span><span class="dv">1</span>]</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    sign_value <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> <span class="bu">int</span>(sign_part)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    integer_value <span class="op">=</span> <span class="bu">sum</span>([</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="bu">int</span>(v) <span class="op">*</span> <span class="dv">2</span> <span class="op">**</span> i</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i, v <span class="kw">in</span> <span class="bu">enumerate</span>(integer_part[::<span class="op">-</span><span class="dv">1</span>])</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    ])</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    fractional_value <span class="op">=</span> <span class="bu">sum</span>([</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="bu">int</span>(v) <span class="op">*</span> <span class="dv">2</span> <span class="op">**</span> <span class="op">-</span>(i <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i, v <span class="kw">in</span> <span class="bu">enumerate</span>(fractional_part)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    ])</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> sign_value <span class="op">*</span> (integer_value <span class="op">+</span> fractional_value)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>m, n <span class="op">=</span> <span class="dv">8</span>, <span class="dv">8</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="st">'00000010100100000'</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(binary_fixed_point_to_decimal(x, m, n) <span class="op">==</span> <span class="fl">5.125</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-12" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> binary_fixed_point_to_decimal(x, m<span class="op">=</span><span class="dv">8</span>, n<span class="op">=</span><span class="dv">8</span>):</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">    x - binary string of size 1 + m + n</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">    m - size of an integer part</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">    n - sze of a fractional part</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    sign_part, integer_part, fractional_part <span class="op">=</span> x[<span class="dv">0</span>], x[<span class="dv">1</span>:m<span class="op">+</span><span class="dv">1</span>], x[m<span class="op">+</span><span class="dv">1</span>:m<span class="op">+</span>n<span class="op">+</span><span class="dv">1</span>]</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    sign_value <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> <span class="bu">int</span>(sign_part)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    integer_value <span class="op">=</span> <span class="bu">sum</span>([</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        <span class="bu">int</span>(v) <span class="op">*</span> <span class="dv">2</span> <span class="op">**</span> i</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i, v <span class="kw">in</span> <span class="bu">enumerate</span>(integer_part[::<span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    ])</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    fractional_value <span class="op">=</span> <span class="bu">sum</span>([</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        <span class="bu">int</span>(v) <span class="op">*</span> <span class="dv">2</span> <span class="op">**</span> <span class="op">-</span>(i <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i, v <span class="kw">in</span> <span class="bu">enumerate</span>(fractional_part)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    ])</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> sign_value <span class="op">*</span> (integer_value <span class="op">+</span> fractional_value)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>m, n <span class="op">=</span> <span class="dv">8</span>, <span class="dv">8</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="st">'00000010100100000'</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(binary_fixed_point_to_decimal(x, m, n) <span class="op">==</span> <span class="fl">5.125</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>True</code></pre>
 </div>
 </div>
-<div id="cell-5" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="st">'11111111111111111'</span> <span class="co"># Insert a string corresponding to a minimal possible value</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(binary_fixed_point_to_decimal(x, m, n) <span class="op">==</span> <span class="op">-</span>(<span class="dv">2</span> <span class="op">**</span> m <span class="op">-</span> <span class="dv">2</span> <span class="op">**</span> (<span class="op">-</span>n)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-13" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="st">'11111111111111111'</span> <span class="co"># Insert a string corresponding to a minimal possible value</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(binary_fixed_point_to_decimal(x, m, n) <span class="op">==</span> <span class="op">-</span>(<span class="dv">2</span> <span class="op">**</span> m <span class="op">-</span> <span class="dv">2</span> <span class="op">**</span> (<span class="op">-</span>n)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>True</code></pre>
 </div>
 </div>
-<div id="cell-6" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="st">'01111111111111111'</span> <span class="co"># Insert a string corresponding to a maximal possible value</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(binary_fixed_point_to_decimal(x, m, n) <span class="op">==</span> <span class="dv">2</span> <span class="op">**</span> m <span class="op">-</span> <span class="dv">2</span> <span class="op">**</span> (<span class="op">-</span>n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-14" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="st">'01111111111111111'</span> <span class="co"># Insert a string corresponding to a maximal possible value</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(binary_fixed_point_to_decimal(x, m, n) <span class="op">==</span> <span class="dv">2</span> <span class="op">**</span> m <span class="op">-</span> <span class="dv">2</span> <span class="op">**</span> (<span class="op">-</span>n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>True</code></pre>
 </div>
 </div>
-<div id="cell-7" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="st">'00000000000000001'</span> <span class="co"># Insert a string corresponding to an absolute minimal but nonzero possible value</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(binary_fixed_point_to_decimal(x, m, n) <span class="op">==</span> <span class="dv">2</span> <span class="op">**</span> (<span class="op">-</span>n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-15" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="st">'00000000000000001'</span> <span class="co"># Insert a string corresponding to an absolute minimal but nonzero possible value</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(binary_fixed_point_to_decimal(x, m, n) <span class="op">==</span> <span class="dv">2</span> <span class="op">**</span> (<span class="op">-</span>n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>True</code></pre>
 </div>
 </div>
-<section id="floating-point" class="level4">
-<h4 class="anchored" data-anchor-id="floating-point">Floating point</h4>
-<p>Floating point contains a 1-bit sign, <span class="math inline">m</span>-bits exponent, and <span class="math inline">n</span>-bits mantissa part:</p>
+<p>Основной недостаток чисел с фиксированной точкой — ограниченный диапазон и разрешение. Например, для 8-битного формата: - диапазон <span class="math inline">[-128, 127]</span> - разрешение <span class="math inline">2^{-7} = 0.0078125</span></p>
+<p>Это означает, что для представления очень больших или очень маленьких чисел потребуется больше бит.</p>
+<p>Для 32-битного формата: - диапазон <span class="math inline">[-2^{31}, 2^{31} - 1]</span> - разрешение <span class="math inline">2^{-23} \approx 1.192 \times 10^{-7}</span></p>
+<p>Это означает, что для представления очень больших или очень маленьких чисел потребуется больше бит.</p>
+</section>
+<section id="числа-с-плавающей-точкой" class="level2">
+<h2 class="anchored" data-anchor-id="числа-с-плавающей-точкой">Числа с плавающей точкой</h2>
+<p>Числа с плавающей точкой состоят из 1-битного знака, <span class="math inline">m</span>-битного экспоненты и <span class="math inline">n</span>-битного мантиссы:</p>
 <p><span class="math display">
 \text{decimal} =
 (-1)^{\text{sign}} \times
@@ -283,209 +345,261 @@ base^{\Big(\sum_{i=0}^{m-1} \text{exponent}[i] \cdot base^{m-1-i} - (2^{m-1} - 1
 \Big(1 + \sum_{i=0}^{n-1} \text{mantissa}[i] \cdot base^{-i-1}\Big)
 </span></p>
 <ul>
-<li>exponent values that are all 0 and all 1 are reserved for special numbers: NaN, infinity, etc.</li>
-<li>total storage is <span class="math inline">m + n + 1</span> bits</li>
+<li>значения экспоненты, равные 0 и 1, зарезервированы для специальных чисел: NaN, бесконечность и т.д.</li>
+<li>общее количество бит <span class="math inline">m + n + 1</span></li>
 </ul>
-<p><img src="https://i.ibb.co/MSk5Drs/floatingpoint.png" style="width:700px"></p>
-<p>Half (float16) vs Single (float32) vs and Double (float32) Precision</p>
+<p>Half (float16) vs Single (float32) vs and Double (float32) Точность</p>
 <ul>
 <li>float16 - 16 bit total: 1 for a sign, <span class="math inline">m = 5</span> for exponent and <span class="math inline">n = 10</span> for mantissa</li>
 <li>float32 - 32 bits total: 1 for a sign, <span class="math inline">m = 8</span> for exponent and <span class="math inline">n = 23</span> for mantissa</li>
 <li>float64 - 64 bits total: 1 for a sign, <span class="math inline">m = 11</span> for exponent and <span class="math inline">n = 52</span> for mantissa</li>
 </ul>
-<div id="cell-11" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> binary_floating_point_to_decimal(x, m<span class="op">=</span><span class="dv">8</span>, n<span class="op">=</span><span class="dv">23</span>):</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">    x - binary string of size 1 + m + n</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">    m - size of an exponent part</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">    n - sze of a mantissa part</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    sign_part, exponent_part, mantissa_part <span class="op">=</span> x[<span class="dv">0</span>], x[<span class="dv">1</span>:m<span class="op">+</span><span class="dv">1</span>], x[m<span class="op">+</span><span class="dv">1</span>:n<span class="op">+</span>m<span class="op">+</span><span class="dv">1</span>]</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    sign_value <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> <span class="bu">int</span>(sign_part)</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    mantissa_value <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, v <span class="kw">in</span> <span class="bu">enumerate</span>(mantissa_part):</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        mantissa_value <span class="op">+=</span> <span class="bu">int</span>(v) <span class="op">*</span> (<span class="dv">2</span> <span class="op">**</span> <span class="op">-</span>(i <span class="op">+</span> <span class="dv">1</span>))</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    exponent_value <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, v <span class="kw">in</span> <span class="bu">enumerate</span>(exponent_part):</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        exponent_value <span class="op">+=</span> <span class="bu">int</span>(v) <span class="op">*</span> <span class="dv">2</span> <span class="op">**</span> i</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    exponent_value <span class="op">-=</span> (<span class="dv">2</span> <span class="op">**</span> (m <span class="op">-</span> <span class="dv">1</span>) <span class="op">-</span> <span class="dv">1</span>)</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> sign_value <span class="op">*</span> (<span class="dv">2</span> <span class="op">**</span> exponent_value) <span class="op">*</span> mantissa_value</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>m, n <span class="op">=</span> <span class="dv">8</span>, <span class="dv">23</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="st">'01000000101001000000000000000000'</span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(binary_floating_point_to_decimal(x, m, n) <span class="op">==</span> <span class="fl">5.125</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-19" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> binary_floating_point_to_decimal(x, m<span class="op">=</span><span class="dv">8</span>, n<span class="op">=</span><span class="dv">23</span>):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">    x - binary string of size 1 + m + n</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">    m - size of an exponent part</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">    n - sze of a mantissa part</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    sign_part, exponent_part, mantissa_part <span class="op">=</span> x[<span class="dv">0</span>], x[<span class="dv">1</span>:m<span class="op">+</span><span class="dv">1</span>], x[m<span class="op">+</span><span class="dv">1</span>:n<span class="op">+</span>m<span class="op">+</span><span class="dv">1</span>]</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    sign_value <span class="op">=</span> (<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> <span class="bu">int</span>(sign_part)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    mantissa_value <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, v <span class="kw">in</span> <span class="bu">enumerate</span>(mantissa_part):</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>        mantissa_value <span class="op">+=</span> <span class="bu">int</span>(v) <span class="op">*</span> (<span class="dv">2</span> <span class="op">**</span> <span class="op">-</span>(i <span class="op">+</span> <span class="dv">1</span>))</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    exponent_value <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, v <span class="kw">in</span> <span class="bu">enumerate</span>(exponent_part):</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>        exponent_value <span class="op">+=</span> <span class="bu">int</span>(v) <span class="op">*</span> <span class="dv">2</span> <span class="op">**</span> i</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    exponent_value <span class="op">-=</span> (<span class="dv">2</span> <span class="op">**</span> (m <span class="op">-</span> <span class="dv">1</span>) <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> sign_value <span class="op">*</span> (<span class="dv">2</span> <span class="op">**</span> exponent_value) <span class="op">*</span> mantissa_value</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>m, n <span class="op">=</span> <span class="dv">8</span>, <span class="dv">23</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="st">'01000000101001000000000000000000'</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(binary_floating_point_to_decimal(x, m, n) <span class="op">==</span> <span class="fl">5.125</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>True</code></pre>
 </div>
 </div>
 </section>
-<section id="rounding-errors" class="level4">
-<h4 class="anchored" data-anchor-id="rounding-errors">Rounding Errors</h4>
-<p>Due to the fact that float representations are only approximations to real numbers, some errors may occur.</p>
-<p>For example, let’s consider a simple summation algorithm, where <span class="math inline">x_i</span> are floating point numbers:</p>
+<section id="ошибки-округления" class="level2">
+<h2 class="anchored" data-anchor-id="ошибки-округления">Ошибки округления</h2>
+<p>Из-за того, что представления с плавающей точкой являются лишь приближениями к действительным числам, могут возникать ошибки округления.</p>
+<p>Например, рассмотрим простой алгоритм суммирования, где <span class="math inline">x_i</span> — числа с плавающей точкой:</p>
 <p><span class="math display">
 f(x) = x_1 + x_2 + ... + x_n
 </span></p>
-<p>Realize a naïve algorithm from the lecture (add one-by-one) and check out the occuring error.</p>
-<p>[!] Set <span class="math inline">n</span> as 1000 and all <span class="math inline">x_i</span> as 0.1.</p>
-<div id="cell-15" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>total <span class="op">=</span> <span class="fl">0.0</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1000</span>):</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    total <span class="op">+=</span> <span class="fl">0.1</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected result: 100.0"</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Actual result:"</span>, total)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Реализуйте простой алгоритм из лекции (добавляя по одному):</p>
+<p>[!] Установите <span class="math inline">n</span> равным 1000 и все <span class="math inline">x_i</span> равными 0.1.</p>
+<div id="cell-23" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>total <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1000</span>):</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    total <span class="op">+=</span> <span class="fl">0.1</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected result: 100.0"</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Actual result:"</span>, total)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Expected result: 100.0
 Actual result: 99.9999999999986</code></pre>
 </div>
 </div>
-<p>Realize a Kahan algorithm from the lecture and check out the occuring error.</p>
-<p>[!] Set <span class="math inline">n</span> as 1000 and all <span class="math inline">x_i</span> as 0.1.</p>
-<div id="cell-17" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1000</span>):</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="fl">0.1</span> <span class="op">-</span> c</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> s <span class="op">+</span> y</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> (t <span class="op">-</span> s) <span class="op">-</span> y</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> t</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected result: 100.0"</span>)</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Actual result:"</span>, s)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Реализуйте алгоритм Кахана из лекции и проверьте возникающую ошибку.</p>
+<p>[!] Установите <span class="math inline">n</span> равным 1000 и все <span class="math inline">x_i</span> равными 0.1.</p>
+<div id="cell-25" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1000</span>):</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="fl">0.1</span> <span class="op">-</span> c</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> s <span class="op">+</span> y</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> (t <span class="op">-</span> s) <span class="op">-</span> y</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> t</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected result: 100.0"</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Actual result:"</span>, s)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Expected result: 100.0
 Actual result: 100.0</code></pre>
 </div>
 </div>
-<p>Explanation: the value 0.1 cannot be represented precisely in binary so it becomes an approximation. When this approximation is added repeatedly, the small rounding errors accumulate, leading to a final result slightly less than 100.0.</p>
+<p>Объяснение: значение 0.1 не может быть точно представлено в двоичной системе, поэтому оно становится приближением. Когда это приближение добавляется по одному, малые ошибки округления накапливаются, что приводит к конечному результату, немного меньшему, чем 100.0.</p>
 </section>
-<section id="vectors-and-vector-norms" class="level4">
-<h4 class="anchored" data-anchor-id="vectors-and-vector-norms">Vectors and vector norms</h4>
-<p>In NLA we typically work not with numbers, but with vectors that are simply arrays of numbers of size <span class="math inline">n</span>.</p>
-<div id="cell-21" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>])</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Size of the x vector is </span><span class="sc">{</span><span class="bu">len</span>(x)<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Type of the vector elements is </span><span class="sc">{</span><span class="bu">type</span>(x[<span class="dv">0</span>])<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="векторы-и-векторные-нормы" class="level2">
+<h2 class="anchored" data-anchor-id="векторы-и-векторные-нормы">Векторы и векторные нормы</h2>
+<p>В NLA мы обычно работаем не с числами, а с векторами, которые являются просто массивами чисел размера <span class="math inline">n</span>.</p>
+<div id="cell-28" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>])</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Size of the x vector is </span><span class="sc">{</span><span class="bu">len</span>(x)<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Type of the vector elements is </span><span class="sc">{</span><span class="bu">type</span>(x[<span class="dv">0</span>])<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Size of the x vector is 5
 Type of the vector elements is &lt;class 'numpy.int64'&gt;</code></pre>
 </div>
 </div>
-<p>As you can see, this vector contains only integer values. Now convert them into float32 type.</p>
-<div id="cell-23" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> x.astype(np.float32)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Type of the vector elements is </span><span class="sc">{</span><span class="bu">type</span>(x[<span class="dv">0</span>])<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Как видите, этот вектор содержит только целые значения. Теперь преобразуйте их в тип float32.</p>
+<div id="cell-30" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> x.astype(np.float32)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Type of the vector elements is </span><span class="sc">{</span><span class="bu">type</span>(x[<span class="dv">0</span>])<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Type of the vector elements is &lt;class 'numpy.float32'&gt;</code></pre>
 </div>
 </div>
-<p>In order to measure smallness of a vector its <strong>norm</strong> <span class="math inline">\|x\|</span> is used. The most important class is <span class="math inline">p</span>-norms: <span class="math display">
+<p>Для измерения малости вектора используется его <strong>норма</strong> <span class="math inline">\|x\|</span>.</p>
+<p>Самый важный класс норм — <span class="math inline">p</span>-нормы: <span class="math display">
 \|x\|_p = \Big(\sum_{i=1}^n |x_i|^p\Big)^{1/p}
-</span> Examples of <span class="math inline">p</span>-norms: - Manhattan distance or <span class="math inline">L_1</span> norm - when <span class="math inline">p=1</span> - Euclidean norm or <span class="math inline">L_2</span> norm - when <span class="math inline">p=2</span> - Infinity norm, or Chebyshev norm - when <span class="math inline">p=+\infty</span>: $ |x|_{} = _i | x_i|$</p>
-<p>Compute norms for the <span class="math inline">x</span> vector:</p>
-<p>Hint: use np.linalg.norm</p>
-<div id="cell-26" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'L1 norm:'</span>, np.linalg.norm(x, <span class="dv">1</span>))</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'L2 norm:'</span>, np.linalg.norm(x, <span class="dv">2</span>))</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Chebyshev norm:'</span>, np.linalg.norm(x, np.inf))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</span> Примеры <span class="math inline">p</span>-норм: - Манхэттенское расстояние или <span class="math inline">L_1</span> норма - когда <span class="math inline">p=1</span> - Евклидова норма или <span class="math inline">L_2</span> норма - когда <span class="math inline">p=2</span> - Бесконечная норма, или норма Чебышева - когда <span class="math inline">p=+\infty</span>: $ |x|_{} = _i | x_i|$</p>
+<p>Посчитайте нормы для вектора <span class="math inline">x</span>:</p>
+<p>Подсказка: используйте <code>np.linalg.norm</code></p>
+<div id="cell-33" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'L1 norm:'</span>, np.linalg.norm(x, <span class="dv">1</span>))</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'L2 norm:'</span>, np.linalg.norm(x, <span class="dv">2</span>))</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Chebyshev norm:'</span>, np.linalg.norm(x, np.inf))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>L1 norm: 15.0
 L2 norm: 7.4161983
 Chebyshev norm: 5.0</code></pre>
 </div>
 </div>
-<p>A unit disk for a p-norm is a set of point such that <span class="math inline">\|x\|_p = 1</span>.</p>
-<p>Visualize p-norm unit disk for the following p-norms: <span class="math inline">p \in (0.25, 0.75, 1.0, 2.0, 5.0, \infty)</span></p>
-<p>Hint: <span class="math inline">y = \pm (1 - |x|^p)^{1/p}</span></p>
-<div id="cell-28" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> unit_disk(p):</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">201</span>)</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> np.<span class="bu">abs</span>(x) <span class="op">**</span> p) <span class="op">**</span> (<span class="dv">1</span> <span class="op">/</span> p)</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.hstack([x, x[<span class="dv">1</span>:][::<span class="op">-</span><span class="dv">1</span>], x[<span class="dv">0</span>]])</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.hstack([y, <span class="op">-</span>y[<span class="dv">1</span>:][::<span class="op">-</span><span class="dv">1</span>], y[<span class="dv">0</span>]])</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x, y</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">4</span>, <span class="dv">4</span>))</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">'equal'</span>)</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> p <span class="kw">in</span> (<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="fl">5.0</span>, np.inf):</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    x, y <span class="op">=</span> unit_disk(p)</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    plt.plot(x, y, label<span class="op">=</span><span class="ss">f'$p$=</span><span class="sc">{</span>p<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Единичный диск для <span class="math inline">p</span>-нормы — это множество точек таких, что <span class="math inline">\|x\|_p = 1</span>.</p>
+<p>Визуализируйте единичный диск для следующих <span class="math inline">p</span>-норм: <span class="math inline">p \in (0.25, 0.75, 1.0, 2.0, 5.0, \infty)</span></p>
+<p>Подсказка: <span class="math inline">y = \pm (1 - |x|^p)^{1/p}</span></p>
+<div id="cell-35" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> unit_disk(p):</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">201</span>)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> np.<span class="bu">abs</span>(x) <span class="op">**</span> p) <span class="op">**</span> (<span class="dv">1</span> <span class="op">/</span> p)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.hstack([x, x[<span class="dv">1</span>:][::<span class="op">-</span><span class="dv">1</span>], x[<span class="dv">0</span>]])</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.hstack([y, <span class="op">-</span>y[<span class="dv">1</span>:][::<span class="op">-</span><span class="dv">1</span>], y[<span class="dv">0</span>]])</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x, y</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">4</span>, <span class="dv">4</span>))</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">'equal'</span>)</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> p <span class="kw">in</span> (<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="fl">5.0</span>, np.inf):</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    x, y <span class="op">=</span> unit_disk(p)</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>    plt.plot(x, y, label<span class="op">=</span><span class="ss">f'$p$=</span><span class="sc">{</span>p<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="seminar-1_files/figure-html/cell-12-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="seminar-1_files/figure-html/cell-16-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
+<p><img src="p_balls.svg" class="img-fluid"></p>
 </section>
-<section id="stability" class="level4">
-<h4 class="anchored" data-anchor-id="stability">Stability</h4>
-<p>Suppose we have a vector <span class="math inline">x</span>, function <span class="math inline">f(x)</span>, and an algorithm <span class="math inline">\text{alg}(x)</span> to approximate the function. Then the algorithm is called <strong>forward stable</strong>, if for some small <span class="math inline">\varepsilon</span></p>
+<section id="устойчивость" class="level2">
+<h2 class="anchored" data-anchor-id="устойчивость">Устойчивость</h2>
+<p>Предположим, у нас есть вектор <span class="math inline">x</span>, функция <span class="math inline">f(x)</span>, и алгоритм <span class="math inline">\text{alg}(x)</span> для приближения функции. Тогда алгоритм называется <strong>устойчивым в прямом направлении</strong>, если для некоторого малого <span class="math inline">\varepsilon</span></p>
 <p><span class="math display">
 \|\text{alg}(x) - f(x)\|  \leq \varepsilon
 </span></p>
-<p>[Task] Check the summation algorithms mentioned before (naive and Kahan) to be forward stable.</p>
-<p>Set each <span class="math inline">x_i</span> as 0.1 againg and <span class="math inline">n</span> as 100. <span class="math display">
+<p>[Задание] Проверьте суммирующие алгоритмы, упомянутые ранее (простой и Кахана) на устойчивость в прямом направлении.</p>
+<p>Пусть <span class="math inline">x_i = 0.1</span> и <span class="math inline">n = 100</span>. <span class="math display">
 f(x) = \sum_{i=1}^{100} x_i, \;\;
 x_i = 0.1
-</span> Record the error occuring in each step of summation: <span class="math display">
+</span> Запишите ошибку, возникающую в каждом шаге суммирования: <span class="math display">
 \text{error}[i] = |0.1 \cdot i - \text{alg}(x)|
 </span></p>
-<div id="cell-32" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Naive</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>total <span class="op">=</span> <span class="fl">0.0</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>error_naive <span class="op">=</span> []</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N):</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    total <span class="op">+=</span> <span class="fl">0.1</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    refer <span class="op">=</span> (i <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">10</span></span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    error_naive.append(np.<span class="bu">abs</span>(refer <span class="op">-</span> total))</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Kahan</span></span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>error_kahan <span class="op">=</span> []</span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N):</span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="fl">0.1</span> <span class="op">-</span> c</span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> s <span class="op">+</span> y</span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> (t <span class="op">-</span> s) <span class="op">-</span> y</span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> t</span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    error_kahan.append(np.<span class="bu">abs</span>(c))</span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="vs">r'Forward stability of summation algorithms $\varepsilon(n)$'</span>)</span>
-<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>plt.plot(error_naive, label<span class="op">=</span><span class="st">'Naive'</span>)</span>
-<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>plt.plot(error_kahan, label<span class="op">=</span><span class="st">'Kahan'</span>)</span>
-<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="vs">r'$\varepsilon$'</span>, rotation<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="vs">r'$n$'</span>)</span>
-<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-39" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Naive</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>total <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>error_naive <span class="op">=</span> []</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N):</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    total <span class="op">+=</span> <span class="fl">0.1</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    refer <span class="op">=</span> (i <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">10</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    error_naive.append(np.<span class="bu">abs</span>(refer <span class="op">-</span> total))</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Kahan</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>error_kahan <span class="op">=</span> []</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N):</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="fl">0.1</span> <span class="op">-</span> c</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> s <span class="op">+</span> y</span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> (t <span class="op">-</span> s) <span class="op">-</span> y</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> t</span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>    error_kahan.append(np.<span class="bu">abs</span>(c))</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="vs">r'Forward stability of summation algorithms $\varepsilon(n)$'</span>)</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>plt.plot(error_naive, label<span class="op">=</span><span class="st">'Naive'</span>)</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>plt.plot(error_kahan, label<span class="op">=</span><span class="st">'Kahan'</span>)</span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="vs">r'$\varepsilon$'</span>, rotation<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="vs">r'$n$'</span>)</span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="seminar-1_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="seminar-1_files/figure-html/cell-17-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>What do you see?</p>
-
-
 </section>
+<section id="простая-но-очень-важная-идея-умножения-матриц" class="level2">
+<h2 class="anchored" data-anchor-id="простая-но-очень-важная-идея-умножения-матриц">Простая, но очень важная идея умножения матриц</h2>
+<p>Предположим, у вас есть следующее выражение: <span class="math display">
+b = A_1 A_2 A_3 x,
+</span> где <span class="math inline">A_1, A_2, A_3 \in \mathbb{R}^{3 \times 3}</span> - случайные квадратные плотные матрицы, а <span class="math inline">x \in \mathbb{R}^n</span> - вектор. Вам нужно вычислить <span class="math inline">b</span>. Какой способ лучше всего использовать?</p>
+<p><span class="math inline">A_1 A_2 A_3 x</span> (слева направо) <span class="math inline">\left(A_1 \left(A_2 \left(A_3 x\right)\right)\right)</span> (справа налево) Не имеет значения Результаты первых двух вариантов не будут одинаковыми.</p>
+<div id="cell-42" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to create a random square matrix of size n</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_random_matrix(n):</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.random.rand(n, n)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the size of the matrices</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a list of 3 random matrices</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>matrices <span class="op">=</span> [create_random_matrix(n) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>)]</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.random.rand(n, <span class="dv">1</span>)  <span class="co"># y is a vector</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to compute the expression in a given order</span></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compute_expression(matrices, y, reverse<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> y</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> reverse:</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Start with y and multiply with each matrix from right to left</span></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> matrix <span class="kw">in</span> <span class="bu">reversed</span>(matrices):</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>            result <span class="op">=</span> matrix <span class="op">@</span> result</span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Start with the first matrix and multiply each next matrix from left to right</span></span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> matrices[<span class="dv">0</span>]</span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> matrix <span class="kw">in</span> matrices[<span class="dv">1</span>:]:</span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a>            result <span class="op">=</span> result <span class="op">@</span> matrix</span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Finally multiply with y</span></span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> result <span class="op">@</span> y</span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span>
+<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Time the expression from left to right</span></span>
+<span id="cb33-31"><a href="#cb33-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"💎 From left to right"</span>)</span>
+<span id="cb33-32"><a href="#cb33-32" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit compute_expression(matrices, y)</span>
+<span id="cb33-33"><a href="#cb33-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-34"><a href="#cb33-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Time the expression from right to left</span></span>
+<span id="cb33-35"><a href="#cb33-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"💎 From right to left"</span>)</span>
+<span id="cb33-36"><a href="#cb33-36" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit compute_expression(matrices, y, reverse<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>💎 From left to right
+706 µs ± 62 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+💎 From right to left
+24.9 µs ± 2.82 µs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</code></pre>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
