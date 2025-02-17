@@ -268,6 +268,77 @@ window.Quarto = {
 </ul>
 <p>CG stores less vectors (<span class="math inline">3</span> instead of <span class="math inline">5</span>).</p>
 <p>Now, let us talk about non-symmetric systems.</p>
+<div id="cell-8" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse.linalg</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a symmetric indefinite matrix</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>diag <span class="op">=</span> np.ones(n)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a discretized 1D Helmholtz operator: -d^2/dx^2 - k^2</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>h <span class="op">=</span> <span class="fl">1.0</span><span class="op">/</span>n  <span class="co"># Grid spacing</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">0</span>     <span class="co"># Wave number</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create diagonals for tridiagonal matrix</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>main_diag <span class="op">=</span> <span class="op">-</span><span class="fl">2.00</span><span class="op">/</span>h<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> k<span class="op">**</span><span class="dv">2</span>  <span class="co"># Main diagonal: -2/h^2 + k^2 </span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>off_diag <span class="op">=</span> <span class="fl">1.0</span><span class="op">/</span>h<span class="op">**</span><span class="dv">2</span>           <span class="co"># Off diagonals: 1/h^2</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Create arrays for the three diagonals</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>main <span class="op">=</span> np.ones(n) <span class="op">*</span> main_diag</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>upper <span class="op">=</span> np.ones(n) <span class="op">*</span> off_diag  </span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>lower <span class="op">=</span> np.ones(n) <span class="op">*</span> off_diag</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct tridiagonal matrix using sparse diagonals</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># The error occurs because spdiags expects diagonals to be provided in a 2D array</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># where each row represents a diagonal. Let's stack them correctly:</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> sp.sparse.spdiags([lower, main, upper], [<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], n, n, <span class="bu">format</span><span class="op">=</span><span class="st">'csr'</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Random right-hand side</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.random.randn(n)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Lists to store residual norms</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>res_minres <span class="op">=</span> []</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>res_cg <span class="op">=</span> []</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> callback_minres(xk):</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    res_minres.append(np.linalg.norm(b <span class="op">-</span> A <span class="op">@</span> xk))</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> callback_cg(xk):</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    res_cg.append(np.linalg.norm(b <span class="op">-</span> A <span class="op">@</span> xk))</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Solve with MINRES</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>x_minres <span class="op">=</span> scipy.sparse.linalg.minres(A, b, callback<span class="op">=</span>callback_minres, maxiter<span class="op">=</span><span class="dv">500</span>, rtol<span class="op">=</span><span class="fl">1e-10</span>)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Try to solve with CG (may not converge due to indefiniteness)</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    x_cg <span class="op">=</span> scipy.sparse.linalg.cg(A, b, callback<span class="op">=</span>callback_cg, maxiter<span class="op">=</span><span class="dv">500</span>, rtol<span class="op">=</span><span class="fl">1e-10</span>)</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span>:</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"CG failed to converge as expected for indefinite system"</span>)</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot convergence</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_minres, <span class="st">'b-'</span>, label<span class="op">=</span><span class="st">'MINRES'</span>)</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(res_cg) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    plt.semilogy(res_cg, <span class="st">'r--'</span>, label<span class="op">=</span><span class="st">'CG'</span>)</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Iteration'</span>)</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Residual norm'</span>)</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Convergence comparison for symmetric indefinite system'</span>)</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>np.<span class="bu">max</span>(np.linalg.eigvals(A.todense()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>np.float64(-9.771444747833783)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-14_files/figure-html/cell-2-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="non-symmetric-systems" class="level2">
 <h2 class="anchored" data-anchor-id="non-symmetric-systems">Non-symmetric systems</h2>
@@ -277,42 +348,42 @@ window.Quarto = {
 </ul>
 <p><span class="math display">A(x + e) = f, \quad Ae = f - Ax,</span></p>
 <p>and generate the new <strong>Krylov subspace</strong> from the residual vector. This spoils the convergence, as we will see from the demo.</p>
-<div id="cell-9" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse.linalg</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>plt.rc(<span class="st">"text"</span>, usetex<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">300</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> np.ones(n)<span class="op">;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="op">-</span>sp.sparse.spdiags(np.vstack((ex,  <span class="op">-</span>(<span class="dv">2</span> <span class="op">+</span> <span class="fl">1.</span><span class="op">/</span>n)<span class="op">*</span>ex, (<span class="dv">1</span> <span class="op">+</span> <span class="fl">1.</span><span class="op">/</span>n) <span class="op">*</span> ex)), [<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], n, n, <span class="st">'csr'</span>)<span class="op">;</span> </span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.random.randn(n)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>res_gmres_rst <span class="op">=</span> []</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>res_gmres <span class="op">=</span> []</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gmres_rst_cl(r):</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    res_gmres_rst.append(np.linalg.norm(r))</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gmres_rst(r):</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    res_gmres.append(np.linalg.norm(r))</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> scipy.sparse.linalg.gmres(A, rhs, restart<span class="op">=</span><span class="dv">20</span>, callback<span class="op">=</span>gmres_rst_cl)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> scipy.sparse.linalg.gmres(A, rhs, restart<span class="op">=</span>n, callback<span class="op">=</span>gmres_rst)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>lim <span class="op">=</span> <span class="dv">300</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_gmres_rst[:lim], marker<span class="op">=</span><span class="st">'.'</span>,color<span class="op">=</span><span class="st">'k'</span>, label<span class="op">=</span><span class="st">'GMRES, restart=20'</span>)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_gmres[:lim], marker<span class="op">=</span><span class="st">'x'</span>,color<span class="op">=</span><span class="st">'r'</span>, label<span class="op">=</span><span class="st">'GMRES, no restart'</span>)</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Iteration number'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Residual norm'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>plt.xticks(fontsize<span class="op">=</span><span class="dv">20</span>)</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>plt.yticks(fontsize<span class="op">=</span><span class="dv">20</span>)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-10" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse.linalg</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>plt.rc(<span class="st">"text"</span>, usetex<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">300</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> np.ones(n)<span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="op">-</span>sp.sparse.spdiags(np.vstack((ex,  <span class="op">-</span>(<span class="dv">2</span> <span class="op">+</span> <span class="fl">1.</span><span class="op">/</span>n)<span class="op">*</span>ex, (<span class="dv">1</span> <span class="op">+</span> <span class="fl">1.</span><span class="op">/</span>n) <span class="op">*</span> ex)), [<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], n, n, <span class="st">'csr'</span>)<span class="op">;</span> </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.random.randn(n)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>res_gmres_rst <span class="op">=</span> []</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>res_gmres <span class="op">=</span> []</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gmres_rst_cl(r):</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    res_gmres_rst.append(np.linalg.norm(r))</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gmres_rst(r):</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    res_gmres.append(np.linalg.norm(r))</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> scipy.sparse.linalg.gmres(A, rhs, restart<span class="op">=</span><span class="dv">20</span>, callback<span class="op">=</span>gmres_rst_cl)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> scipy.sparse.linalg.gmres(A, rhs, restart<span class="op">=</span>n, callback<span class="op">=</span>gmres_rst)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>lim <span class="op">=</span> <span class="dv">300</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_gmres_rst[:lim], marker<span class="op">=</span><span class="st">'.'</span>,color<span class="op">=</span><span class="st">'k'</span>, label<span class="op">=</span><span class="st">'GMRES, restart=20'</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_gmres[:lim], marker<span class="op">=</span><span class="st">'x'</span>,color<span class="op">=</span><span class="st">'r'</span>, label<span class="op">=</span><span class="st">'GMRES, no restart'</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Iteration number'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Residual norm'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>plt.xticks(fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>plt.yticks(fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-14_files/figure-html/cell-2-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-14_files/figure-html/cell-3-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -334,24 +405,24 @@ window.Quarto = {
 <li><p>The stabilization idea proposed by Van der Vorst et al.&nbsp;improves the stability (later in the lecture)</p></li>
 </ul>
 <p>Let us do some demo for a simple non-symmetric matrix to demonstrate instability of BiCG method.</p>
-<div id="cell-12" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>res_all_bicg <span class="op">=</span> []</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bicg_cl(x):</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    res_all_bicg.append(np.linalg.norm(A.dot(x) <span class="op">-</span> rhs))</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> scipy.sparse.linalg.bicg(A, rhs, x0<span class="op">=</span>np.zeros(n), callback<span class="op">=</span>bicg_cl)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_all_bicg, label<span class="op">=</span><span class="st">'BiCG'</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_gmres_rst[:n], label<span class="op">=</span><span class="st">'GMRES, restart=20'</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_gmres, label<span class="op">=</span><span class="st">'GMRES, no restart'</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Iteration number'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Residual norm'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>plt.xticks(fontsize<span class="op">=</span><span class="dv">20</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>plt.yticks(fontsize<span class="op">=</span><span class="dv">20</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-13" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>res_all_bicg <span class="op">=</span> []</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bicg_cl(x):</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    res_all_bicg.append(np.linalg.norm(A.dot(x) <span class="op">-</span> rhs))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> scipy.sparse.linalg.bicg(A, rhs, x0<span class="op">=</span>np.zeros(n), callback<span class="op">=</span>bicg_cl)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_all_bicg, label<span class="op">=</span><span class="st">'BiCG'</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_gmres_rst[:n], label<span class="op">=</span><span class="st">'GMRES, restart=20'</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_gmres, label<span class="op">=</span><span class="st">'GMRES, no restart'</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Iteration number'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Residual norm'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>plt.xticks(fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>plt.yticks(fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-14_files/figure-html/cell-3-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-14_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -393,71 +464,71 @@ window.Quarto = {
 <li><p>For more details, please consult the book <a href="http://www.lmn.pub.ro/~daniel/ElectromagneticModelingDoctoral/Books/Numerical%20Methods/VanDerVorst2003%20Iterative%20Krylov%20Methods%20for%20Large%20Linear%20Systems.pdf">“Iterative Krylov Methods for Large Linear Systems”</a> by H. Van-der Vorst.</p></li>
 </ul>
 <p>A short demo to compare “Stabilized” vs “Non-stabilized” versions.</p>
-<div id="cell-16" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse.linalg</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">600</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> np.ones(n)<span class="op">;</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="op">-</span>sp.sparse.spdiags(np.vstack((ex,  <span class="op">-</span>(<span class="dv">2</span> <span class="op">+</span> <span class="fl">1.</span><span class="op">/</span>n)<span class="op">*</span>ex, (<span class="dv">1</span> <span class="op">+</span> <span class="fl">1.</span><span class="op">/</span>n) <span class="op">*</span> ex)), [<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], n, n, <span class="st">'csr'</span>) </span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.random.randn(n)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># ee = sp.sparse.eye(n)</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># A = -sp.sparse.spdiags(np.vstack((ex,  -(2 + 1./n)*ex, (1 + 1./n) * ex)), [-1, 0, 1], n, n, 'csr')</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># A = sp.sparse.kron(A, ee) + sp.sparse.kron(ee, A)</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># rhs = np.ones(n * n)</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Dimension of the linear system = </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(A.shape[<span class="dv">0</span>]))</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>res_all_bicg <span class="op">=</span> []</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>res_all_bicgstab <span class="op">=</span> []</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bicg_cl(x):</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    res_all_bicg.append(np.linalg.norm(A.dot(x) <span class="op">-</span> rhs))</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bicgstab_cl(x):</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    res_all_bicgstab.append(np.linalg.norm(A.dot(x) <span class="op">-</span> rhs))</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>res_gmres_rst <span class="op">=</span> []</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>res_gmres <span class="op">=</span> []</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gmres_rst_cl(r):</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    res_gmres_rst.append(np.linalg.norm(r))</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gmres_rst(r):</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    res_gmres.append(np.linalg.norm(r))</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>sol2 <span class="op">=</span> scipy.sparse.linalg.gmres(A, rhs, restart<span class="op">=</span><span class="dv">20</span>, callback<span class="op">=</span>gmres_rst_cl)</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>sol2 <span class="op">=</span> scipy.sparse.linalg.gmres(A, rhs, restart<span class="op">=</span>n, callback<span class="op">=</span>gmres_rst)</span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>sol2 <span class="op">=</span> scipy.sparse.linalg.bicg(A, rhs, x0<span class="op">=</span>np.zeros(A.shape[<span class="dv">0</span>]), callback<span class="op">=</span>bicg_cl)</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>sol2 <span class="op">=</span> scipy.sparse.linalg.bicgstab(A, rhs, x0<span class="op">=</span>np.zeros(A.shape[<span class="dv">0</span>]), callback<span class="op">=</span>bicgstab_cl)</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>res_all_bicg <span class="op">=</span> np.array(res_all_bicg)<span class="op">/</span>res_all_bicg[<span class="dv">0</span>]</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>res_all_bicgstab <span class="op">=</span> np.array(res_all_bicgstab)<span class="op">/</span>res_all_bicgstab[<span class="dv">0</span>]</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>res_gmres_rst <span class="op">=</span> np.array(res_gmres_rst)<span class="op">/</span>res_gmres_rst[<span class="dv">0</span>]</span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>res_gmres <span class="op">=</span> np.array(res_gmres)<span class="op">/</span>res_gmres[<span class="dv">0</span>]</span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>lim <span class="op">=</span> <span class="dv">500</span></span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_all_bicgstab[:lim], marker<span class="op">=</span><span class="st">'.'</span>,color<span class="op">=</span><span class="st">'k'</span>, label<span class="op">=</span><span class="st">'BiCGStab'</span>)</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_all_bicg[:lim], marker<span class="op">=</span><span class="st">'x'</span>,color<span class="op">=</span><span class="st">'r'</span>, label<span class="op">=</span><span class="st">'BiCG'</span>)</span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_gmres_rst[:lim], marker<span class="op">=</span><span class="st">'.'</span>,color<span class="op">=</span><span class="st">'y'</span>, label<span class="op">=</span><span class="st">'GMRES res(n)'</span>)</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_gmres[:lim], marker<span class="op">=</span><span class="st">'x'</span>,color<span class="op">=</span><span class="st">'g'</span>, label<span class="op">=</span><span class="st">'GMRES'</span>)</span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Iteration number'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Retative residual norm'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'best'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>plt.xticks(fontsize<span class="op">=</span><span class="dv">20</span>)</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> plt.yticks(fontsize<span class="op">=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-17" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse.linalg</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">600</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> np.ones(n)<span class="op">;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="op">-</span>sp.sparse.spdiags(np.vstack((ex,  <span class="op">-</span>(<span class="dv">2</span> <span class="op">+</span> <span class="fl">1.</span><span class="op">/</span>n)<span class="op">*</span>ex, (<span class="dv">1</span> <span class="op">+</span> <span class="fl">1.</span><span class="op">/</span>n) <span class="op">*</span> ex)), [<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], n, n, <span class="st">'csr'</span>) </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.random.randn(n)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># ee = sp.sparse.eye(n)</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co"># A = -sp.sparse.spdiags(np.vstack((ex,  -(2 + 1./n)*ex, (1 + 1./n) * ex)), [-1, 0, 1], n, n, 'csr')</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># A = sp.sparse.kron(A, ee) + sp.sparse.kron(ee, A)</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># rhs = np.ones(n * n)</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Dimension of the linear system = </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(A.shape[<span class="dv">0</span>]))</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>res_all_bicg <span class="op">=</span> []</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>res_all_bicgstab <span class="op">=</span> []</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bicg_cl(x):</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    res_all_bicg.append(np.linalg.norm(A.dot(x) <span class="op">-</span> rhs))</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bicgstab_cl(x):</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    res_all_bicgstab.append(np.linalg.norm(A.dot(x) <span class="op">-</span> rhs))</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>res_gmres_rst <span class="op">=</span> []</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>res_gmres <span class="op">=</span> []</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gmres_rst_cl(r):</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    res_gmres_rst.append(np.linalg.norm(r))</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gmres_rst(r):</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    res_gmres.append(np.linalg.norm(r))</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>sol2 <span class="op">=</span> scipy.sparse.linalg.gmres(A, rhs, restart<span class="op">=</span><span class="dv">20</span>, callback<span class="op">=</span>gmres_rst_cl)</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>sol2 <span class="op">=</span> scipy.sparse.linalg.gmres(A, rhs, restart<span class="op">=</span>n, callback<span class="op">=</span>gmres_rst)</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>sol2 <span class="op">=</span> scipy.sparse.linalg.bicg(A, rhs, x0<span class="op">=</span>np.zeros(A.shape[<span class="dv">0</span>]), callback<span class="op">=</span>bicg_cl)</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>sol2 <span class="op">=</span> scipy.sparse.linalg.bicgstab(A, rhs, x0<span class="op">=</span>np.zeros(A.shape[<span class="dv">0</span>]), callback<span class="op">=</span>bicgstab_cl)</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>res_all_bicg <span class="op">=</span> np.array(res_all_bicg)<span class="op">/</span>res_all_bicg[<span class="dv">0</span>]</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>res_all_bicgstab <span class="op">=</span> np.array(res_all_bicgstab)<span class="op">/</span>res_all_bicgstab[<span class="dv">0</span>]</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>res_gmres_rst <span class="op">=</span> np.array(res_gmres_rst)<span class="op">/</span>res_gmres_rst[<span class="dv">0</span>]</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>res_gmres <span class="op">=</span> np.array(res_gmres)<span class="op">/</span>res_gmres[<span class="dv">0</span>]</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>lim <span class="op">=</span> <span class="dv">500</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_all_bicgstab[:lim], marker<span class="op">=</span><span class="st">'.'</span>,color<span class="op">=</span><span class="st">'k'</span>, label<span class="op">=</span><span class="st">'BiCGStab'</span>)</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_all_bicg[:lim], marker<span class="op">=</span><span class="st">'x'</span>,color<span class="op">=</span><span class="st">'r'</span>, label<span class="op">=</span><span class="st">'BiCG'</span>)</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_gmres_rst[:lim], marker<span class="op">=</span><span class="st">'.'</span>,color<span class="op">=</span><span class="st">'y'</span>, label<span class="op">=</span><span class="st">'GMRES res(n)'</span>)</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>plt.semilogy(res_gmres[:lim], marker<span class="op">=</span><span class="st">'x'</span>,color<span class="op">=</span><span class="st">'g'</span>, label<span class="op">=</span><span class="st">'GMRES'</span>)</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Iteration number'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Retative residual norm'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'best'</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>plt.xticks(fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> plt.yticks(fontsize<span class="op">=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Dimension of the linear system = 600</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-14_files/figure-html/cell-4-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-14_files/figure-html/cell-5-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -625,16 +696,16 @@ x^{(k+1)} = x^{(k)} - \omega (D + \omega L)^{-1}(Ax^{(k)} - f).
 <section id="incomplete-lu-formal-definition" class="level2">
 <h2 class="anchored" data-anchor-id="incomplete-lu-formal-definition">Incomplete-LU: formal definition</h2>
 <p>We run the usual LU-decomposition cycle, but avoid inserting non-zeros <strong>other</strong> than the initial non-zero pattern.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>    L <span class="op">=</span> np.zeros((n, n))</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    U <span class="op">=</span> np.zeros((n, n))</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(n): <span class="co">#Eliminate one row   </span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        L[k, k] <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(k<span class="op">+</span><span class="dv">1</span>, n):</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            L[i, k] <span class="op">=</span> a[i, k] <span class="op">/</span> a[k, k]</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(k<span class="op">+</span><span class="dv">1</span>, n):</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                a[i, j] <span class="op">=</span> a[i, j] <span class="op">-</span> L[i, k] <span class="op">*</span> a[k, j]  <span class="co">#New fill-ins appear here</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(k, n):</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            U[k, j] <span class="op">=</span> a[k, j]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>    L <span class="op">=</span> np.zeros((n, n))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    U <span class="op">=</span> np.zeros((n, n))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(n): <span class="co">#Eliminate one row   </span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        L[k, k] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(k<span class="op">+</span><span class="dv">1</span>, n):</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>            L[i, k] <span class="op">=</span> a[i, k] <span class="op">/</span> a[k, k]</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(k<span class="op">+</span><span class="dv">1</span>, n):</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                a[i, j] <span class="op">=</span> a[i, j] <span class="op">-</span> L[i, k] <span class="op">*</span> a[k, j]  <span class="co">#New fill-ins appear here</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(k, n):</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>            U[k, j] <span class="op">=</span> a[k, j]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="iluk" class="level2">
 <h2 class="anchored" data-anchor-id="iluk">ILU(k)</h2>
@@ -677,8 +748,9 @@ x^{(k+1)} = x^{(k)} - \omega (D + \omega L)^{-1}(Ax^{(k)} - f).
 <section id="symmetric-positive-definite-case" class="level2">
 <h2 class="anchored" data-anchor-id="symmetric-positive-definite-case">Symmetric positive definite case</h2>
 <ul>
-<li><p>In the SPD case, instead of incomplete LU you should use Incomplete Cholesky, which is twice faster and consumes twice less memory.</p></li>
-<li><p>Both <strong>ILUT</strong> and <strong>Ichol</strong> are implemented in SciPy and you can try (nothing quite fancy, but it works).</p></li>
+<li><p>In the SPD case, instead of incomplete LU you can use Incomplete Cholesky, which is twice faster and consumes twice less memory.</p></li>
+<li><p>However, Incomplete Cholesky <strong>may not exist</strong>.</p></li>
+<li><p>Both <strong>ILUT</strong> and <strong>Ichol</strong> are implemented in SciPy and you can try.</p></li>
 </ul>
 </section>
 <section id="second-order-lu-preconditioners" class="level2">
@@ -700,23 +772,14 @@ x^{(k+1)} = x^{(k)} - \omega (D + \omega L)^{-1}(Ax^{(k)} - f).
 <li>Incomplete LU, three flavours: ILU(k), ILUT, ILU2</li>
 </ul>
 </section>
-<section id="next-lecture" class="level2">
-<h2 class="anchored" data-anchor-id="next-lecture">Next lecture</h2>
-<ul>
-<li>Tensors</li>
-<li>Tucker and CP decompositions</li>
-<li>Tensor train decomposition</li>
-<li>Applications</li>
-</ul>
-</section>
 <section id="questions" class="level1">
 <h1>Questions?</h1>
 <div id="cell-41" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}" data-execution_count="41">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"./styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> HTML(styles)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>css_styling()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"./styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> HTML(styles)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>css_styling()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="41">
 <link href="http://fonts.googleapis.com/css?family=Fenix" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=Alegreya+Sans:100,300,400,500,700,800,900,100italic,300italic,400italic,500italic,700italic,800italic,900italic" rel="stylesheet" type="text/css">

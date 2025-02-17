@@ -150,12 +150,12 @@ window.Quarto = {
 <meta property="og:description" content="">
 <meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-11/lecture-11_files/figure-html/cell-5-output-2.png">
 <meta property="og:image:height" content="418">
-<meta property="og:image:width" content="456">
+<meta property="og:image:width" content="457">
 <meta name="twitter:title" content="Lecture 11: Sparse direct solvers">
 <meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-11/lecture-11_files/figure-html/cell-5-output-2.png">
 <meta name="twitter:image-height" content="418">
-<meta name="twitter:image-width" content="456">
+<meta name="twitter:image-width" content="457">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -250,73 +250,47 @@ window.Quarto = {
 <li>And solving linear systems with <strong>sparse</strong> triangular matrices is very easy.</li>
 </ul>
 <p><span style="color:red"> Note that the inverse matrix to sparse matrix is not sparse! </span></p>
-<div id="cell-6" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
+<div id="cell-6" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> spsp</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">7</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">4</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> np.ones(n)<span class="op">;</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> spsp.spdiags(np.vstack((ex,  np.random.rand(n), np.random.rand(n))), [<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], n, n, <span class="st">'csr'</span>)<span class="op">;</span> </span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.array(np.linalg.inv(a.toarray()))</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(a.toarray())</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(b)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>np.linalg.svd(b[:<span class="dv">3</span>, <span class="dv">4</span>:])[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#a = spsp.spdiags(np.vstack((ex,  np.random.rand(n), np.random.rand(n))), [-1, 0, 1], n, n, 'csr'); </span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> spsp.spdiags(np.vstack((<span class="op">-</span>ex,  <span class="dv">2</span><span class="op">*</span>ex, <span class="op">-</span>ex)), [<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], n, n, <span class="st">'csr'</span>)<span class="op">;</span> </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">#a = spsp.spdiags(np.vstack((-ex,  2*ex, -ex), np.random.rand(n)), [-1, 0, 1], n, n, 'csr'); </span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.array(np.linalg.inv(a.toarray()))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(a.toarray())</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(b)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>np.linalg.svd(b[:<span class="dv">3</span>, <span class="dv">4</span>:])[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[[0.81628124 0.46963379 0.         0.         0.         0.
-  0.        ]
- [1.         0.4010937  0.52590463 0.         0.         0.
-  0.        ]
- [0.         1.         0.31569952 0.05086576 0.         0.
-  0.        ]
- [0.         0.         1.         0.92964368 0.53328924 0.
-  0.        ]
- [0.         0.         0.         1.         0.03959506 0.01950792
-  0.        ]
- [0.         0.         0.         0.         1.         0.19991324
-  0.40202748]
- [0.         0.         0.         0.         0.         1.
-  0.83648376]]
-[[ 8.27969626e-01  3.24143929e-01 -5.18854601e-01 -6.66664548e-03
-   3.25895391e-02  2.26486550e-03 -1.08853060e-03]
- [ 6.90205720e-01 -5.63401979e-01  9.01833054e-01  1.15874490e-02
-  -5.66446236e-02 -3.93661455e-03  1.89199994e-03]
- [-2.10077402e+00  1.71482242e+00  2.98790004e-01  3.83908521e-03
-  -1.87671623e-02 -1.30425589e-03  6.26846250e-04]
- [-5.30658931e-01  4.33166929e-01  7.54748405e-02 -2.51631866e-01
-   1.23008889e+00  8.54871214e-02 -4.10864784e-02]
- [ 4.86433539e+00 -3.97066571e+00 -6.91847278e-01  2.30660735e+00
-  -2.10913161e+00 -1.46577692e-01  7.04475839e-02]
- [ 1.73291328e+01 -1.41454460e+01 -2.46469711e+00  8.21725928e+00
-  -7.51375447e+00 -4.08466841e+00  1.96315700e+00]
- [-2.07166398e+01  1.69106044e+01  2.94649725e+00 -9.82357295e+00
-   8.98254670e+00  4.88314130e+00 -1.15143537e+00]]</code></pre>
+<pre><code>[[ 2. -1.  0.  0.]
+ [-1.  2. -1.  0.]
+ [ 0. -1.  2. -1.]
+ [ 0.  0. -1.  2.]]
+[[0.8 0.6 0.4 0.2]
+ [0.6 1.2 0.8 0.4]
+ [0.4 0.8 1.2 0.6]
+ [0.2 0.4 0.6 0.8]]</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>array([6.81937164e-02, 3.86855873e-17, 2.42041921e-19])</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>array([], dtype=float64)</code></pre>
 </div>
 </div>
 </section>
 <section id="and-the-factors" class="level2">
 <h2 class="anchored" data-anchor-id="and-the-factors">And the factors…</h2>
 <p><span class="math inline">L</span> and <span class="math inline">U</span> are typically sparse. In the tridiagonal case they are even bidiagonal!</p>
-<div id="cell-8" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="2">
+<div id="cell-8" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.sparse.linalg <span class="im">import</span> splu</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> splu(a.tocsc(), permc_spec<span class="op">=</span><span class="st">"NATURAL"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> splu(a.tocsc())<span class="co">#, permc_spec="NATURAL")</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(T.L.toarray())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[[ 1.          0.          0.          0.          0.          0.
-   0.        ]
- [-0.5         1.          0.          0.          0.          0.
-   0.        ]
- [ 0.         -0.66666667  1.          0.          0.          0.
-   0.        ]
- [ 0.          0.         -0.75        1.          0.          0.
-   0.        ]
- [ 0.          0.          0.         -0.8         1.          0.
-   0.        ]
- [ 0.          0.          0.          0.         -0.83333333  1.
-   0.        ]
- [ 0.          0.          0.          0.          0.         -0.85714286
-   1.        ]]</code></pre>
+<pre><code>[[ 1.   0.   0.   0. ]
+ [ 0.   1.   0.   0. ]
+ [-0.5 -0.5  1.   0. ]
+ [ 0.  -0.5 -0.5  1. ]]</code></pre>
 </div>
 </div>
 <p>Interesting to note that <code>splu</code> without <code>permc_spec</code> will produce permutations which will not yield the bidiagonal factor:</p>
@@ -347,7 +321,7 @@ window.Quarto = {
 <section id="d-case" class="level2">
 <h2 class="anchored" data-anchor-id="d-case">2D-case</h2>
 <p>From a matrix that comes as a discretization of a two-dimensional problem everything is much worse:</p>
-<div id="cell-12" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="12">
+<div id="cell-12" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> spsp</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse.linalg</span>
@@ -359,13 +333,13 @@ window.Quarto = {
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>e <span class="op">=</span> sp.sparse.eye(n)</span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> sp.sparse.kron(lp1, e) <span class="op">+</span> sp.sparse.kron(e, lp1)</span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> spsp.csc_matrix(A)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> spsp.linalg.splu(A, permc_spec<span class="op">=</span><span class="st">"NATURAL"</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> spsp.linalg.splu(A)<span class="co">#, permc_spec="NATURAL")</span></span>
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>plt.spy(T.L, marker<span class="op">=</span><span class="st">'.'</span>, color<span class="op">=</span><span class="st">'k'</span>, markersize<span class="op">=</span><span class="dv">8</span>)</span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>T.L</span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.spy(A, marker='.', color='k', markersize=8)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
-<pre><code>&lt;16384x16384 sparse matrix of type '&lt;class 'numpy.float64'&gt;'
-    with 2097279 stored elements in Compressed Sparse Column format&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<pre><code>&lt;Compressed Sparse Column sparse matrix of dtype 'float64'
+    with 610620 stored elements and shape (16384, 16384)&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>

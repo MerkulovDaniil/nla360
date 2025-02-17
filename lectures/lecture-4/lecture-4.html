@@ -403,7 +403,7 @@ maxCacheSize: 5.33 GB
 <section id="computing-matrix-rank" class="level2">
 <h2 class="anchored" data-anchor-id="computing-matrix-rank">Computing matrix rank</h2>
 <p>We can also try to compute the matrix rank using the built-in <code>jnp.linalg.matrix_rank</code> function</p>
-<div id="cell-22" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="3">
+<div id="cell-22" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Computing matrix rank</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">50</span> </span>
@@ -413,7 +413,7 @@ maxCacheSize: 5.33 GB
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Rank of the matrix:'</span>, np.linalg.matrix_rank(b, tol<span class="op">=</span><span class="fl">1e-7</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rank of the matrix: 1
-Rank of the matrix: 9</code></pre>
+Rank of the matrix: 10</code></pre>
 </div>
 </div>
 <p><font color="red"> So, small perturbations might crucially affect the rank! </font></p>

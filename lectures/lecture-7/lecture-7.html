@@ -388,24 +388,22 @@ window.Quarto = {
 <li>It is a <strong>bad idea</strong> for numerical stability. Let us do some demo (for a submatrix of the Hilbert matrix).</li>
 </ul>
 <div id="cell-19" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax.config <span class="im">import</span> config</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>config.update(<span class="st">"jax_enable_x64"</span>, <span class="va">True</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="dv">6</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span> <span class="op">/</span> (i <span class="op">+</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(r)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> jnp.array(a)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>q, Rmat <span class="op">=</span> jnp.linalg.qr(a)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>e <span class="op">=</span> jnp.eye(r)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Built-in QR orth'</span>, jnp.linalg.norm(jnp.dot(q.T, q) <span class="op">-</span> e))</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>gram_matrix <span class="op">=</span> a.T.dot(a)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>Rmat1 <span class="op">=</span> jnp.linalg.cholesky(gram_matrix)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">#q1 = jnp.dot(a, jnp.linalg.inv(Rmat1.T))</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>q1 <span class="op">=</span> jnp.linalg.solve(Rmat1, a.T).T</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Via Cholesky:'</span>, jnp.linalg.norm(jnp.dot(q1.T, q1) <span class="op">-</span> e))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span> <span class="op">/</span> (i <span class="op">+</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(r)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.array(a)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>q, Rmat <span class="op">=</span> np.linalg.qr(a)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>e <span class="op">=</span> np.eye(r)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Built-in QR orth'</span>, np.linalg.norm(np.dot(q.T, q) <span class="op">-</span> e))</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>gram_matrix <span class="op">=</span> a.T.dot(a)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>Rmat1 <span class="op">=</span> np.linalg.cholesky(gram_matrix)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#q1 = np.dot(a, np.linalg.inv(Rmat1.T))</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>q1 <span class="op">=</span> np.linalg.solve(Rmat1, a.T).T</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Via Cholesky:'</span>, np.linalg.norm(np.dot(q1.T, q1) <span class="op">-</span> e))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Built-in QR orth 8.184741451905057e-16
-Via Cholesky: 2.614491817325585e-05</code></pre>
+<pre><code>Built-in QR orth 6.764143318685874e-16
+Via Cholesky: 1.528398708004441e-09</code></pre>
 </div>
 </div>
 </section>
@@ -435,6 +433,22 @@ This is called <strong>loss of orthogonality</strong>.</p></li>
 <li><p>In exact arithmetic, it is the same. In floating point it is absolutely different!</p></li>
 <li><p>Note that the complexity is <span class="math inline">\mathcal{O}(nm^2)</span> operations</p></li>
 </ul>
+<div id="cell-22" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.random.rand(n)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> a <span class="op">+</span> <span class="fl">1e-9</span><span class="op">*</span>np.random.randn(n)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> a<span class="op">/</span>np.linalg.norm(a)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> b <span class="op">-</span> np.dot(b, a)<span class="op">*</span>a</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> c<span class="op">/</span>np.linalg.norm(c)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.dot(c, a))</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> c <span class="op">-</span> np.dot(c, a)<span class="op">*</span>a</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> c<span class="op">/</span>np.linalg.norm(c)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.dot(c, a))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1.576475053416404e-07
+-2.42861286636753e-17</code></pre>
+</div>
+</div>
 </section>
 <section id="qr-decomposition-the-almost-practical-way" class="level2">
 <h2 class="anchored" data-anchor-id="qr-decomposition-the-almost-practical-way">QR decomposition: the (almost) practical way</h2>
@@ -557,23 +571,23 @@ This is called <strong>loss of orthogonality</strong>.</p></li>
 <li><p>Complexity of each step is <span class="math inline">\mathcal{O}(n^3)</span>, if a general QR decomposition is done.</p></li>
 <li><p>Our hope is that <span class="math inline">A_k</span> will be <strong>very close to the triangular matrix</strong> for suffiently large <span class="math inline">k</span>.</p></li>
 </ul>
-<div id="cell-35" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span><span class="op">/</span>(i <span class="op">-</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> jnp.array(a)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>niters <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(niters):</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    q, rmat <span class="op">=</span> jnp.linalg.qr(a)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> rmat.dot(q)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Leading 3x3 block of a:'</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(a[:<span class="dv">4</span>, :<span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-36" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">40</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span><span class="op">/</span>(i <span class="op">-</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.array(a)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>niters <span class="op">=</span> <span class="dv">10000</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(niters):</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    q, rmat <span class="op">=</span> np.linalg.qr(a)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> rmat.dot(q)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Leading 3x3 block of a:'</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(a[:<span class="dv">4</span>, :<span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Leading 3x3 block of a:
-[[ 1.68842566e+00  2.39874769e+00 -4.91278296e-01  4.55588011e-01]
- [-2.27337624e+00  1.13938512e+00 -1.02951549e+00  5.70268353e-01]
- [-1.39868453e-15 -3.77840299e-15  2.37335976e+00  1.79215981e+00]
- [-4.11289213e-16 -5.73344858e-16 -9.26030829e-01  2.20080588e+00]]</code></pre>
+[[ 3.08733278e-01  3.08447671e+00  1.39093779e-02 -9.15979870e-02]
+ [-3.05714157e+00  2.90031089e-01  1.49436447e-01 -4.41658920e-02]
+ [-2.25478613e-21 -1.27296314e-20  5.50815465e-01  3.04169557e+00]
+ [-1.45411659e-20 -7.68894785e-21 -3.00877077e+00  5.09624202e-01]]</code></pre>
 </div>
 </div>
 </section>
@@ -662,12 +676,12 @@ This is called <strong>loss of orthogonality</strong>.</p></li>
 </ul>
 <section id="questions" class="level3">
 <h3 class="anchored" data-anchor-id="questions">Questions?</h3>
-<div id="cell-45" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"./styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> HTML(styles)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>css_styling()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-46" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"./styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> HTML(styles)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>css_styling()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

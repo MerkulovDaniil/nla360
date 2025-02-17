@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lecture 1: Floating-point arithmetic, vector norms</title>
+<title>Лекция 1: Арифметика с плавающей точкой, векторные нормы</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -146,12 +146,12 @@ window.Quarto = {
 };
 </script>
 
-<meta property="og:title" content="Lecture 1: Floating-point arithmetic, vector norms">
+<meta property="og:title" content="Лекция 1: Арифметика с плавающей точкой, векторные нормы">
 <meta property="og:description" content="">
 <meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-1/Babylonian_numerals.png">
 <meta property="og:image:height" content="534">
 <meta property="og:image:width" content="900">
-<meta name="twitter:title" content="Lecture 1: Floating-point arithmetic, vector norms">
+<meta name="twitter:title" content="Лекция 1: Арифметика с плавающей точкой, векторные нормы">
 <meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-1/Babylonian_numerals.png">
 <meta name="twitter:image-height" content="534">
@@ -208,108 +208,105 @@ window.Quarto = {
 </header>
 
 
-<section id="syllabus" class="level2">
-<h2 class="anchored" data-anchor-id="syllabus">Syllabus</h2>
-<p><strong>Today:</strong> - Part 1: floating point, vector norms - Part 2: matrix norms and stability concepts</p>
-</section>
-<section id="representation-of-numbers" class="level1">
-<h1>Representation of numbers</h1>
+<section id="представление-чисел" class="level1">
+<h1>Представление чисел</h1>
 <ul>
-<li>Real numbers are fundamental to mathematics and science, representing continuous quantities like:
+<li>Вещественные числа являются фундаментальными в математике и науке, представляя непрерывные величины, такие как:
 <ul>
-<li>Probabilities (between 0 and 1)</li>
-<li>Physical measurements (mass, velocity, temperature, etc.)</li>
-<li>Financial values (prices, interest rates)</li>
-<li>Mathematical quantities (π, e, √2)</li>
+<li>Вероятности (от 0 до 1)</li>
+<li>Физические измерения (масса, скорость, температура и т.д.)</li>
+<li>Финансовые значения (цены, процентные ставки)</li>
+<li>Математические величины (<span class="math inline">\pi</span>, <span class="math inline">e</span>, <span class="math inline">\sqrt{2}</span>)</li>
 </ul></li>
-<li>The history of number systems dates back thousands of years:
+<li>История систем счисления насчитывает тысячи лет:
 <ul>
-<li>Babylonians (2000 BCE) developed one of the first positional number systems</li>
-<li>They used base-60 (sexagesimal) system, which influences how we measure time today</li>
-<li>Their system could represent both whole numbers and fractions</li>
+<li>Вавилоняне (2000 до н.э.) разработали одну из первых позиционных систем счисления</li>
+<li>Они использовали систему с основанием 60 (шестидесятеричную), которая влияет на то, как мы измеряем время сегодня</li>
+<li>Их система могла представлять как целые числа, так и дроби</li>
 </ul></li>
 </ul>
 <p><img src="./Babylonian_numerals.png" width="500"></p>
 <ul>
-<li>Modern computers can only process binary (base-2) numbers:
+<li>Современные компьютеры могут обрабатывать только двоичные (с основанием 2) числа:
 <ul>
-<li>All data must be converted to sequences of 0s and 1s</li>
-<li>This creates challenges for representing real numbers</li>
-<li>We need efficient ways to encode both very large and very small numbers</li>
-<li>Must balance precision, range, and memory usage</li>
-<li>Understanding these representations is crucial for numerical computing and machine learning as well.</li>
+<li>Все данные должны быть преобразованы в последовательности 0 и 1</li>
+<li>Это создает проблемы для представления вещественных чисел</li>
+<li>Нам нужны эффективные способы кодирования как очень больших, так и очень малых чисел</li>
+<li>Необходимо балансировать между точностью, диапазоном и использованием памяти</li>
+<li>Понимание этих представлений критически важно для численных вычислений и машинного обучения</li>
 </ul></li>
 </ul>
-<section id="fixed-point-representation" class="level2">
-<h2 class="anchored" data-anchor-id="fixed-point-representation">Fixed Point Representation</h2>
+<section id="представление-чисел-с-фиксированной-точкой" class="level2">
+<h2 class="anchored" data-anchor-id="представление-чисел-с-фиксированной-точкой">Представление чисел с фиксированной точкой</h2>
 <ul>
-<li>Fixed point is the simplest way to represent real numbers digitally
+<li>Числа с фиксированной точкой - простейший способ представления вещественных чисел в цифровом виде
 <ul>
-<li>Also known as <strong>Qm.n</strong> format, where:
+<li>Также известен как формат <strong>Qm.n</strong>, где:
 <ul>
-<li>m bits for the integer part</li>
-<li>n bits for the fractional part</li>
+<li>m бит для целой части</li>
+<li>n бит для дробной части</li>
 </ul></li>
 </ul></li>
-<li>Key Properties:
+<li>Основные свойства:
 <ul>
-<li>Range: <span class="math inline">[-(2^m), 2^m - 2^{-n}]</span></li>
-<li>Resolution: <span class="math inline">2^{-n}</span> (smallest representable difference)</li>
-<li>Storage: <span class="math inline">m + n + 1</span> bits total (including sign bit)</li>
+<li>Диапазон: <span class="math inline">[-(2^m), 2^m - 2^{-n}]</span></li>
+<li>Разрешение: <span class="math inline">2^{-n}</span> (наименьшая представимая разница)</li>
+<li>Хранение: всего <span class="math inline">m + n + 1</span> бит (включая знаковый бит)</li>
 </ul></li>
-<li>Limitations:
+<li>Ограничения:
 <ul>
-<li>Fixed range of representable numbers</li>
-<li>Trade-off between range (m) and precision (n)</li>
-<li>Cannot efficiently handle very large or very small numbers</li>
+<li>Фиксированный диапазон представимых чисел</li>
+<li>Компромисс между диапазоном (m) и точностью (n)</li>
+<li>Неэффективно для представления очень больших или очень малых чисел</li>
 </ul></li>
 </ul>
 </section>
 </section>
-<section id="floating-point" class="level1">
-<h1>Floating point</h1>
-<p>The numbers in computer memory are typically represented as <strong>floating point numbers</strong>.</p>
-<p>A floating point number is represented as:</p>
+<section id="числа-с-плавающей-точкой" class="level1">
+<h1>Числа с плавающей точкой</h1>
+<p>Числа в памяти компьютера обычно представлены как <strong>числа с плавающей точкой</strong>.</p>
+<p>Число с плавающей точкой представляется как:</p>
 <p><span class="math display">\textrm{number} = \textrm{significand} \times \textrm{base}^{\textrm{exponent}},</span></p>
-<p>where: - <em>significand</em> is an integer - <em>base</em> is a positive integer - <em>exponent</em> is an integer (can be negative)</p>
-<p>For example:</p>
+<p>где: - <em>significand</em> (значащая часть) - целое число - <em>base</em> (основание) - положительное целое число<br>
+- <em>exponent</em> (показатель степени) - целое число (может быть отрицательным)</p>
+<p>Например:</p>
 <p><span class="math display"> 1.2 = 12 \cdot 10^{-1}.</span></p>
-<p>This format has a long history. It was already used in the world’s first working programmable, fully automatic digital computer <a href="https://en.wikipedia.org/wiki/Z3_(computer)">Z3</a> designed in 1935 and completed in 1941 in Germany by <a href="https://en.wikipedia.org/wiki/Konrad_Zuse">Konrad Zuse</a>.</p>
-<section id="floating-point-formula" class="level2">
-<h2 class="anchored" data-anchor-id="floating-point-formula">Floating point: formula</h2>
+<p>Этот формат имеет долгую историю. Он уже использовался в первом в мире работающем программируемом, полностью автоматическом цифровом компьютере <a href="https://en.wikipedia.org/wiki/Z3_(computer)">Z3</a>, спроектированном в 1935 году и завершенном в 1941 году в Германии <a href="https://en.wikipedia.org/wiki/Konrad_Zuse">Конрадом Цузе</a>.</p>
+<section id="числа-с-плавающей-точкой-формула" class="level2">
+<h2 class="anchored" data-anchor-id="числа-с-плавающей-точкой-формула">Числа с плавающей точкой: формула</h2>
 <p><span class="math display">f = (-1)^s 2^{(p-b)} \left( 1 + \frac{d_1}{2} + \frac{d_2}{2^2}  + \ldots + \frac{d_m}{2^m}\right),</span></p>
-<p>where <span class="math inline">s \in \{0, 1\}</span> is the sign bit, <span class="math inline">d_i \in \{0, 1\}</span> is the <span class="math inline">m</span>-bit mantissa, <span class="math inline">p \in \mathbb{Z}; 0 \leq p \leq 2^e</span>, <span class="math inline">e</span> is the <span class="math inline">e</span>-bit exponent, commonly defined as <span class="math inline">2^e - 1</span></p>
-<p>Can be thought as a uniform <span class="math inline">m</span>-bit grid between two sequential powers of <span class="math inline">2</span>.</p>
+<p>где <span class="math inline">s \in \{0, 1\}</span> - знаковый бит, <span class="math inline">d_i \in \{0, 1\}</span> - <span class="math inline">m</span>-битная мантисса, <span class="math inline">p \in \mathbb{Z}; 0 \leq p \leq 2^e</span>, <span class="math inline">e</span> - <span class="math inline">e</span>-битная экспонента, обычно определяемая как <span class="math inline">2^e - 1</span></p>
+<p>Можно представить как равномерную <span class="math inline">m</span>-битную сетку между двумя последовательными степенями числа <span class="math inline">2</span>.</p>
 </section>
-<section id="simple-examples" class="level2">
-<h2 class="anchored" data-anchor-id="simple-examples">Simple examples</h2>
-<p>There are many ways to write a number in scientific notation, but there is always a unique normalized representation, with exactly one non-zero digit to the left of the decimal point.</p>
+<section id="простые-примеры" class="level2">
+<h2 class="anchored" data-anchor-id="простые-примеры">Простые примеры</h2>
+<p>Существует много способов записать число в научной нотации, но всегда есть единственное нормализованное представление с ровно одной ненулевой цифрой слева от десятичной точки.</p>
 <p>For example: - <span class="math inline">0.232 \times 10^3 = 23.2 \times 10^1 = 2.32 \times 10^2 = \ldots</span> - <span class="math inline">01001 = 1.001 \times 2^3 = \ldots</span></p>
-<p><strong>Example 1:</strong> What’s the normalized representation of <span class="math inline">00101101.101</span>?</p>
+<p><strong>Пример 1:</strong> Каково нормализованное представление числа <span class="math inline">00101101.101</span>?</p>
 <p><span class="math inline">0.0001101001110</span> <span class="math inline">= 1.110100111 \times 2^{-4}</span></p>
 </section>
-<section id="multiplication-in-more-details" class="level2">
-<h2 class="anchored" data-anchor-id="multiplication-in-more-details">Multiplication in more details</h2>
-<p>Consider two FP numbers <span class="math inline">x, y</span>, whose exponents and fractions are <span class="math inline">x_e, y_e</span> and <span class="math inline">x_m, y_m</span> respectively, the vanilla FP Mul result is</p>
+<section id="умножение-более-подробно" class="level2">
+<h2 class="anchored" data-anchor-id="умножение-более-подробно">Умножение более подробно</h2>
+<p>Рассмотрим два числа с плавающей точкой <span class="math inline">x, y</span>, у которых экспоненты и дробные части равны <span class="math inline">x_e, y_e</span> и <span class="math inline">x_m, y_m</span> соответственно. Результат обычного умножения чисел с плавающей точкой будет:</p>
 <p><span class="math display">
 \operatorname{Mul}(x, y)=\left(1+x_m\right) \cdot 2^{x_e} \cdot\left(1+y_m\right) \cdot 2^{y_e}=\left(1+x_m+y_m+x_m \cdot y_m\right) \cdot 2^{x_e+y_e}
 </span></p>
-<p>Recent papers: <a href="https://arxiv.org/pdf/2410.00907">Addition is all you need</a> tries to argue that we can replace this multplication by addition and still get trainable neural networks (needs to be checked.)</p>
+<p>Недавние статьи: <a href="https://arxiv.org/pdf/2410.00907">Addition is all you need</a> пытаются доказать, что мы можем заменить это умножение сложением и все равно получить обучаемые нейронные сети (требует проверки).</p>
 </section>
-<section id="fixed-vs-floating" class="level2">
-<h2 class="anchored" data-anchor-id="fixed-vs-floating">Fixed vs Floating</h2>
-<p><strong>Q</strong>: What are the advantages/disadvantages of the fixed and floating points?</p>
-<p><strong>A</strong>: In most cases, they work just fine.</p>
+<section id="фиксированная-и-плавающая-точка" class="level2">
+<h2 class="anchored" data-anchor-id="фиксированная-и-плавающая-точка">Фиксированная и плавающая точка</h2>
+<p><strong>В</strong>: Каковы преимущества/недостатки чисел с фиксированной и плавающей точкой?</p>
+<p><strong>О</strong>: В большинстве случаев они работают нормально.</p>
 <ul>
-<li><p>However, fixed point represents numbers within specified range and controls <strong>absolute</strong> accuracy.</p></li>
-<li><p>Floating point represent numbers with <strong>relative</strong> accuracy, and is suitable for the case when numbers in the computations have varying scale (i.e., <span class="math inline">10^{-1}</span> and <span class="math inline">10^{5}</span>).</p></li>
-<li><p>In practice, if speed is of no concern, use float32 or float64.</p></li>
+<li><p>Числа с фиксированной точкой представляют числа в заданном диапазоне и контролируют <strong>абсолютную</strong> точность.</p></li>
+<li><p>Числа с плавающей точкой представляют числа с <strong>относительной</strong> точностью и подходят для случаев, когда числа в вычислениях имеют разный масштаб (например, <span class="math inline">10^{-1}</span> и <span class="math inline">10^{5}</span>).</p></li>
+<li><p>На практике, если скорость не имеет значения, используйте float32 или float64 (на самом деле, нет!)</p></li>
 </ul>
 </section>
-<section id="floating-point-numbers-on-a-logarithmic-scale" class="level2">
-<h2 class="anchored" data-anchor-id="floating-point-numbers-on-a-logarithmic-scale">Floating point numbers on a logarithmic scale</h2>
-<p>Let’s visualize how floating point numbers are distributed on the real line:</p>
-<div id="cell-13" class="cell" data-execution_count="1">
+<section id="числа-с-плавающей-точкой-на-логарифмической-шкале" class="level2">
+<h2 class="anchored" data-anchor-id="числа-с-плавающей-точкой-на-логарифмической-шкале">Числа с плавающей точкой на логарифмической шкале</h2>
+<p>Визуализируем, как числа с плавающей точкой распределены на вещественной прямой:</p>
+<div id="cell-12" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -363,21 +360,57 @@ window.Quarto = {
 </section>
 <section id="ieee-754" class="level2">
 <h2 class="anchored" data-anchor-id="ieee-754">IEEE 754</h2>
-<p>In modern computers, the floating point representation is controlled by <a href="https://en.wikipedia.org/wiki/IEEE_floating_point">IEEE 754 standard</a> which was published in <strong>1985</strong> and before that point different computers behaved differently with floating point numbers.</p>
-<p>IEEE 754 has: - Floating point representation (as described above), <span class="math inline">(-1)^s \times c \times b^q</span>. - Two infinities, <span class="math inline">+\infty</span> and <span class="math inline">-\infty</span> - Two zeros: +0 and -0 - Two kinds of <strong>NaN</strong>: a quiet NaN (<strong>qNaN</strong>) and signalling NaN (<strong>sNaN</strong>) - qNaN does not throw exception in the level of floating point unit (FPU), until you check the result of computations - sNaN value throws exception from FPU if you use corresponding variable. This type of NaN can be useful for initialization purposes - C++11 proposes <a href="https://en.cppreference.com/w/cpp/numeric/math/nan">standard interface</a> for creating different NaNs - Rules for <strong>rounding</strong> - Rules for <span class="math inline">\frac{0}{0}, \frac{1}{-0}, \ldots</span></p>
-<p>Possible values are defined with - base <span class="math inline">b</span> - accuracy <span class="math inline">p</span> - number of digits - maximum possible value <span class="math inline">e_{\max}</span></p>
-<p>and have the following restrictions - $ 0 c b^p - 1$ - <span class="math inline">1 - e_{\max} \leq q + p - 1 \leq e_{\max}</span></p>
+<p>В современных компьютерах представление чисел с плавающей точкой контролируется <a href="https://en.wikipedia.org/wiki/IEEE_floating_point">стандартом IEEE 754</a>, который был опубликован в <strong>1985</strong> году, и до этого момента разные компьютеры по-разному работали с числами с плавающей точкой.</p>
+<p>IEEE 754 имеет: - Представление чисел с плавающей точкой (как описано выше), <span class="math inline">(-1)^s \times c \times b^q</span>. - Две бесконечности, <span class="math inline">+\infty</span> и <span class="math inline">-\infty</span> - Два нуля: +0 и -0 - Два вида <strong>NaN</strong>: тихий NaN (<strong>qNaN</strong>) и сигнальный NaN (<strong>sNaN</strong>) - qNaN не вызывает исключение на уровне модуля операций с плавающей точкой (FPU), пока вы не проверите результат вычислений - значение sNaN вызывает исключение от FPU при использовании соответствующей переменной. Этот тип NaN может быть полезен для целей инициализации - C++11 предлагает <a href="https://en.cppreference.com/w/cpp/numeric/math/nan">стандартный интерфейс</a> для создания различных NaN - Правила <strong>округления</strong> - Правила для <span class="math inline">\frac{0}{0}, \frac{1}{-0}, \ldots</span></p>
+<p>Возможные значения определяются с помощью - основания <span class="math inline">b</span> - точности <span class="math inline">p</span> - количество цифр - максимально возможного значения <span class="math inline">e_{\max}</span></p>
+<p>и имеют следующие ограничения - $ 0 c b^p - 1$ - <span class="math inline">1 - e_{\max} \leq q + p - 1 \leq e_{\max}</span></p>
+<p><strong>Поведение при операциях:</strong> - <code>qNaN</code> (тихий NaN): - Не вызывает исключения при генерации - Распространяется через все последующие вычисления - Пример: <code>0/0 → qNaN</code>, <code>qNaN + 5 → qNaN</code></p>
+<ul>
+<li><code>sNaN</code> (сигнализирующий NaN):
+<ul>
+<li><strong>Вызывает исключение</strong> при использовании в любой арифметической операции</li>
+<li>Используется для отладки критических ошибок</li>
+<li>Пример: Попытка чтения неинициализированной памяти</li>
+</ul></li>
+</ul>
+<p><strong>2. Битовая репрезентация:</strong> Тип | Знак | Экспонента | Мантисса | |——–|——|——————|——————-| | qNaN | любой| все 1 | 1xxx… (MSB=1) | | sNaN | любой| все 1 | 0xxx… (MSB=0) |</p>
+<p><em>MSB - старший бит мантиссы</em></p>
+<p><strong>3. Практическое использование в ИИ:</strong> - <code>qNaN</code>: - Автоматическая обработка ошибок в градиентах - Подавление исключений в распределенных вычислениях - Пример: <code>NaN</code> в лоссе при batch-обучении</p>
+<ul>
+<li><code>sNaN</code>:
+<ul>
+<li>Отладка численной нестабильности в кастомных ядрах CUDA</li>
+<li>Обнаружение ошибок инициализации параметров</li>
+<li>Валидация входных данных в критических системах</li>
+</ul></li>
+</ul>
+<p><strong>4. Особенности реализации:</strong> - Большинство GPU (NVIDIA) не поддерживают sNaN - В Python <code>math.nan</code> всегда возвращает qNaN - Некоторые фреймворки (PyTorch) перехватывают NaN до генерации исключений</p>
+<p>Пример использования в отладке:</p>
+<div id="cell-15" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">## Создание sNaN (не поддерживается напрямую в NumPy)</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>snan <span class="op">=</span> np.array([np.nan], dtype<span class="op">=</span>np.float32)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>snan.view(np.uint32)[<span class="dv">0</span>] <span class="op">=</span> <span class="bn">0x7F800001</span>  <span class="co"># Правильный паттерн для sNaN</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>np.seterr(invalid<span class="op">=</span><span class="st">'raise'</span>)  <span class="co"># Включаем генерацию исключений</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> snan <span class="op">+</span> <span class="dv">2</span>  <span class="co"># Вызовет InvalidOperation</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">FloatingPointError</span>:</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Обнаружена критическая численная ошибка!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Обнаружена критическая численная ошибка!</code></pre>
+</div>
+</div>
 </section>
-<section id="single-precision-double-precision" class="level2">
-<h2 class="anchored" data-anchor-id="single-precision-double-precision">Single precision, double precision</h2>
-<p>The two standard formats, called <strong>binary32</strong> and <strong>binary64</strong> (called also <strong>single</strong> and <strong>double</strong> formats). Recently, the format <strong>binary16</strong> plays important role in learning deep neural networks.</p>
+<section id="одинарная-и-двойная-точность" class="level2">
+<h2 class="anchored" data-anchor-id="одинарная-и-двойная-точность">Одинарная и двойная точность</h2>
+<p>Два стандартных формата, называемые <strong>binary32</strong> и <strong>binary64</strong> (также называемые форматами <strong>одинарной</strong> и <strong>двойной</strong> точности). В последнее время формат <strong>binary16</strong> играет важную роль в обучении глубоких нейронных сетей.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>Name</th>
-<th>Common Name</th>
-<th>Base</th>
-<th>Digits</th>
+<th>Название</th>
+<th>Общее название</th>
+<th>Основание</th>
+<th>Разряды</th>
 <th>Emin</th>
 <th>Emax</th>
 </tr>
@@ -385,7 +418,7 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>binary16</td>
-<td>half precision</td>
+<td>половинная точность</td>
 <td>2</td>
 <td>11</td>
 <td>-14</td>
@@ -393,7 +426,7 @@ window.Quarto = {
 </tr>
 <tr class="even">
 <td>binary32</td>
-<td>single precision</td>
+<td>одинарная точность</td>
 <td>2</td>
 <td>24</td>
 <td>-126</td>
@@ -401,7 +434,7 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td>binary64</td>
-<td>double precision</td>
+<td>двойная точность</td>
 <td>2</td>
 <td>53</td>
 <td>-1022</td>
@@ -411,173 +444,135 @@ window.Quarto = {
 </table>
 <p><img src="./double64.png"></p>
 </section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="примеры" class="level2">
+<h2 class="anchored" data-anchor-id="примеры">Примеры</h2>
 <ul>
-<li>For a number +0
+<li>Для числа +0
 <ul>
-<li><em>sign</em> is 0</li>
-<li><em>exponent</em> is 00000000000</li>
-<li><em>fraction</em> is all zeros</li>
+<li><em>sign</em> равен 0</li>
+<li><em>exponent</em> равен 00000000000</li>
+<li><em>fraction</em> состоит из нулей</li>
 </ul></li>
-<li>For a number -0
+<li>Для числа -0
 <ul>
-<li><em>sign</em> is 1</li>
-<li><em>exponent</em> is 00000000000</li>
-<li><em>fraction</em> is all zeros</li>
+<li><em>sign</em> равен 1</li>
+<li><em>exponent</em> равен 00000000000</li>
+<li><em>fraction</em> состоит из нулей</li>
 </ul></li>
-<li>For +infinity
+<li>Для +бесконечности
 <ul>
-<li><em>sign</em> is 0</li>
-<li><em>exponent</em> is 11111111111</li>
-<li><em>fraction</em> is all zeros</li>
+<li><em>sign</em> равен 0</li>
+<li><em>exponent</em> равен 11111111111</li>
+<li><em>fraction</em> состоит из нулей</li>
 </ul></li>
 </ul>
-<p><strong>Q</strong>: what about -infinity and NaN ?</p>
+<p><strong>Вопрос</strong>: что насчет -бесконечности и NaN?</p>
 </section>
-<section id="accuracy-and-memory" class="level2">
-<h2 class="anchored" data-anchor-id="accuracy-and-memory">Accuracy and memory</h2>
-<p>The <strong>relative accuracy</strong> of single precision is <span class="math inline">10^{-7}-10^{-8}</span>, while for double precision is <span class="math inline">10^{-14}-10^{-16}</span>.</p>
-<p><font color="red"> Crucial note 1: </font> A <strong>float16</strong> takes <strong>2 bytes</strong>, <strong>float32</strong> takes <strong>4 bytes</strong>, <strong>float64</strong>, or double precision, takes <strong>8 bytes.</strong></p>
-<p><font color="red"> Crucial note 2: </font> These are the only two floating point-types supported in hardware (float32 and float64) + GPU/TPU different float types are supported.</p>
-<p><font color="red"> Crucial note 3: </font> You should use <strong>double precision</strong> in computational science and engineering and <strong>float32/float16</strong> on GPU/Data Science.</p>
-<p>Now for large models float16 has become more and more robust.</p>
+<section id="точность-и-память" class="level2">
+<h2 class="anchored" data-anchor-id="точность-и-память">Точность и память</h2>
+<p><strong>Относительная точность</strong> одинарной точности составляет <span class="math inline">10^{-7}-10^{-8}</span>, в то время как для двойной точности - <span class="math inline">10^{-14}-10^{-16}</span>.</p>
+<p><font color="red"> Важное замечание 1: </font> <strong>float16</strong> занимает <strong>2 байта</strong>, <strong>float32</strong> занимает <strong>4 байта</strong>, <strong>float64</strong>, или двойная точность, занимает <strong>8 байт</strong>.</p>
+<p><font color="red"> Важное замечание 2: </font> Только эти два типа чисел с плавающей точкой поддерживаются аппаратно (float32 и float64) + на GPU/TPU поддерживаются различные типы с плавающей точкой.</p>
+<p><font color="red"> Важное замечание 3: </font> Вам следует использовать <strong>двойную точность</strong> в вычислительной науке и инженерии, и <strong>float32/float16</strong> на GPU/в науке о данных.</p>
+<p>Сейчас для больших моделей float16 становится все более надежным.</p>
 </section>
-<section id="how-does-number-representation-format-affect-training-of-neural-networks-nn" class="level2">
-<h2 class="anchored" data-anchor-id="how-does-number-representation-format-affect-training-of-neural-networks-nn">How does number representation format affect training of neural networks (NN)?</h2>
+<section id="как-формат-представления-чисел-влияет-на-обучение-нейронных-сетей-нс" class="level2">
+<h2 class="anchored" data-anchor-id="как-формат-представления-чисел-влияет-на-обучение-нейронных-сетей-нс">Как формат представления чисел влияет на обучение нейронных сетей (НС)?</h2>
 <ul>
-<li>Weights in layers (fully-connected, convolutional, activation functions) can be stored with different accuracies</li>
-<li>It is important to improve energy efficiency of the devices that are used to train NNs</li>
-<li>Project <a href="https://github.com/facebookresearch/deepfloat">DeepFloat</a> from Facebook demonstrates how re-develop floating point operations in a way to ensure efficiency in training NNs, more details see in this <a href="https://arxiv.org/pdf/1811.01721.pdf">paper</a></li>
-<li>Affect of the real numbers representation on the gradients of activation functions</li>
-<li>Typically, the first digit is one.</li>
-<li>Subnormal numbers have first digit 0 to represent zeros and numbers close to zero.</li>
-<li>Subnormal numbers fill the gap between positive and negative</li>
-<li>They have performance issues, often flushed to zero by default.</li>
+<li>Веса в слоях (полносвязных, сверточных, функциях активации) могут храниться с разной точностью</li>
+<li>Важно повышать энергоэффективность устройств, используемых для обучения НС</li>
+<li>Проект <a href="https://github.com/facebookresearch/deepfloat">DeepFloat</a> от Facebook демонстрирует, как переработать операции с плавающей точкой для обеспечения эффективности при обучении НС, подробнее см. в этой <a href="https://arxiv.org/pdf/1811.01721.pdf">статье</a></li>
+<li>Влияние представления вещественных чисел на градиенты функций активации</li>
+<li>Обычно первая цифра равна единице</li>
+<li>Субнормальные числа имеют первую цифру 0 для представления нулей и чисел, близких к нулю</li>
+<li>Субнормальные числа заполняют промежуток между положительными и отрицательными числами</li>
+<li>У них есть проблемы с производительностью, часто по умолчанию обнуляются</li>
 </ul>
 <p><img width="500," src="./grad_norm_fp16.png"></p>
 <ul>
-<li>And on the learning curves</li>
+<li>И на кривых обучения</li>
 </ul>
 <p><img width="500," src="./train_val_curves.png"></p>
-<p>Plots are taken from <a href="https://arxiv.org/pdf/1710.03740.pdf%EF%BC%89%E3%80%82">this paper</a></p>
+<p>Графики взяты из <a href="https://arxiv.org/pdf/1710.03740.pdf%EF%BC%89%E3%80%82">этой статьи</a></p>
 </section>
 <section id="bfloat16-brain-floating-point" class="level2">
 <h2 class="anchored" data-anchor-id="bfloat16-brain-floating-point">bfloat16 (Brain Floating Point)</h2>
 <ul>
-<li>This format occupies 16 bits
+<li>Этот формат занимает 16 бит
 <ul>
-<li>1 bit for sign</li>
-<li>8 bits for exponent</li>
-<li>7 bits for fraction <img src="./bfloat16.png"></li>
+<li>1 бит для sign</li>
+<li>8 бит для exponent</li>
+<li>7 бит для fraction <img src="./bfloat16.png"></li>
 </ul></li>
-<li>Truncated single precision format from IEEE standard</li>
-<li>What is the difference between float32 and float16?</li>
-<li>This format is utilized in Intel FPGA, Google TPU, Xeon CPUs and other platforms</li>
+<li>Усеченный формат одинарной точности из стандарта IEEE</li>
+<li>В чем разница между float32 и float16?</li>
+<li>Этот формат используется в Intel FPGA, Google TPU, Xeon CPUs и других платформах</li>
 </ul>
 </section>
-<section id="tensor-float-from-nvidia-blog-post-about-this-format" class="level2">
-<h2 class="anchored" data-anchor-id="tensor-float-from-nvidia-blog-post-about-this-format">Tensor Float from Nvidia (<a href="https://blogs.nvidia.com/blog/2020/05/14/tensorfloat-32-precision-format/">blog post about this format</a>)</h2>
+<section id="tensor-float-от-nvidia-блог-пост-об-этом-формате" class="level2">
+<h2 class="anchored" data-anchor-id="tensor-float-от-nvidia-блог-пост-об-этом-формате">Tensor Float от Nvidia (<a href="https://blogs.nvidia.com/blog/2020/05/14/tensorfloat-32-precision-format/">блог пост об этом формате</a>)</h2>
 <ul>
-<li>Comparison with other formats</li>
+<li>Сравнение с другими форматами</li>
 </ul>
 <p><img src="./tensor_float_cf.png"></p>
 <ul>
-<li>Results</li>
+<li>Результаты</li>
 </ul>
 <p><img src="./TF32-BERT.png"></p>
 <ul>
-<li>PyTorch and Tensorflow supported this format are available in <a href="https://ngc.nvidia.com/catalog/all">Nvidia NCG</a></li>
+<li>PyTorch и Tensorflow с поддержкой этого формата доступны в <a href="https://ngc.nvidia.com/catalog/all">Nvidia NCG</a></li>
 </ul>
 </section>
-<section id="mixed-precision-docs-from-nvidia" class="level2">
-<h2 class="anchored" data-anchor-id="mixed-precision-docs-from-nvidia">Mixed precision (<a href="https://docs.nvidia.com/deeplearning/performance/mixed-precision-training/index.html">docs from Nvidia</a>)</h2>
-<ul>
-<li><p>Main idea:</p>
-<ul>
-<li>Maintain copy of weights in single precision</li>
-<li>Then in every iteration
-<ul>
-<li>Make a copy of weights in half-precision</li>
-<li>Forward pass with weights in half-precision</li>
-<li>Multiply the loss by the scaling factor <span class="math inline">S</span></li>
-<li>Backward pass again in half precision</li>
-<li>Multiply the weight gradient with <span class="math inline">1/S</span></li>
-<li>Complete the weight update (including gradient clipping, etc.)</li>
-</ul></li>
-<li>Scaling factor <span class="math inline">S</span> is a hyper-parameter</li>
-<li>Constant: a value so that its product with the maximum absolute gradient value is below 65504 (the maximum value representable in half precision).</li>
-<li>Dynamic update based on the current gradient statistics</li>
-</ul></li>
-<li><p>Performance comparison <img src="./mixed_precision_res.png" width="500"></p></li>
-<li><p>Automatic mixed-precision extensions exist to simplify turning this option on, more details <a href="https://developer.nvidia.com/automatic-mixed-precision">here</a></p></li>
-</ul>
-</section>
-<section id="alternative-to-the-ieee-754-standard" class="level2">
-<h2 class="anchored" data-anchor-id="alternative-to-the-ieee-754-standard">Alternative to the IEEE 754 standard</h2>
-<p>Issues in IEEE 754: - overflow to infinity or zero - many different NaNs - invisible rounding errors - accuracy is very high or very poor - subnormal numbers – numbers between 0 and minimal possible represented number, i.e.&nbsp;significand starts from zero</p>
-<p>Concept of <strong>posits</strong> can replace floating point numbers, see <a href="http://www.johngustafson.net/pdfs/BeatingFloatingPoint.pdf">this paper</a></p>
+<section id="альтернатива-стандарту-ieee-754" class="level2">
+<h2 class="anchored" data-anchor-id="альтернатива-стандарту-ieee-754">Альтернатива стандарту IEEE 754</h2>
+<p>Проблемы в IEEE 754: - переполнение в бесконечность или ноль - множество различных NaN - невидимые ошибки округления - точность либо очень высокая, либо очень низкая - subnormal numbers – числа между 0 и минимальным возможным представимым числом, т.е. significand начинается с нуля</p>
+<p>Концепция <strong>posits</strong> может заменить числа с плавающей точкой, см. <a href="http://www.johngustafson.net/pdfs/BeatingFloatingPoint.pdf">эту статью</a></p>
 <p><img width="600" src="./posit.png"></p>
 <ul>
-<li>represent numbers with some accuracy, but provide limits of changing</li>
-<li>no overflows!</li>
-<li>example of a number representation</li>
+<li>представляют числа с некоторой точностью, но обеспечивают пределы изменения</li>
+<li>нет переполнений!</li>
+<li>пример представления числа</li>
 </ul>
 <p><img width="600" src="./posit_example.png"></p>
-<section id="division-accuracy-demo" class="level3">
-<h3 class="anchored" data-anchor-id="division-accuracy-demo">Division accuracy demo</h3>
-<div id="cell-24" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#from jax.config import config</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#config.update("jax_enable_x64", True)</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#c = random.random()</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#print(c)</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> jnp.float32(<span class="fl">0.925924589693</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(c)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> jnp.float32(<span class="fl">1.786875867457e-2</span>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> jnp.float32(c <span class="op">/</span> a)</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="sc">{0:10.16f}</span><span class="st">'</span>.<span class="bu">format</span>(b))</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">abs</span>(a <span class="op">*</span> b <span class="op">-</span> c)<span class="op">/</span><span class="bu">abs</span>(c))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Platform 'METAL' is experimental and not all JAX functionality may be correctly supported!
-WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-W0000 00:00:1730112332.744245 4402733 mps_client.cc:510] WARNING: JAX Apple GPU support is experimental and not all JAX functionality is correctly supported!
-I0000 00:00:1730112332.761652 4402733 service.cc:145] XLA service 0x60000122a800 initialized for platform METAL (this does not guarantee that XLA will be used). Devices:
-I0000 00:00:1730112332.761811 4402733 service.cc:153]   StreamExecutor device (0): Metal, &lt;undefined&gt;
-I0000 00:00:1730112332.763332 4402733 mps_client.cc:406] Using Simple allocator.
-I0000 00:00:1730112332.763342 4402733 mps_client.cc:384] XLA backend will use up to 11452858368 bytes on device 0 for SimpleAllocator.</code></pre>
-</div>
+<section id="демонстрация-точности-деления" class="level3">
+<h3 class="anchored" data-anchor-id="демонстрация-точности-деления">Демонстрация точности деления</h3>
+<div id="cell-24" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> np.float32(<span class="fl">0.925924589693</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(c)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.float32(<span class="fl">1.786875867457e-2</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.float32(c <span class="op">/</span> a)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="sc">{0:10.16f}</span><span class="st">'</span>.<span class="bu">format</span>(b))</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">abs</span>(a <span class="op">*</span> b <span class="op">-</span> c)<span class="op">/</span><span class="bu">abs</span>(c))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Metal device set to: Apple M2 Pro
-0.9259246
+<pre><code>0.9259246
 51.8180694580078125
 0.0</code></pre>
 </div>
 </div>
 </section>
-<section id="square-root-accuracy-demo" class="level3">
-<h3 class="anchored" data-anchor-id="square-root-accuracy-demo">Square root accuracy demo</h3>
-<div id="cell-26" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> jnp.float32(<span class="fl">1e-20</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> jnp.sqrt(a)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(b.dtype)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="sc">{0:10.64f}</span><span class="st">'</span>.<span class="bu">format</span>(<span class="bu">abs</span>(b <span class="op">*</span> b <span class="op">-</span> a)<span class="op">/</span><span class="bu">abs</span>(a)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="квадратный-корень" class="level3">
+<h3 class="anchored" data-anchor-id="квадратный-корень">Квадратный корень</h3>
+<div id="cell-26" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.float32(<span class="fl">1e-20</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.sqrt(a)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(b.dtype)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="sc">{0:10.64f}</span><span class="st">'</span>.<span class="bu">format</span>(<span class="bu">abs</span>(b <span class="op">*</span> b <span class="op">-</span> a)<span class="op">/</span><span class="bu">abs</span>(a)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>float32
 0.0000000807793583135207882151007652282714843750000000000000000000</code></pre>
 </div>
 </div>
 </section>
-<section id="exponent-accuracy-demo" class="level3">
-<h3 class="anchored" data-anchor-id="exponent-accuracy-demo">Exponent accuracy demo</h3>
-<div id="cell-28" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> jnp.float32(<span class="fl">0.0001</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> jnp.exp(a)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(b.dtype)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((jnp.log(b) <span class="op">-</span> a)<span class="op">/</span>a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="демонстрация-точности-экспоненты" class="level3">
+<h3 class="anchored" data-anchor-id="демонстрация-точности-экспоненты">Демонстрация точности экспоненты</h3>
+<div id="cell-28" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.float32(<span class="fl">0.0001</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.exp(a)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(b.dtype)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((np.log(b) <span class="op">-</span> a)<span class="op">/</span>a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>float32
 0.000115978764</code></pre>
@@ -585,257 +580,218 @@ I0000 00:00:1730112332.763342 4402733 mps_client.cc:384] XLA backend will use up
 </div>
 </section>
 </section>
-<section id="more-complicated-example" class="level2">
-<h2 class="anchored" data-anchor-id="more-complicated-example">More complicated example</h2>
-<div id="cell-30" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create x points in the range [-2e-15, 2e-15]</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">2e-15</span>, <span class="fl">2e-15</span>, <span class="dv">100</span>)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute log(1+x)/x - 1 using method (a) and (b), being careful about x=0</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>y_a <span class="op">=</span> np.zeros_like(x)</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>y_b <span class="op">=</span> np.zeros_like(x)</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>nonzero <span class="op">=</span> x <span class="op">!=</span> <span class="dv">0</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>y_a[nonzero] <span class="op">=</span> (np.log(x[nonzero]<span class="op">+</span><span class="dv">1</span>))<span class="op">/</span>x[nonzero] <span class="op">-</span> <span class="dv">1</span>  <span class="co"># (a)</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>y_b[nonzero] <span class="op">=</span> (np.log(x[nonzero]<span class="op">+</span><span class="dv">1</span>))<span class="op">/</span>((<span class="dv">1</span><span class="op">+</span>x[nonzero])<span class="op">-</span><span class="dv">1</span>) <span class="op">-</span> <span class="dv">1</span>  <span class="co"># (b</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the plots</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>fig, (ax1, ax2) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">6</span>))</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for method (a)</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(x, y_a, <span class="st">'b-'</span>)</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>ax1.grid(<span class="va">True</span>)</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'x'</span>)</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'log(1+x)/x - 1'</span>)</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Method (a): (log(1+x))/x - 1'</span>)</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for method (b)</span></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>ax2.plot(x, y_b, <span class="st">'r-'</span>)</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>ax2.grid(<span class="va">True</span>)</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">'x'</span>)</span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">'log(1+x)/x - 1'</span>)</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>ax2.set_title(<span class="st">'Method (b): (log(1+x))/((1+x)-1) - 1'</span>)</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjust layout and add a main title</span></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">'Comparison of two methods for computing log(1+x)/x - 1 in double precision'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>plt.subplots_adjust(top<span class="op">=</span><span class="fl">0.88</span>)</span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="еще-примерчики" class="level2">
+<h2 class="anchored" data-anchor-id="еще-примерчики">Еще примерчики</h2>
+<div id="cell-30" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create x points in the range [-2e-15, 2e-15]</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">2e-15</span>, <span class="fl">2e-15</span>, <span class="dv">100</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute log(1+x)/x - 1 using method (a) and (b), being careful about x=0</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>y_a <span class="op">=</span> np.zeros_like(x)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>y_b <span class="op">=</span> np.zeros_like(x)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>nonzero <span class="op">=</span> x <span class="op">!=</span> <span class="dv">0</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>y_a[nonzero] <span class="op">=</span> (np.log(x[nonzero]<span class="op">+</span><span class="dv">1</span>))<span class="op">/</span>x[nonzero] <span class="op">-</span> <span class="dv">1</span>  <span class="co"># (a)</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>y_b[nonzero] <span class="op">=</span> (np.log(x[nonzero]<span class="op">+</span><span class="dv">1</span>))<span class="op">/</span>((<span class="dv">1</span><span class="op">+</span>x[nonzero])<span class="op">-</span><span class="dv">1</span>) <span class="op">-</span> <span class="dv">1</span>  <span class="co"># (b</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the plots</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>fig, (ax1, ax2) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">6</span>))</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for method (a)</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(x, y_a, <span class="st">'b-'</span>)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>ax1.grid(<span class="va">True</span>)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'x'</span>)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'log(1+x)/x - 1'</span>)</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Method (a): (log(1+x))/x - 1'</span>)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for method (b)</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>ax2.plot(x, y_b, <span class="st">'r-'</span>)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>ax2.grid(<span class="va">True</span>)</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">'x'</span>)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">'log(1+x)/x - 1'</span>)</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>ax2.set_title(<span class="st">'Method (b): (log(1+x))/((1+x)-1) - 1'</span>)</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjust layout and add a main title</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">'Comparison of two methods for computing log(1+x)/x - 1 in double precision'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>plt.subplots_adjust(top<span class="op">=</span><span class="fl">0.88</span>)</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>/var/folders/x_/_k8z8m6s2qxc_j4gwz6fpvmm0000gp/T/ipykernel_35926/1372311441.py:12: RuntimeWarning: invalid value encountered in divide
-  y_b[nonzero] = (np.log(x[nonzero]+1))/((1+x[nonzero])-1) - 1  # (b)</code></pre>
+<pre><code>/var/folders/x_/_k8z8m6s2qxc_j4gwz6fpvmm0000gp/T/ipykernel_7697/1439480773.py:12: RuntimeWarning: invalid value encountered in divide
+  y_b[nonzero] = (np.log(x[nonzero]+1))/((1+x[nonzero])-1) - 1  # (b</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-1_files/figure-html/cell-6-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-1_files/figure-html/cell-7-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="summary-of-demos" class="level2">
-<h2 class="anchored" data-anchor-id="summary-of-demos">Summary of demos</h2>
+<section id="итоги-демо" class="level2">
+<h2 class="anchored" data-anchor-id="итоги-демо">Итоги демо</h2>
 <ul>
-<li>For some values the inverse functions give exact answers</li>
-<li>The relative accuracy should be preserved due to the IEEE standard</li>
-<li>Does not hold for many modern GPU</li>
-<li>More details about adoptation of IEEE 754 standard for GPU you can find <a href="https://docs.nvidia.com/cuda/floating-point/index.html#considerations-for-heterogeneous-world">here</a></li>
+<li>Для некоторых значений обратные функции дают точные ответы</li>
+<li>Относительная accuracy должна сохраняться благодаря IEEE standard</li>
+<li>Не выполняется для многих современных GPU</li>
+<li>Больше деталей про адаптацию IEEE 754 standard для GPU можно найти <a href="https://docs.nvidia.com/cuda/floating-point/index.html#considerations-for-heterogeneous-world">здесь</a></li>
 </ul>
 </section>
-<section id="loss-of-significance" class="level2">
-<h2 class="anchored" data-anchor-id="loss-of-significance">Loss of significance</h2>
+<section id="потеря-значимых-цифр" class="level2">
+<h2 class="anchored" data-anchor-id="потеря-значимых-цифр">Потеря значимых цифр</h2>
 <ul>
-<li>Many operations lead to the loss of digits <a href="https://en.wikipedia.org/wiki/Loss_of_significance">loss of significance</a></li>
-<li>For example, it is a bad idea to subtract two big numbers that are close, the difference will have fewer correct digits</li>
-<li>This is related to algorithms and their properties (forward/backward stability), which we will discuss later</li>
+<li>Многие операции приводят к потере цифр <a href="https://en.wikipedia.org/wiki/Loss_of_significance">loss of significance</a></li>
+<li>Например, плохая идея вычитать два больших близких числа, разность будет иметь меньше правильных цифр</li>
+<li>Это связано с алгоритмами и их свойствами (forward/backward stability), которые мы обсудим позже</li>
 </ul>
 </section>
 <section id="summation-algorithm" class="level2">
 <h2 class="anchored" data-anchor-id="summation-algorithm">Summation algorithm</h2>
-<p>However, the rounding errors can depend on the algorithm.</p>
+<p>Однако ошибки округления могут зависеть от алгоритма.</p>
 <ul>
-<li><p>Consider the simplest problem: given <span class="math inline">n</span> floating point numbers <span class="math inline">x_1, \ldots, x_n</span></p></li>
-<li><p>Compute their sum</p></li>
+<li><p>Рассмотрим простейшую задачу: даны <span class="math inline">n</span> чисел с плавающей точкой <span class="math inline">x_1, \ldots, x_n</span></p></li>
+<li><p>Вычислить их сумму</p></li>
 </ul>
 <p><span class="math display">S = \sum_{i=1}^n x_i = x_1 + \ldots + x_n.</span></p>
 <ul>
-<li><p>The simplest algorithm is to add one-by-one</p></li>
-<li><p>What is the actual error for such algorithm?</p></li>
+<li><p>Простейший алгоритм - складывать числа одно за другим</p></li>
+<li><p>Какова реальная ошибка такого алгоритма?</p></li>
 </ul>
 </section>
-<section id="naïve-algorithm" class="level2">
-<h2 class="anchored" data-anchor-id="naïve-algorithm">Naïve algorithm</h2>
-<p>Naïve algorithm adds numbers one-by-one:</p>
+<section id="наивный-алгоритм" class="level2">
+<h2 class="anchored" data-anchor-id="наивный-алгоритм">Наивный алгоритм</h2>
 <p><span class="math display">y_1 = x_1, \quad y_2 = y_1 + x_2, \quad y_3 = y_2 + x_3, \ldots.</span></p>
 <ul>
-<li><p>The <strong>worst-case</strong> error is then proportional to <span class="math inline">\mathcal{O}(n)</span>, while <strong>mean-squared</strong> error is <span class="math inline">\mathcal{O}(\sqrt{n})</span>.</p></li>
-<li><p>The <strong>Kahan algorithm</strong> gives the worst-case error bound <span class="math inline">\mathcal{O}(1)</span> (i.e., independent of <span class="math inline">n</span>).</p></li>
-<li><p><font color="red"> Can you find the better algorithm?</font></p></li><font color="red">
+<li><p><strong>Worst-case</strong> ошибка пропорциональна <span class="math inline">\mathcal{O}(n)</span>, в то время как <strong>mean-squared</strong> ошибка равна <span class="math inline">\mathcal{O}(\sqrt{n})</span>.</p></li>
+<li><p><strong>Kahan algorithm</strong> дает границу <strong>worst-case</strong> ошибки <span class="math inline">\mathcal{O}(1)</span> (т.е. независимо от <span class="math inline">n</span>).</p></li>
+<li><p><font color="red"> Можете ли вы найти алгоритм лучше?</font></p></li><font color="red">
 </font></ul><font color="red">
 </font></section><font color="red">
-<section id="kahan-summation" class="level2">
-<h2 class="anchored" data-anchor-id="kahan-summation">Kahan summation</h2>
-<p>The following algorithm gives <span class="math inline">2 \varepsilon + \mathcal{O}(n \varepsilon^2)</span> error, where <span class="math inline">\varepsilon</span> is the machine precision.</p>
+<section id="суммирование-кахана" class="level2">
+<h2 class="anchored" data-anchor-id="суммирование-кахана">Суммирование Кахана</h2>
+<p>Следующий алгоритм дает ошибку <span class="math inline">2 \varepsilon + \mathcal{O}(n \varepsilon^2)</span>, где <span class="math inline">\varepsilon</span> - это machine precision.</p>
 <ul>
-<li>The reason of the loss of significance in summation is operating with numbers of different magnitude</li>
-<li>The main idea of Kahan summation is to keep track of small errors and aggregate them in separate variable</li>
-<li>This approach is called <em>compensated summation</em></li>
+<li>Причина потери значимости при суммировании заключается в операциях с числами разного порядка</li>
+<li>Основная идея Kahan summation состоит в том, чтобы отслеживать маленькие ошибки и аккумулировать их в отдельной переменной</li>
+<li>Этот подход называется <em>compensated summation</em></li>
 </ul>
-<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x)):</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> x[i] <span class="op">-</span> c</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> s <span class="op">+</span> y</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> (t <span class="op">-</span> s) <span class="op">-</span> y</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> t</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ul>
-<li>There exists more advanced tricks to process this simple operation that are used for example in <code>fsum</code> function from <code>math</code> package, implementation check out <a href="https://github.com/python/cpython/blob/d267006f18592165ed97e0a9c2494d3bce25fc2b/Modules/mathmodule.c#L1087">here</a></li>
-</ul>
-<div id="cell-36" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
+<div id="cell-36" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numba <span class="im">import</span> jit <span class="im">as</span> numba_jit</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10</span> <span class="op">**</span> <span class="dv">5</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>sm <span class="op">=</span> <span class="fl">1e-10</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> jnp.ones(n, dtype<span class="op">=</span>jnp.float32) <span class="op">*</span> sm</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> x.at[<span class="dv">0</span>].<span class="bu">set</span>(<span class="dv">1</span>)</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co">#x = jax.ops.index_update(x, [0], 1.)</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>true_sum <span class="op">=</span> <span class="fl">1.0</span> <span class="op">+</span> (n <span class="op">-</span> <span class="dv">1</span>)<span class="op">*</span>sm</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>approx_sum <span class="op">=</span> jnp.<span class="bu">sum</span>(x)</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>math_fsum <span class="op">=</span> math.fsum(x)</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="at">@jax.jit</span></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dumb_sum(x):</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> jnp.float32(<span class="fl">0.0</span>)</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> b_fun(i, val):</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> val <span class="op">+</span> x[i] </span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> jax.lax.fori_loop(<span class="dv">0</span>, <span class="bu">len</span>(x), b_fun, s)</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="at">@numba_jit</span>(nopython<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> kahan_sum_numba(x):</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> np.float32(<span class="fl">0.0</span>)</span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> np.float32(<span class="fl">0.0</span>)</span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x)):</span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> x[i] <span class="op">-</span> c</span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>        t <span class="op">=</span> s <span class="op">+</span> y</span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>        c <span class="op">=</span> (t <span class="op">-</span> s) <span class="op">-</span> y</span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>        s <span class="op">=</span> t</span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="at">@jax.jit</span></span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> kahan_sum_jax(x):</span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> jnp.float32(<span class="fl">0.0</span>)</span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> jnp.float32(<span class="fl">0.0</span>)</span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> b_fun2(i, val):</span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>        s, c <span class="op">=</span> val</span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> x[i] <span class="op">-</span> c</span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>        t <span class="op">=</span> s <span class="op">+</span> y</span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>        c <span class="op">=</span> (t <span class="op">-</span> s) <span class="op">-</span> y</span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>        s <span class="op">=</span> t</span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> s, c</span>
-<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>    s, c <span class="op">=</span> jax.lax.fori_loop(<span class="dv">0</span>, <span class="bu">len</span>(x), b_fun2, (s, c))</span>
-<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span>
-<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a>k_sum_numba <span class="op">=</span> kahan_sum_numba(np.array(x))</span>
-<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>k_sum_jax <span class="op">=</span> kahan_sum_jax(x)</span>
-<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a>d_sum <span class="op">=</span> dumb_sum(x)</span>
-<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in np sum: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(approx_sum <span class="op">-</span> true_sum))</span>
-<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in Kahan sum Numba: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(k_sum_numba <span class="op">-</span> true_sum))</span>
-<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in Kahan sum JAX: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(k_sum_jax <span class="op">-</span> true_sum))</span>
-<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in dumb sum: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(d_sum <span class="op">-</span> true_sum))</span>
-<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in math fsum: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(math_fsum <span class="op">-</span> true_sum))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numba <span class="im">import</span> jit <span class="im">as</span> numba_jit</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10</span> <span class="op">**</span> <span class="dv">6</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>sm <span class="op">=</span> <span class="fl">1e-10</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.ones(n, dtype<span class="op">=</span>np.float32) <span class="op">*</span> sm</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">0</span>] <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>true_sum <span class="op">=</span> <span class="fl">1.0</span> <span class="op">+</span> (n <span class="op">-</span> <span class="dv">1</span>)<span class="op">*</span>sm</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>approx_sum <span class="op">=</span> np.<span class="bu">sum</span>(x)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>math_fsum <span class="op">=</span> math.fsum(x)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="at">@numba_jit</span>(nopython<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> kahan_sum_numba(x):</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> np.float32(<span class="fl">0.0</span>)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> np.float32(<span class="fl">0.0</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x)):</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> x[i] <span class="op">-</span> c</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>        t <span class="op">=</span> s <span class="op">+</span> y</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>        c <span class="op">=</span> (t <span class="op">-</span> s) <span class="op">-</span> y</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>        s <span class="op">=</span> t</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simple_sum(x):</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x)):</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>        s <span class="op">+=</span> x[i]</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>k_sum_numba <span class="op">=</span> kahan_sum_numba(x)</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>simple_sum_result <span class="op">=</span> simple_sum(x)</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in np sum: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(approx_sum <span class="op">-</span> true_sum))</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in simple sum: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(simple_sum_result <span class="op">-</span> true_sum))</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in Kahan sum Numba: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(k_sum_numba <span class="op">-</span> true_sum))</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in math fsum: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(math_fsum <span class="op">-</span> true_sum))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Error in np sum: 0.0e+00
-Error in Kahan sum Numba: 1.4e-08
-Error in Kahan sum JAX: 0.0e+00
-Error in dumb sum: -1.0e-05
-Error in math fsum: 1.3e-13</code></pre>
+<pre><code>Error in np sum: 1.7e-06
+Error in simple sum: -1.0e-04
+Error in Kahan sum Numba: 1.7e-08
+Error in math fsum: 1.3e-12</code></pre>
 </div>
 </div>
 </section>
-<section id="summary-of-floating-point" class="level2">
-<h2 class="anchored" data-anchor-id="summary-of-floating-point">Summary of floating-point</h2>
+<section id="итого" class="level2">
+<h2 class="anchored" data-anchor-id="итого">Итого</h2>
 <ul>
-<li><p>You should be really careful with floating point numbers, since it may give you incorrect answers due to rounding-off errors.</p></li>
-<li><p>For many standard algorithms, the stability is well-understood and problems can be easily detected.</p></li>
+<li><p>Необходимо быть очень осторожным с числами с плавающей точкой, так как они могут давать неверные результаты из-за ошибок округления.</p></li>
+<li><p>Для многих стандартных алгоритмов стабильность хорошо изучена и проблемы могут быть легко обнаружены.</p></li>
 </ul>
 </section>
-<section id="vectors" class="level2">
-<h2 class="anchored" data-anchor-id="vectors">Vectors</h2>
+<section id="векторы" class="level2">
+<h2 class="anchored" data-anchor-id="векторы">Векторы</h2>
 <ul>
-<li>In NLA we typically work not with <strong>numbers</strong>, but with <strong>vectors</strong></li>
-<li>Recall that a vector in a fixed basis of size <span class="math inline">n</span> can be represented as a 1D array with <span class="math inline">n</span> numbers</li>
-<li>Typically, it is considered as an <span class="math inline">n \times 1</span> matrix (<strong>column vector</strong>)</li>
+<li>В численной линейной алгебре мы обычно работаем не с <strong>числами</strong>, а с <strong>векторами</strong></li>
+<li>Напомним, что вектор в фиксированном базисе размера <span class="math inline">n</span> может быть представлен как одномерный массив с <span class="math inline">n</span> числами</li>
+<li>Как правило, он рассматривается как матрица размера <span class="math inline">n \times 1</span> (<strong>вектор-столбец</strong>)</li>
 </ul>
-<p><strong>Example:</strong> Polynomials with degree <span class="math inline">\leq n</span> form a linear space. Polynomial $ x^3 - 2x^2 + 1$ can be considered as a vector <span class="math inline">\begin{bmatrix}1 \\ -2 \\ 0 \\ 1\end{bmatrix}</span> in the basis <span class="math inline">\{x^3, x^2, x, 1\}</span></p>
+<p><strong>Пример:</strong> Многочлены степени <span class="math inline">\leq n</span> образуют линейное пространство. Многочлен $ x^3 - 2x^2 + 1$ может быть представлен как вектор <span class="math inline">\begin{bmatrix}1 \\ -2 \\ 0 \\ 1\end{bmatrix}</span> в базисе <span class="math inline">\{x^3, x^2, x, 1\}</span></p>
 </section>
-<section id="vector-norm" class="level2">
-<h2 class="anchored" data-anchor-id="vector-norm">Vector norm</h2>
+<section id="норма-вектора" class="level2">
+<h2 class="anchored" data-anchor-id="норма-вектора">Норма вектора</h2>
 <ul>
-<li><p>Vectors typically provide an (approximate) description of a physical (or some other) object</p></li>
-<li><p>One of the main question is <strong>how accurate</strong> the approximation is (1%, 10%)</p></li>
-<li><p>What is an acceptable representation, of course, depends on the particular applications. For example:</p>
+<li><p>Векторы обычно предоставляют (приближенное) описание физического (или какого-либо другого) объекта</p></li>
+<li><p>Один из главных вопросов - насколько точным является приближение (1%, 10%)</p></li>
+<li><p>Приемлемое представление, конечно, зависит от конкретного применения. Например:</p>
 <ul>
-<li>In partial differential equations accuracies <span class="math inline">10^{-5} - 10^{-10}</span> are the typical case</li>
-<li>In data-based applications sometimes an error of <span class="math inline">80\%</span> is ok, since the interesting signal is corrupted by a huge noise</li>
+<li>В дифференциальных уравнениях в частных производных точности <span class="math inline">10^{-5} - 10^{-10}</span> являются типичным случаем</li>
+<li>В приложениях, основанных на данных, иногда ошибка в <span class="math inline">80\%</span> допустима, так как полезный сигнал искажен сильным шумом</li>
 </ul></li>
 </ul>
 </section>
-<section id="distances-and-norms" class="level2">
-<h2 class="anchored" data-anchor-id="distances-and-norms">Distances and norms</h2>
+<section id="расстояния-и-нормы" class="level2">
+<h2 class="anchored" data-anchor-id="расстояния-и-нормы">Расстояния и нормы</h2>
 <ul>
-<li>Norm is a <strong>qualitative measure of smallness of a vector</strong> and is typically denoted as <span class="math inline">\Vert x \Vert</span>.</li>
+<li>Норма - это <strong>количественная мера малости вектора</strong>, которая обычно обозначается как <span class="math inline">\Vert x \Vert</span>.</li>
 </ul>
-<p>The norm should satisfy certain properties:</p>
+<p>Норма должна удовлетворять определенным свойствам:</p>
 <ul>
 <li><span class="math inline">\Vert \alpha x \Vert = |\alpha| \Vert x \Vert</span></li>
-<li><span class="math inline">\Vert x + y \Vert \leq \Vert x \Vert + \Vert y \Vert</span> (triangle inequality)</li>
-<li>If <span class="math inline">\Vert x \Vert = 0</span> then <span class="math inline">x = 0</span></li>
+<li><span class="math inline">\Vert x + y \Vert \leq \Vert x \Vert + \Vert y \Vert</span> (неравенство треугольника)</li>
+<li>Если <span class="math inline">\Vert x \Vert = 0</span>, то <span class="math inline">x = 0</span></li>
 </ul>
-<p>The distance between two vectors is then defined as</p>
+<p>Расстояние между двумя векторами определяется как</p>
 <p><span class="math display"> d(x, y) = \Vert x - y \Vert. </span></p>
-</section>
-<section id="standard-norms" class="level2">
-<h2 class="anchored" data-anchor-id="standard-norms">Standard norms</h2>
-<p>The most well-known and widely used norm is <strong>euclidean norm</strong>:</p>
+<p>Стандартные нормы Наиболее известной и широко используемой нормой является <strong>евклидова норма</strong>:</p>
 <p><span class="math display">\Vert x \Vert_2 = \sqrt{\sum_{i=1}^n |x_i|^2},</span></p>
-<p>which corresponds to the distance in our real life. If the vectors have complex elements, we use their modulus.</p>
+<p>которая соответствует расстоянию в нашей реальной жизни. Если векторы имеют комплексные элементы, мы используем их модуль.</p>
 </section>
-<section id="p-norm" class="level2">
-<h2 class="anchored" data-anchor-id="p-norm"><span class="math inline">p</span>-norm</h2>
-<p>Euclidean norm, or <span class="math inline">2</span>-norm, is a subclass of an important class of <span class="math inline">p</span>-norms:</p>
+<section id="p-норма" class="level2">
+<h2 class="anchored" data-anchor-id="p-норма"><span class="math inline">p</span>-норма</h2>
+<p>Евклидова норма, или <span class="math inline">2</span>-норма, является подклассом важного класса <span class="math inline">p</span>-норм:</p>
 <p><span class="math display"> \Vert x \Vert_p = \Big(\sum_{i=1}^n |x_i|^p\Big)^{1/p}. </span></p>
-<p>There are two very important special cases: - Infinity norm, or Chebyshev norm is defined as the element of the maximal absolute value:</p>
+<p>Существуют два очень важных частных случая: - Норма Чебышева, определяется как элемент с максимальным абсолютным значением:</p>
 <p><span class="math display"> \Vert x \Vert_{\infty} = \max_i | x_i| </span></p>
 <p><img src="chebyshev.jpeg"></p>
 <ul>
-<li><span class="math inline">L_1</span> norm (or <strong>Manhattan distance</strong>) which is defined as the sum of modules of the elements of <span class="math inline">x</span>:</li>
+<li><span class="math inline">L_1</span> норма (или <strong>манхэттенское расстояние</strong>), которая определяется как сумма модулей элементов <span class="math inline">x</span>:</li>
 </ul>
 <p><span class="math display"> \Vert x \Vert_1 = \sum_i |x_i| </span></p>
 <p><img src="manhattan.jpeg"></p>
-<p>We will give examples where <span class="math inline">L_1</span> norm is very important: it all relates to the <strong>compressed sensing</strong> methods that emerged in the mid-00s as one of the most popular research topics.</p>
 </section>
-<section id="equivalence-of-the-norms" class="level2">
-<h2 class="anchored" data-anchor-id="equivalence-of-the-norms">Equivalence of the norms</h2>
-<p>All norms are equivalent in the sense that</p>
+<section id="эквивалентность-норм" class="level2">
+<h2 class="anchored" data-anchor-id="эквивалентность-норм">Эквивалентность норм</h2>
+<p>Все нормы эквивалентны в том смысле, что</p>
 <p><span class="math display"> C_1 \Vert x \Vert_* \leq  \Vert x \Vert_{**} \leq C_2 \Vert x \Vert_* </span></p>
-<p>for some positive constants <span class="math inline">C_1(n), C_2(n)</span>, <span class="math inline">x \in \mathbb{R}^n</span> for any pairs of norms <span class="math inline">\Vert \cdot \Vert_*</span> and <span class="math inline">\Vert \cdot \Vert_{**}</span>. The equivalence of the norms basically means that if the vector is small in one norm, it is small in another norm. However, the constants can be large.</p>
+<p>для некоторых положительных констант <span class="math inline">C_1(n), C_2(n)</span>, <span class="math inline">x \in \mathbb{R}^n</span> для любой пары норм <span class="math inline">\Vert \cdot \Vert_*</span> и <span class="math inline">\Vert \cdot \Vert_{**}</span>. Эквивалентность норм по существу означает, что если вектор мал в одной норме, то он мал и в другой норме. Однако константы могут быть большими.</p>
 </section>
-<section id="computing-norms-in-python" class="level2">
-<h2 class="anchored" data-anchor-id="computing-norms-in-python">Computing norms in Python</h2>
-<p>The NumPy package has all you need for computing norms: <code>np.linalg.norm</code> function.</p>
-<div id="cell-46" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="1">
+<section id="вычисление-норм-в-python" class="level2">
+<h2 class="anchored" data-anchor-id="вычисление-норм-в-python">Вычисление норм в Python</h2>
+<p>Пакет NumPy содержит все необходимое для вычисления норм: функция <code>np.linalg.norm</code></p>
+<div id="cell-45" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.random.randn(n)</span>
@@ -844,90 +800,67 @@ Error in math fsum: 1.3e-13</code></pre>
 <span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Relative error in L2 norm:'</span>, np.linalg.norm(a <span class="op">-</span> b) <span class="op">/</span> np.linalg.norm(b))</span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Relative error in Chebyshev norm:'</span>, np.linalg.norm(a <span class="op">-</span> b, np.inf) <span class="op">/</span> np.linalg.norm(b, np.inf))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Relative error in L1 norm: 0.9929434299101272
-Relative error in L2 norm: 0.9870451639574119
-Relative error in Chebyshev norm: 0.7489012536858338</code></pre>
+<pre><code>Relative error in L1 norm: 1.007463406918509
+Relative error in L2 norm: 1.0030695138070433
+Relative error in Chebyshev norm: 0.7942525068309023</code></pre>
 </div>
 </div>
 </section>
-<section id="unit-disks-in-different-norms" class="level2">
-<h2 class="anchored" data-anchor-id="unit-disks-in-different-norms">Unit disks in different norms</h2>
+<section id="единичные-шары-в-различных-нормах" class="level2">
+<h2 class="anchored" data-anchor-id="единичные-шары-в-различных-нормах">Единичные шары в различных нормах</h2>
 <ul>
-<li>A unit disk is a set of point such that <span class="math inline">\Vert x \Vert \leq 1</span></li>
-<li>For the euclidean norm a unit disk is a usual disk</li>
-<li>For other norms unit disks look very different</li>
+<li>Единичный шар - это множество точек, таких что <span class="math inline">\Vert x \Vert \leq 1</span></li>
+<li>Для евклидовой нормы единичный шар является обычным кругом</li>
+<li>Для других норм единичные шары выглядят совершенно по-разному</li>
 </ul>
-<div id="cell-48" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="dv">1</span> <span class="co"># Which norm do we use</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> <span class="dv">40000</span> <span class="co"># Number of sampling points</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> []</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(M):</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.random.randn(<span class="dv">2</span>, <span class="dv">1</span>)</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.linalg.norm(a[:, <span class="dv">0</span>], p) <span class="op">&lt;=</span> <span class="dv">1</span>:</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>        b.append(a[:, <span class="dv">0</span>])</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.array(b)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>plt.plot(b[:, <span class="dv">0</span>], b[:, <span class="dv">1</span>], <span class="st">'.'</span>)</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">'equal'</span>)</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Unit disk in the p-th norm, $p=</span><span class="sc">{0:}</span><span class="st">$'</span>.<span class="bu">format</span>(p))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-47" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="dv">1</span> <span class="co"># Which norm do we use</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> <span class="dv">40000</span> <span class="co"># Number of sampling points</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> []</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(M):</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.random.randn(<span class="dv">2</span>, <span class="dv">1</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.linalg.norm(a[:, <span class="dv">0</span>], p) <span class="op">&lt;=</span> <span class="dv">1</span>:</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        b.append(a[:, <span class="dv">0</span>])</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.array(b)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>plt.plot(b[:, <span class="dv">0</span>], b[:, <span class="dv">1</span>], <span class="st">'.'</span>)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">'equal'</span>)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Unit disk in the p-th norm, $p=</span><span class="sc">{0:}</span><span class="st">$'</span>.<span class="bu">format</span>(p))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <pre><code>Text(0.5, 1.0, 'Unit disk in the p-th norm, $p=1$')</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-1_files/figure-html/cell-9-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-1_files/figure-html/cell-10-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="why-l_1-norm-can-be-important" class="level2">
-<h2 class="anchored" data-anchor-id="why-l_1-norm-can-be-important">Why <span class="math inline">L_1</span>-norm can be important?</h2>
-<p><span class="math inline">L_1</span> norm, as it was discovered quite recently, plays an important role in <strong>compressed sensing</strong>.</p>
-<p>The simplest formulation of the considered problem is as follows:</p>
+<section id="что-такое-устойчивый-алгоритм" class="level2">
+<h2 class="anchored" data-anchor-id="что-такое-устойчивый-алгоритм">Что такое устойчивый алгоритм?</h2>
+<p>И мы завершаем лекцию понятием <strong>устойчивости</strong>.</p>
 <ul>
-<li>You have some observations <span class="math inline">f</span></li>
-<li>You have a linear model <span class="math inline">Ax = f</span>, where <span class="math inline">A</span> is an <span class="math inline">n \times m</span> matrix, <span class="math inline">A</span> is <strong>known</strong></li>
-<li>The number of equations, <span class="math inline">n</span>, is less than the number of unknowns, <span class="math inline">m</span></li>
+<li>Пусть <span class="math inline">x</span> - объект (например, вектор)</li>
+<li>Пусть <span class="math inline">f(x)</span> - функция (функционал), которую вы хотите вычислить</li>
 </ul>
-<p>The question: can we find the solution?</p>
-<p>The solution is obviously non-unique, so a natural approach is to find the solution that is minimal in the certain sense:</p>
-<p><span class="math display">\begin{align*}
-&amp; \Vert x \Vert \rightarrow \min_x \\
-\mbox{subject to } &amp; Ax = f
-\end{align*}</span></p>
-<ul>
-<li><p>Typical choice of <span class="math inline">\Vert x \Vert = \Vert x \Vert_2</span> leads to the <strong>linear least squares problem</strong> (and has been used for ages).</p></li>
-<li><p>The choice <span class="math inline">\Vert x \Vert = \Vert x \Vert_1</span> leads to the <a href="https://en.wikipedia.org/wiki/Compressed_sensing"><strong>compressed sensing</strong></a></p></li>
-<li><p>It typically yields the <strong>sparsest solution</strong></p></li>
-</ul>
-</section>
-<section id="what-is-a-stable-algorithm" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-a-stable-algorithm">What is a stable algorithm?</h2>
-<p>And we finalize the lecture by the concept of <strong>stability</strong>.</p>
-<ul>
-<li>Let <span class="math inline">x</span> be an object (for example, a vector)</li>
-<li>Let <span class="math inline">f(x)</span> be the function (functional) you want to evaluate</li>
-</ul>
-<p>You also have a <strong>numerical algorithm</strong> <code>alg(x)</code> that actually computes <strong>approximation</strong> to <span class="math inline">f(x)</span>.</p>
-<p>The algorithm is called <strong>forward stable</strong>, if</p>
+<p>У вас также есть <strong>численный алгоритм</strong> <code>alg(x)</code>, который фактически вычисляет <strong>приближение</strong> к <span class="math inline">f(x)</span>.</p>
+<p>Алгоритм называется <strong>устойчивым</strong>, если</p>
 <p><span class="math display">\Vert \text{alg}(x) - f(x) \Vert  \leq \varepsilon </span></p>
-<p>The algorithm is called <strong>backward stable</strong>, if for any <span class="math inline">x</span> there is a close vector <span class="math inline">x + \delta x</span> such that</p>
+<p>Алгоритм называется <strong>обратно устойчивым</strong>, если для любого <span class="math inline">x</span> существует близкий вектор <span class="math inline">x + \delta x</span> такой, что</p>
 <p><span class="math display">\text{alg}(x) = f(x + \delta x)</span></p>
-<p>and <span class="math inline">\Vert \delta x \Vert</span> is small.</p>
+<p>и <span class="math inline">\Vert \delta x \Vert</span> мало.</p>
 </section>
-<section id="classical-example" class="level2">
-<h2 class="anchored" data-anchor-id="classical-example">Classical example</h2>
-<p>A classical example is the <strong>solution of linear systems of equations</strong> using Gaussian elimination which is similar to LU factorization (more details later)</p>
-<p>We consider the <strong>Hilbert matrix</strong> with the elements</p>
+<section id="классический-пример" class="level2">
+<h2 class="anchored" data-anchor-id="классический-пример">Классический пример</h2>
+<p>Классическим примером является <strong>решение систем линейных уравнений</strong> с помощью метода Гаусса, который похож на LU-разложение (подробнее позже)</p>
+<p>Рассмотрим <strong>матрицу Гильберта</strong> с элементами</p>
 <p><span class="math display">A = \{a_{ij}\}, \quad a_{ij} = \frac{1}{i + j + 1}, \quad i,j = 0, \ldots, n-1.</span></p>
-<p>And consider a linear system</p>
+<p>И рассмотрим линейную систему</p>
 <p><span class="math display">Ax = f.</span></p>
-<p>We will look into matrices in more details in the next lecture, and for linear systems in the upcoming weeks</p>
-<div id="cell-53" class="cell" data-scrolled="false" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="17">
+<div id="cell-50" class="cell" data-scrolled="false" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span><span class="op">/</span>(i <span class="op">+</span> j <span class="op">+</span> <span class="dv">1</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="co"># Hilbert matrix</span></span>
@@ -943,68 +876,70 @@ Relative error in Chebyshev norm: 0.7489012536858338</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-1_files/figure-html/cell-10-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-1_files/figure-html/cell-11-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="cell-54" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="34">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> jnp.ones(n)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> jnp.linalg.solve(A, rhs)</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(jnp.linalg.norm(A <span class="op">@</span> sol <span class="op">-</span> rhs)<span class="op">/</span>jnp.linalg.norm(rhs))</span>
+<div id="cell-51" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.ones(n)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> np.linalg.solve(A, rhs)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.linalg.norm(A <span class="op">@</span> sol <span class="op">-</span> rhs)<span class="op">/</span>np.linalg.norm(rhs))</span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.plot(sol)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>0.0018351191</code></pre>
 </div>
 </div>
 </section>
-<section id="more-examples-of-instability" class="level2">
-<h2 class="anchored" data-anchor-id="more-examples-of-instability">More examples of instability</h2>
-<p>How to compute the following functions in numerically stable manner?</p>
+<section id="больше-примеров-неустойчивости" class="level2">
+<h2 class="anchored" data-anchor-id="больше-примеров-неустойчивости">Больше примеров неустойчивости</h2>
+<p>Как вычислить следующие функции численно устойчивым способом?</p>
 <ul>
 <li><span class="math inline">\log(1 - \tanh^2(x))</span></li>
 <li><span class="math inline">\text{SoftMax}(x)_j = \dfrac{e^{x_j}}{\sum\limits_{i=1}^n e^{x_i}}</span></li>
 </ul>
-<div id="cell-56" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="32">
+<div id="cell-53" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> <span class="dv">30</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>eps <span class="op">=</span> <span class="fl">1e-6</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original function:"</span>, jnp.log(<span class="dv">1</span> <span class="op">-</span> jnp.tanh(u)<span class="op">**</span><span class="dv">2</span>))</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>eps_add <span class="op">=</span> jnp.log(<span class="dv">1</span> <span class="op">-</span> jnp.tanh(u)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> eps)</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Attempt to improve stability by adding a small constant:"</span>, eps_add)</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Use more numerically stable form:"</span>, jnp.log(<span class="dv">4</span>) <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> jnp.log(jnp.exp(<span class="op">-</span>u) <span class="op">+</span> jnp.exp(u)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Исходная функция:"</span>, np.log(<span class="dv">1</span> <span class="op">-</span> np.tanh(u)<span class="op">**</span><span class="dv">2</span>))</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>eps_add <span class="op">=</span> np.log(<span class="dv">1</span> <span class="op">-</span> np.tanh(u)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> eps)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Попытка улучшить стабильность добавлением малой константы:"</span>, eps_add)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Использование более численно стабильной формы:"</span>, np.log(<span class="dv">4</span>) <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> np.log(np.exp(<span class="op">-</span>u) <span class="op">+</span> np.exp(u)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Original function: -inf
-Attempt to improve stability by adding a small constant: -13.815511
-Use more numerically stable form: -58.613705</code></pre>
+<pre><code>Исходная функция: -inf
+Попытка улучшить стабильность добавлением малой константы: -13.815510557964274
+Использование более численно стабильной формы: -58.61370563888011</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/var/folders/x_/_k8z8m6s2qxc_j4gwz6fpvmm0000gp/T/ipykernel_7697/1002619719.py:3: RuntimeWarning: divide by zero encountered in log
+  print("Исходная функция:", np.log(1 - np.tanh(u)**2))</code></pre>
 </div>
 </div>
-<div id="cell-57" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="30">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> jax.random.normal(jax.random.PRNGKey(<span class="dv">0</span>), (n, ))</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> x.at[<span class="dv">0</span>].<span class="bu">set</span>(<span class="dv">1000</span>)</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(jnp.exp(x) <span class="op">/</span> jnp.<span class="bu">sum</span>(jnp.exp(x)))</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(jnp.exp(x <span class="op">-</span> jnp.<span class="bu">max</span>(x)) <span class="op">/</span> jnp.<span class="bu">sum</span>(jnp.exp(x <span class="op">-</span> jnp.<span class="bu">max</span>(x))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-54" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.normal(size<span class="op">=</span>(n,))</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.exp(x) <span class="op">/</span> np.<span class="bu">sum</span>(np.exp(x)))</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.exp(x <span class="op">-</span> np.<span class="bu">max</span>(x)) <span class="op">/</span> np.<span class="bu">sum</span>(np.exp(x <span class="op">-</span> np.<span class="bu">max</span>(x))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[nan  0.  0.  0.  0.]
 [1. 0. 0. 0. 0.]</code></pre>
 </div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/var/folders/x_/_k8z8m6s2qxc_j4gwz6fpvmm0000gp/T/ipykernel_7697/1311588733.py:4: RuntimeWarning: overflow encountered in exp
+  print(np.exp(x) / np.sum(np.exp(x)))
+/var/folders/x_/_k8z8m6s2qxc_j4gwz6fpvmm0000gp/T/ipykernel_7697/1311588733.py:4: RuntimeWarning: invalid value encountered in divide
+  print(np.exp(x) / np.sum(np.exp(x)))</code></pre>
+</div>
 </div>
 </section>
-<section id="take-home-message" class="level2">
-<h2 class="anchored" data-anchor-id="take-home-message">Take home message</h2>
+<section id="основные-выводы" class="level2">
+<h2 class="anchored" data-anchor-id="основные-выводы">Основные выводы</h2>
 <ul>
-<li>Floating point (double, single, number of bytes), rounding error</li>
-<li>Norms are measures of smallness, used to compute the accuracy</li>
-<li><span class="math inline">1</span>, <span class="math inline">p</span> and Euclidean norms</li>
-<li><span class="math inline">L_1</span> is used in compressed sensing as a surrogate for sparsity (later lectures)</li>
-<li>Forward/backward error (and stability of algorithms) (later lectures)</li>
-</ul>
-</section>
-<section id="next-lecture" class="level2">
-<h2 class="anchored" data-anchor-id="next-lecture">Next lecture</h2>
-<ul>
-<li>Matrix norms: what is the difference between matrix and vector norms</li>
-<li>Unitary matrices, including elementary unitary matrices.</li>
+<li>Числа с плавающей точкой (двойная, одинарная точность, количество байт), ошибки округления</li>
+<li>Нормы как меры малости, используются для вычисления точности</li>
+<li>Нормы: <span class="math inline">1</span>, <span class="math inline">p</span> и евклидова</li>
+<li>Прямая/обратная ошибка (и устойчивость алгоритмов) (в следующих лекциях)</li>
 </ul>
 
 

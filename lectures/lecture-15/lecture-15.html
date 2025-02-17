@@ -148,12 +148,12 @@ window.Quarto = {
 
 <meta property="og:title" content="Lecture 15. Structured matrices, FFT, convolutions, Toeplitz matrices">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-15/lecture-15_files/figure-html/cell-2-output-2.png">
+<meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-15/lecture-15_files/figure-html/cell-3-output-2.png">
 <meta property="og:image:height" content="455">
 <meta property="og:image:width" content="578">
 <meta name="twitter:title" content="Lecture 15. Structured matrices, FFT, convolutions, Toeplitz matrices">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-15/lecture-15_files/figure-html/cell-2-output-2.png">
+<meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-15/lecture-15_files/figure-html/cell-3-output-2.png">
 <meta name="twitter:image-height" content="455">
 <meta name="twitter:image-width" content="578">
 <meta name="twitter:card" content="summary_large_image">
@@ -333,7 +333,7 @@ F_n =
 <p>where</p>
 <p><span class="math display">w_n = e^{-\frac{2\pi i}{n}}.</span></p>
 <p><strong>Properties:</strong> * Symmetric (not Hermitian!) * Unitary up to a scaling factor: <span class="math inline">F_n^* F_n = F_n F_n^* = nI</span> (check this fact). Therefore <span class="math inline">F_n^{-1} = \frac{1}{n}F^*_n</span> * Can be multiplied by a vector (called discrete Fourier transform or DFT) with <font color="red"><span class="math inline">\mathcal{O}(n \log n)</span></font> complexity (called fast Fourier transform or <font color="red">FFT</font>)! FFT helps to analyze spectrum of a signal and, as we will see later, helps to do fast mutiplications with certain types of matrices.</p>
-<div id="cell-13" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="2">
+<div id="cell-14" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -353,12 +353,12 @@ F_n =
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-15_files/figure-html/cell-2-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-15_files/figure-html/cell-3-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="cell-14" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="3">
+<div id="cell-15" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>yf <span class="op">=</span> np.fft.fft(y)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>xf <span class="op">=</span> np.linspace(<span class="fl">0.0</span>, <span class="fl">1.0</span><span class="op">/</span>(<span class="fl">2.0</span><span class="op">*</span>dt), N<span class="op">//</span><span class="dv">2</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>plt.plot(xf, <span class="fl">2.0</span><span class="op">/</span>N <span class="op">*</span> np.<span class="bu">abs</span>(yf[<span class="dv">0</span>:N<span class="op">//</span><span class="dv">2</span>])) <span class="co">#Note: N/2 to N will give negative frequencies</span></span>
@@ -371,7 +371,7 @@ F_n =
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-15_files/figure-html/cell-3-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-15_files/figure-html/cell-4-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -467,7 +467,7 @@ W_{n/2} &amp; -W_{n/2}
 <li>Thus, we <font color="red">reduced multiplication by <span class="math inline">F_n</span> to 2 multiplications by <span class="math inline">F_{n/2}</span></font> and cheap multiplications by diagonal matrices.</li>
 <li>If we apply the obtained expressions recursively to <span class="math inline">F_{n/2}</span>, we will get <font color="red"><span class="math inline">\mathcal{O}(n\log n)</span> </font> complexity.</li>
 </ul>
-<div id="cell-19" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="4">
+<div id="cell-20" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#FFT vs full matvec</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -552,7 +552,7 @@ C = \frac{1}{n} F^*_n \Lambda F_n, \quad \text{where}\quad \Lambda = \text{diag}
 Cx = \frac{1}{n} F_n^* \text{diag}(F_n c) F_n x = \text{ifft}\left( \text{fft}(c) \circ \text{fft}(x)\right)
 </span></p>
 <p>where <span class="math inline">\circ</span> denotes elementwise product (Hadamard product) of two vectors (since <span class="math inline">\text{diag}(a)b = a\circ b</span>) and <code>ifft</code> denotes inverse Fourier transform <span class="math inline">F^{-1}_n</span>.</p>
-<div id="cell-24" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
+<div id="cell-25" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.linalg</span>
@@ -604,7 +604,7 @@ y_i = \sum_{j=1}^n t_{i-j} x_j,
 </span></p>
 <p>which can be interpreted as a discrete <font color="red">convolution</font> of filter <span class="math inline">t_i</span> and signal <span class="math inline">x_i</span>. For simplicity the size of the filter <span class="math inline">t</span> is such that the sizes of the input and output signals are the same. Generally, filter size can be arbitrary.</p>
 <p>Fast convolution computation has a variety of applications, for instance, in signal processing or partial differential and integral equations. For instance, here is the smoothing of a signal:</p>
-<div id="cell-27" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="6">
+<div id="cell-28" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> signal</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -630,7 +630,7 @@ y_i = \sum_{j=1}^n t_{i-j} x_j,
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-15_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-15_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -746,7 +746,7 @@ x_{31} &amp; x_{32} &amp; x_{33} &amp; 0 &amp; 0 \\
 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\  
 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\  
 \end{pmatrix})),</span> where fft2d is 2-dimensional fft that consists of one-dimensional transforms, applied first to rows and and then to columns (or vice versa).</p>
-<div id="cell-31" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="7">
+<div id="cell-32" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Blurring and Sharpening Lena by convolution</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> signal</span>
@@ -820,7 +820,7 @@ Cell <span class="ansi-green-fg">In [7], line 8</span>
 <ul>
 <li>A simple formula for the entries of <span class="math inline">C</span> can be derived.</li>
 </ul>
-<div id="cell-35" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div id="cell-36" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.linalg</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
@@ -853,6 +853,20 @@ Cell <span class="ansi-green-fg">In [7], line 8</span>
 <span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>plt.plot(np.sort(ev), np.ones(n), <span class="st">'o'</span>)</span>
 <span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Eigenvalues for T. Chan Preconditioner'</span>)</span>
 <span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>plt.gca().get_yaxis().set_visible(<span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-15_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-15_files/figure-html/cell-9-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="convolutions-in-neural-networks" class="level2">
@@ -906,13 +920,13 @@ Cell <span class="ansi-green-fg">In [7], line 8</span>
 </section>
 <section id="how-the-trained-filters-and-result-image-representation-looks-like" class="level2">
 <h2 class="anchored" data-anchor-id="how-the-trained-filters-and-result-image-representation-looks-like">How the trained filters and result image representation looks like</h2>
-<div id="cell-40" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div id="cell-41" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torchvision.models <span class="im">as</span> models</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>vgg16 <span class="op">=</span> models.vgg16(pretrained<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(vgg16)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-41" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div id="cell-42" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ch <span class="kw">in</span> vgg16.children():</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    features <span class="op">=</span> ch</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">break</span></span>
@@ -920,7 +934,7 @@ Cell <span class="ansi-green-fg">In [7], line 8</span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, param <span class="kw">in</span> features.named_parameters(): </span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(name, param.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-42" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div id="cell-43" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">17</span>))</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, <span class="bu">filter</span> <span class="kw">in</span> <span class="bu">enumerate</span>(features[<span class="dv">2</span>].weight):</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    plt.subplot(<span class="dv">16</span>, <span class="dv">16</span>, i<span class="op">+</span><span class="dv">1</span>)</span>
@@ -928,13 +942,13 @@ Cell <span class="ansi-green-fg">In [7], line 8</span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    plt.axis(<span class="st">'off'</span>)</span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-43" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div id="cell-44" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> Image.<span class="bu">open</span>(<span class="st">"./tiger.jpeg"</span>)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>plt.imshow(img)</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-44" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div id="cell-45" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torchvision <span class="im">import</span> transforms</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>transform <span class="op">=</span> transforms.Compose([</span>
@@ -948,7 +962,7 @@ Cell <span class="ansi-green-fg">In [7], line 8</span>
 <span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(img_.size())</span>
 <span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_[<span class="dv">0</span>].permute(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-45" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div id="cell-46" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># After the first convolutional layer</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>output1 <span class="op">=</span> features[<span class="dv">0</span>](img_)</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(output1.size())</span>
@@ -959,7 +973,7 @@ Cell <span class="ansi-green-fg">In [7], line 8</span>
 <span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    plt.axis(<span class="st">'off'</span>)</span>
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-46" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div id="cell-47" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># After the second convolutional layer</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>output2 <span class="op">=</span> features[<span class="dv">2</span>](features[<span class="dv">1</span>](output1))</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(output2.size())</span>
@@ -970,7 +984,7 @@ Cell <span class="ansi-green-fg">In [7], line 8</span>
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    plt.axis(<span class="st">'off'</span>)</span>
 <span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-47" class="cell">
+<div id="cell-48" class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>output3 <span class="op">=</span> features[<span class="dv">5</span>](features[<span class="dv">4</span>](features[<span class="dv">3</span>](output2)))</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(output3.size())</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">20</span>))</span>
@@ -1008,7 +1022,7 @@ Cell <span class="ansi-green-fg">In [7], line 8</span>
 </section>
 <section id="small-demo" class="level2">
 <h2 class="anchored" data-anchor-id="small-demo">Small demo</h2>
-<div id="cell-52" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;subslide&quot;}" data-execution_count="13">
+<div id="cell-53" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;subslide&quot;}" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1024</span></span>
@@ -1023,6 +1037,19 @@ Cell <span class="ansi-green-fg">In [7], line 8</span>
 <span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>m1 <span class="op">=</span> f[::<span class="dv">16</span>, ::n<span class="op">//</span><span class="dv">16</span>]</span>
 <span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(m1.shape)</span>
 <span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.linalg.svd(m1)[<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rectangular block, approximate low rank
+[2.83322231e+01 1.44781645e+01 3.38480168e+00 4.57202919e-01
+ 4.42705408e-02 3.33299146e-03 2.03024059e-04 1.02439715e-05
+ 4.34189364e-07 1.55704460e-08 4.73047845e-10 1.21164373e-11
+ 2.58444552e-13 4.26313612e-15 1.71409604e-15 6.10988185e-16]
+Special low-rank submatrices, exact low-rank
+(64, 16)
+[3.20000000e+001 1.35213262e-014 3.69395699e-029 1.29572281e-044
+ 1.33038472e-059 1.57392820e-074 1.98967388e-089 5.68668883e-105
+ 2.40948199e-120 2.27046791e-135 4.41076069e-150 3.57770948e-166
+ 3.18773973e-181 3.45410051e-196 3.80878284e-212 1.03087635e-228]</code></pre>
+</div>
 </div>
 </section>
 <section id="take-home-message" class="level2">
@@ -1034,12 +1061,12 @@ Cell <span class="ansi-green-fg">In [7], line 8</span>
 <li>Multilevel Toeplitz matrices</li>
 <li>Intro to convolutional neural networks</li>
 </ul>
-<div id="cell-54" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"./styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> HTML(styles)</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>css_styling()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-55" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"./styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> HTML(styles)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>css_styling()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <div class="ansi-escaped-output">
 <pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>

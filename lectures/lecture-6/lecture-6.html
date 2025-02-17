@@ -151,12 +151,12 @@ window.Quarto = {
 
 <meta property="og:title" content="Lecture 6: Eigenvalues and eigenvectors">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-6/lecture-6_files/figure-html/cell-3-output-1.png">
+<meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-6/lecture-6_files/figure-html/cell-4-output-1.png">
 <meta property="og:image:height" content="389">
 <meta property="og:image:width" content="515">
 <meta name="twitter:title" content="Lecture 6: Eigenvalues and eigenvectors">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-6/lecture-6_files/figure-html/cell-3-output-1.png">
+<meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-6/lecture-6_files/figure-html/cell-4-output-1.png">
 <meta name="twitter:image-height" content="389">
 <meta name="twitter:image-width" content="515">
 <meta name="twitter:card" content="summary_large_image">
@@ -297,7 +297,7 @@ window.Quarto = {
 <li>Vibrational computations of mechanical structures</li>
 <li>Model order reduction of complex systems</li>
 </ul>
-<div id="cell-11" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="1">
+<div id="cell-12" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> YouTubeVideo </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>YouTubeVideo(<span class="st">"VcCcMZo6J6w"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
@@ -338,7 +338,7 @@ window.Quarto = {
 <li><p>We will use a simple example of <a href="https://en.wikipedia.org/wiki/Zachary%27s_karate_club">Zachary karate club network</a>.</p></li>
 <li><p>This data was manually collected in 1977, and is a classical social network dataset.</p></li>
 </ul>
-<div id="cell-16" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
+<div id="cell-17" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -349,7 +349,7 @@ window.Quarto = {
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-6_files/figure-html/cell-3-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-6_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -358,7 +358,7 @@ window.Quarto = {
 <li>Now we can actually compute the PageRank using the NetworkX built-in function.</li>
 <li>We also plot the size of the nodes larger if its PageRank is larger.</li>
 </ul>
-<div id="cell-18" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="6">
+<div id="cell-19" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pr <span class="op">=</span> nx.algorithms.link_analysis.pagerank(kn)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>pr_vector <span class="op">=</span> <span class="bu">list</span>(pr.values())</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>pr_vector <span class="op">=</span> jnp.array(pr_vector) <span class="op">*</span> <span class="dv">3000</span></span>
@@ -366,7 +366,7 @@ window.Quarto = {
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-6_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-6_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -428,34 +428,35 @@ window.Quarto = {
 <p><strong>Is this a good idea</strong>?</p>
 <p><strong>Give your feedback</strong></p>
 <p>We can do a short demo of this</p>
-<div id="cell-25" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="6">
+<div id="cell-26" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">40</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span> <span class="op">/</span> (i <span class="op">-</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> jnp.array(a)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>ev <span class="op">=</span> jnp.linalg.eigvals(a)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#There is a special numpy function for chacteristic polynomial</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>cf <span class="op">=</span> jnp.poly(a)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>ev_roots <span class="op">=</span> jnp.roots(cf)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#print('Coefficients of the polynomial:', cf)</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#print('Polynomial roots:', ev_roots)</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>plt.scatter(ev_roots.real, ev_roots.imag, marker<span class="op">=</span><span class="st">'x'</span>, label<span class="op">=</span><span class="st">'roots'</span>)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> a <span class="op">+</span> <span class="dv">0</span> <span class="op">*</span> jax.random.normal(jax.random.PRNGKey(<span class="dv">0</span>,), (n, n))</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>ev_b <span class="op">=</span> jnp.linalg.eigvals(b)</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>plt.scatter(ev_b.real, ev_b.imag, marker<span class="op">=</span><span class="st">'o'</span>, label<span class="op">=</span><span class="st">'Lapack'</span>)</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.scatter(ev_roots.real, ev_roots.imag, marker='o', label='Brute force')</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'best'</span>)</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Real part'</span>)</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Imaginary part'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span> <span class="op">/</span> (i <span class="op">-</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.array(a)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>ev <span class="op">=</span> np.linalg.eigvals(a)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#There is a special numpy function for chacteristic polynomial</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>cf <span class="op">=</span> np.poly(a)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>ev_roots <span class="op">=</span> np.roots(cf)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#print('Coefficients of the polynomial:', cf)</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#print('Polynomial roots:', ev_roots)</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>plt.scatter(ev_roots.real, ev_roots.imag, marker<span class="op">=</span><span class="st">'x'</span>, label<span class="op">=</span><span class="st">'roots'</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> a <span class="op">+</span> <span class="fl">1e-3</span> <span class="op">*</span> np.random.randn(n, n)<span class="co">#jax.random.normal(jax.random.PRNGKey(0,), (n, n))</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>ev_b <span class="op">=</span> np.linalg.eigvals(b)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>plt.scatter(ev_b.real, ev_b.imag, marker<span class="op">=</span><span class="st">'o'</span>, label<span class="op">=</span><span class="st">'Lapack'</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.scatter(ev_roots.real, ev_roots.imag, marker='o', label='Brute force')</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'best'</span>)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Real part'</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Imaginary part'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>Text(0, 0.5, 'Imaginary part')</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-6_files/figure-html/cell-5-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-6_files/figure-html/cell-6-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -503,7 +504,7 @@ window.Quarto = {
 </section>
 <section id="a-short-demo" class="level2">
 <h2 class="anchored" data-anchor-id="a-short-demo">A short demo</h2>
-<div id="cell-32" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="7">
+<div id="cell-33" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">3</span></span>
@@ -545,7 +546,7 @@ Cell <span class="ansi-green-fg">In[7], line 17</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-6_files/figure-html/cell-6-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-6_files/figure-html/cell-7-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -735,7 +736,7 @@ x_k = \frac{c_1}{|c_1|}\left(\frac{\lambda_1}{|\lambda_1|}\right)^k\frac{ v_1 + 
 </ul>
 <section id="questions" class="level3">
 <h3 class="anchored" data-anchor-id="questions">Questions?</h3>
-<div id="cell-54" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}">
+<div id="cell-55" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"./styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>

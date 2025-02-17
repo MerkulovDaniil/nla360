@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lecture 6: Linear systems</title>
+<title>Lecture 5: Linear systems</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -149,12 +149,12 @@ window.Quarto = {
 };
 </script>
 
-<meta property="og:title" content="Lecture 6: Linear systems">
+<meta property="og:title" content="Lecture 5: Linear systems">
 <meta property="og:description" content="">
 <meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-5/a319_4.png">
 <meta property="og:image:height" content="266">
 <meta property="og:image:width" content="350">
-<meta name="twitter:title" content="Lecture 6: Linear systems">
+<meta name="twitter:title" content="Lecture 5: Linear systems">
 <meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-5/a319_4.png">
 <meta name="twitter:image-height" content="266">
@@ -492,10 +492,10 @@ L_{21} &amp; L_{22}
 <div id="cell-30" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax.config <span class="im">import</span> config</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>config.update(<span class="st">"jax_enable_x64"</span>, <span class="va">True</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#from jax.config import config</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#config.update("jax_enable_x64", True)</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>eps <span class="op">=</span> <span class="fl">1.8e-17</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>eps <span class="op">=</span> <span class="fl">1.8e-8</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[eps, <span class="dv">1</span>],[<span class="fl">1.0</span>,  <span class="dv">1</span>]]</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> jnp.array(a)</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>a0 <span class="op">=</span> a.copy()</span>
@@ -522,8 +522,8 @@ L_{21} &amp; L_{22}
  [ 0. -1.]]</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="6">
-<pre><code>Array([[1.00000000e+00, 0.00000000e+00],
-       [5.55555556e+16, 1.00000000e+00]], dtype=float64)</code></pre>
+<pre><code>Array([[1.0000000e+00, 0.0000000e+00],
+       [5.5555556e+07, 1.0000000e+00]], dtype=float32)</code></pre>
 </div>
 </div>
 </section>
@@ -701,74 +701,64 @@ L_{21} &amp; L_{22}
 <li>We can also try to test how tight is the estimate, both with ones in the right-hand side, and with a random vector in the right-hand side.</li>
 <li>The results are strickingly different</li>
 </ul>
-<div id="cell-46" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="18">
+<div id="cell-46" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">30</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span><span class="op">/</span>(i <span class="op">+</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> jnp.array(a)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#rhs = jax.random.normal(jax.random.PRNGKey(10), [n]) </span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> jnp.ones(n) <span class="co">#Right-hand side</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">30</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span><span class="op">/</span>(i <span class="op">+</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> jnp.array(a)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#rhs = jax.random.normal(jax.random.PRNGKey(10), [n]) </span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.ones(n) <span class="co">#Right-hand side</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.random.randn(n)</span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#rhs = (jnp.arange(n))</span></span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#rhs = (-1)**rhs</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> jnp.linalg.solve(a, rhs)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> np.linalg.solve(a, rhs)</span>
 <span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#And check if everything is fine</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>er <span class="op">=</span> jnp.linalg.norm(a.dot(f) <span class="op">-</span> rhs) <span class="op">/</span> jnp.linalg.norm(rhs)</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>cn <span class="op">=</span> jnp.linalg.cond(a, <span class="dv">2</span>)</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error:'</span>, er, <span class="st">'Log Condition number:'</span>, jnp.log10(cn))</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>er <span class="op">=</span> np.linalg.norm(a.dot(f) <span class="op">-</span> rhs) <span class="op">/</span> np.linalg.norm(rhs)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>cn <span class="op">=</span> np.linalg.cond(a, <span class="dv">2</span>)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error:'</span>, er, <span class="st">'Log Condition number:'</span>, np.log10(cn))</span>
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#u1, s1, v1 = jnp.linalg.svd(a)</span></span>
 <span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#cf = u1.T@rhs</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>plt.plot(u1[:, <span class="dv">12</span>])</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.plot(u1[:, 12])</span></span>
 <span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#cf/s1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Error: 3.7302540452318564e-08 Log Condition number: 19.282605181744575</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="lecture-5_files/figure-html/cell-4-output-2.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
+<pre><code>Error: 14.153675849075485 Log Condition number: 10.205564</code></pre>
 </div>
 </div>
 <p>And with random right-hand side…</p>
-<div id="cell-48" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="4">
+<div id="cell-48" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span><span class="op">/</span>(i <span class="op">+</span> j <span class="op">+</span> <span class="dv">1</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span><span class="op">/</span>(i <span class="op">-</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> jnp.array(a)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> jax.random.normal(jax.random.PRNGKey(<span class="op">-</span><span class="dv">1</span>), (n, )) <span class="co">#Right-hand side</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> jnp.linalg.solve(a, rhs)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#rhs = jax.random.normal(jax.random.PRNGKey(-1), (n, )) #Right-hand side</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#f = jnp.linalg.solve(a, rhs)</span></span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#And check if everything is fine</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>er <span class="op">=</span> jnp.linalg.norm(a.dot(f) <span class="op">-</span> rhs) <span class="op">/</span> jnp.linalg.norm(rhs)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>cn <span class="op">=</span> jnp.linalg.cond(a)</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error:'</span>, er, <span class="st">'Condition number:'</span>, cn)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#er = jnp.linalg.norm(a.dot(f) - rhs) / jnp.linalg.norm(rhs)</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">#cn = jnp.linalg.cond(a)</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co">#print('Error:', er, 'Condition number:', cn)</span></span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>u, s, v <span class="op">=</span> jnp.linalg.svd(a)</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> jax.random.normal(jax.random.PRNGKey(<span class="dv">1</span>), (n, ))</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co"># rhs = jnp.ones((n,))</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>plt.plot(u.T.dot(rhs))</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>u, s, v <span class="op">=</span> np.linalg.svd(a)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">#rhs = jax.random.normal(jax.random.PRNGKey(1), (n, ))</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.ones((n,))</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>plt.plot(u[:, <span class="dv">0</span>])</span>
 <span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
 <span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Index of vector elements"</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
 <span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Elements of vector"</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
 <span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>plt.xticks(fontsize<span class="op">=</span><span class="dv">18</span>)</span>
 <span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> plt.yticks(fontsize<span class="op">=</span><span class="dv">18</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Error: 17.674315761144477 Condition number: 4.073996146476839e+19</code></pre>
-</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-5_files/figure-html/cell-5-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-5_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -891,24 +881,24 @@ y_n \\
 </span></p>
 <p>which represents overdetermined system.</p>
 <div id="cell-57" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>a_exact <span class="op">=</span> <span class="fl">1.</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>b_exact <span class="op">=</span> <span class="fl">2.</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>xi <span class="op">=</span> jnp.arange(n)</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>yi <span class="op">=</span> a_exact <span class="op">*</span> xi <span class="op">+</span> b_exact <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> jax.random.normal(jax.random.PRNGKey(<span class="dv">1</span>), (n, ))</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> jnp.array([xi, jnp.ones(n)])</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>coef <span class="op">=</span> jnp.linalg.pinv(A).T.dot(yi) <span class="co"># coef is [a, b]</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>plt.plot(xi, yi, <span class="st">'o'</span>, label<span class="op">=</span><span class="st">'$(x_i, y_i)$'</span>)</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>plt.plot(xi, coef[<span class="dv">0</span>]<span class="op">*</span>xi <span class="op">+</span> coef[<span class="dv">1</span>], label<span class="op">=</span><span class="st">'Least squares'</span>)</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'best'</span>, fontsize<span class="op">=</span><span class="dv">18</span>)</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>a_exact <span class="op">=</span> <span class="fl">1.</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>b_exact <span class="op">=</span> <span class="fl">2.</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>xi <span class="op">=</span> jnp.arange(n)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>yi <span class="op">=</span> a_exact <span class="op">*</span> xi <span class="op">+</span> b_exact <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> jax.random.normal(jax.random.PRNGKey(<span class="dv">1</span>), (n, ))</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> jnp.array([xi, jnp.ones(n)])</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>coef <span class="op">=</span> jnp.linalg.pinv(A).T.dot(yi) <span class="co"># coef is [a, b]</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>plt.plot(xi, yi, <span class="st">'o'</span>, label<span class="op">=</span><span class="st">'$(x_i, y_i)$'</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>plt.plot(xi, coef[<span class="dv">0</span>]<span class="op">*</span>xi <span class="op">+</span> coef[<span class="dv">1</span>], label<span class="op">=</span><span class="st">'Least squares'</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'best'</span>, fontsize<span class="op">=</span><span class="dv">18</span>)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -950,11 +940,11 @@ y_n \\
 <li>Schur theorem</li>
 </ul>
 <div id="cell-61" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"../styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> HTML(styles)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>css_styling()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"../styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> HTML(styles)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>css_styling()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <link href="http://fonts.googleapis.com/css?family=Fenix" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=Alegreya+Sans:100,300,400,500,700,800,900,100italic,300italic,400italic,500italic,700italic,800italic,900italic" rel="stylesheet" type="text/css">

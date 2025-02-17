@@ -284,22 +284,23 @@ window.Quarto = {
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">20</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> jax.random.normal(jax.random.PRNGKey(<span class="dv">0</span>), (n, ))</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>sub_diag <span class="op">=</span> jax.random.normal(jax.random.PRNGKey(<span class="dv">1</span>), (n<span class="op">-</span><span class="dv">1</span>,))</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>mat <span class="op">=</span> jnp.diag(d) <span class="op">+</span> jnp.diag(sub_diag, <span class="op">-</span><span class="dv">1</span>) <span class="op">+</span> jnp.diag(sub_diag, <span class="dv">1</span>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>mat1 <span class="op">=</span> jnp.<span class="bu">abs</span>(mat)</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>mat1 <span class="op">=</span> mat1<span class="op">/</span>jnp.<span class="bu">max</span>(mat1.flatten())</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>plt.spy(mat)</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>q, r <span class="op">=</span> jnp.linalg.qr(mat)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> r.dot(q)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># b[abs(b) &lt;= 1e-12] = 0</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> b.at[<span class="bu">abs</span>(b) <span class="op">&lt;=</span> <span class="fl">1e-12</span>].<span class="bu">set</span>(<span class="fl">0.0</span>)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">#b = jax.ops.index_update(b, jax.ops.index[abs(b) &lt;= 1e-12], 0)</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>plt.spy(b)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.figure()</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.imshow(np.abs(r.dot(q)))</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>b[<span class="dv">0</span>, :]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>sub_diag <span class="op">=</span> jax.random.normal(jax.random.PRNGKey(<span class="dv">1</span>), (n<span class="op">-</span><span class="dv">1</span>,))</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>mat <span class="op">=</span> jnp.diag(d) <span class="op">+</span> jnp.diag(sub_diag, <span class="op">-</span><span class="dv">1</span>) <span class="op">+</span> jnp.diag(sub_diag, <span class="dv">1</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>mat1 <span class="op">=</span> jnp.<span class="bu">abs</span>(mat)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>mat1 <span class="op">=</span> mat1<span class="op">/</span>jnp.<span class="bu">max</span>(mat1.flatten())</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>plt.spy(mat)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>q, r <span class="op">=</span> jnp.linalg.qr(mat)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> r.dot(q)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># b[abs(b) &lt;= 1e-12] = 0</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> b.at[<span class="bu">abs</span>(b) <span class="op">&lt;=</span> <span class="fl">1e-12</span>].<span class="bu">set</span>(<span class="fl">0.0</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">#b = jax.ops.index_update(b, jax.ops.index[abs(b) &lt;= 1e-12], 0)</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>plt.spy(b)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.figure()</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.imshow(np.abs(r.dot(q)))</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>b[<span class="dv">0</span>, :]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>Array([-1.47168069, -0.75157939,  0.        ,  0.        ,  0.        ,
         0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
