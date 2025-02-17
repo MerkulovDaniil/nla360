@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.45">
+<meta name="generator" content="quarto-1.6.40">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -38,10 +38,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-7f2a93ce03cd03d77aaf1c7855d4b88b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -144,8 +144,10 @@ window.Quarto = {
 </script>
 
 <meta property="og:title" content="🏡 Main">
+<meta property="og:image" content="https://nla360.fmin.xyz/photos/io.jpeg">
 <meta name="twitter:title" content="🏡 Main">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nla360.fmin.xyz/photos/io.jpeg">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 
 <body class="nav-fixed fullcontent">
@@ -191,7 +193,7 @@ window.Quarto = {
 <!-- margin-sidebar -->
     
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
 <header id="title-block-header">
 </header>
@@ -203,9 +205,6 @@ window.Quarto = {
 <li>Курс для 1-го курса бакалавриата ФПМИ МФТИ в рамках программы “AI360”. 1 лекция + 1 семинар в неделю.</li>
 </ul>
 <div class="responsive-video"><video autoplay="" loop="" muted="" playsinline="" class="video"><source src="pca_kittens.mp4" type="video/mp4">Your browser does not support the video tag.</video></div>
-</section>
-<section id="team" class="level1">
-<h1>Team</h1>
 <div class="center">
 <div id="listing-team" class="quarto-listing quarto-listing-container-custom">
 <div id="listing-team" class="quarto-listing quarto-listing-container-grid">
@@ -217,7 +216,7 @@ window.Quarto = {
                     <img src="photos/io.jpeg" class="thumbnail-image card-img" style="height: 150px;">
                   </p>
                   <div class="card-body post-contents">
-                    <h5 class="no-anchor card-title listing-title" data-anchor-id="team">
+                    <h5 class="no-anchor card-title listing-title" data-anchor-id="вычислительная-линейная-алгебра">
                       Иван Валерьевич Оселедец
                     </h5>
                     <p>Лектор</p>
@@ -334,8 +333,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -344,7 +341,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/nla360\.fmin\.xyz");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
@@ -451,7 +448,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
