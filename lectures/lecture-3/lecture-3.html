@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.45">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Lecture 3: Matvecs and matmuls, memory hierarchy, Strassen algorithm</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/copy-tex.min.js" integrity="sha384-ww/583aHhxWkz5DEVn6OKtNiIaLi2iBRNZXfJRiY1Ai7tnJ9UXpEsyvOITVpTl4A" crossorigin="anonymous"></script>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Lecture 3: Matvecs and matmuls, memory hierarchy, Strassen algorithm">
+<meta property="og:description" content="">
+<meta name="twitter:title" content="Lecture 3: Matvecs and matmuls, memory hierarchy, Strassen algorithm">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../logo.svg" alt="nla360.fmin.xyz" class="navbar-logo">
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../program.html"> 
+<span class="menu-text">🚀 Материалы</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../projects.html"> 
+<span class="menu-text">📽️ Проекты</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/MerkulovDaniil/nla360" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="https://www.youtube.com/@fmin" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-youtube"></i></a>
+    <a href="https://t.me/nla360" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-telegram"></i></a>
+    <a href="" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-table"></i></a>
+    <a href="https://fmin.xyz" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-gem"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header">
+</header>
+
+
+<section id="recap-of-the-previous-lectures" class="level2">
+<h2 class="anchored" data-anchor-id="recap-of-the-previous-lectures">Recap of the previous lectures</h2>
+<ul>
+<li>Floating point arithmetics and related issues</li>
+<li>Stable algorithms: backward and forward stability</li>
+<li>Most important matrix norms: spectral and Frobenius</li>
+<li>Unitary matrices preserve these norms</li>
+<li>There are two “basic” classes of unitary matrices: Householder and Givens matrices</li>
+</ul>
+</section>
+<section id="examples-of-peak-performance" class="level2">
+<h2 class="anchored" data-anchor-id="examples-of-peak-performance">Examples of peak performance</h2>
+<p><strong>Flops</strong> –– floating point operations per second.</p>
+<p>Giga = <span class="math inline">2^{30} \approx 10^9</span>,<br>
+Tera = <span class="math inline">2^{40} \approx 10^{12}</span>,<br>
+Peta = <span class="math inline">2^{50} \approx 10^{15}</span>,<br>
+Exa = <span class="math inline">2^{60} \approx 10^{18}</span></p>
+<p>What is the <strong>peak perfomance</strong> of:</p>
+<ol type="1">
+<li>Modern CPU</li>
+<li>Modern GPU</li>
+<li>Largest supercomputer of the world?</li>
+</ol>
+<section id="clock-frequency-of-cpu-vs.-performance-in-flops" class="level3">
+<h3 class="anchored" data-anchor-id="clock-frequency-of-cpu-vs.-performance-in-flops">Clock frequency of CPU vs.&nbsp;performance in flops</h3>
+<p>FLOPS = sockets * (cores per socket) * (number of clock cycles per second) * (number of floating point operations per cycle).</p>
+<ul>
+<li>Typically sockets = 1</li>
+<li>Number of cores is typically 2 or 4</li>
+<li>Number of ticks per second is familiar clock frequency</li>
+<li>Number of floating point operations per tick depends on the particular CPU</li>
+</ul>
+<ol type="1">
+<li>Modern CPU (Intel Core i7) –– 400 Gflops</li>
+<li>Modern GPU <a href="https://www.nvidia.com/en-us/data-center/h100/">Nvidia DGX H100</a> – depends on the precision!</li>
+<li>Largest supercomputer in the world –– 1.102 Exaflop/s –– peak performanse</li>
+</ol>
+</section>
+</section>
+<section id="matrix-by-vector-multiplication-matvec" class="level2">
+<h2 class="anchored" data-anchor-id="matrix-by-vector-multiplication-matvec">Matrix-by-vector multiplication (matvec)</h2>
+<p>Multiplication of an <span class="math inline">n\times n</span> matrix <span class="math inline">A</span> by a vector <span class="math inline">x</span> of size <span class="math inline">n\times 1</span> (<span class="math inline">y=Ax</span>):</p>
+<p><span class="math display">
+y_{i} = \sum_{j=1}^n a_{ij} x_j
+</span></p>
+<p>requires <span class="math inline">n^2</span> mutliplications and <span class="math inline">n(n-1)</span> additions. Thus, the overall complexity is <span class="math inline">2n^2 - n =</span> <font color="red"> <span class="math inline">\mathcal{O}(n^2)</span> </font></p>
+</section>
+<section id="how-bad-is-mathcalon2" class="level2">
+<h2 class="anchored" data-anchor-id="how-bad-is-mathcalon2">How bad is <span class="math inline">\mathcal{O}(n^2)</span>?</h2>
+<ul>
+<li><p>Let <span class="math inline">A</span> be the matrix of pairwise gravitational interaction between planets in a galaxy.</p></li>
+<li><p>The number of planets in an average galaxy is <span class="math inline">10^{11}</span>, so the size of this matrix is <span class="math inline">10^{11} \times 10^{11}</span>.</p></li>
+<li><p>To model evolution in time we have to multiply this matrix by vector at each time step.</p></li>
+<li><p>Top supercomputers do around <span class="math inline">10^{16}</span> floating point operations per second (flops), so the time required to multiply the matrix <span class="math inline">A</span> by a vector is approximately</p></li>
+</ul>
+<p><span class="math display">\begin{align*}
+\frac{(10^{11})^2 \text{ operations}}{10^{16} \text{ flops}} = 10^6 \text{ sec} \approx 11.5 \text{ days}
+\end{align*}</span></p>
+<p>for one time step. If we could multiply it with <span class="math inline">\mathcal{O}(n)</span> complexity, we would get</p>
+<p><span class="math display">\begin{align*}
+\frac{10^{11} \text{ operations}}{10^{16} \text{ flops}} = 10^{-5} \text{ sec}.
+\end{align*}</span></p>
+<p>Here is the YouTube video that illustrates collision of two galaxisies which was modelled by <span class="math inline">\mathcal{O}(n \log n)</span> algorithm:</p>
+<div id="cell-8" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> YouTubeVideo</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>YouTubeVideo(<span class="st">"7HF5Oy8IMoM"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+
+        <iframe width="400" height="300" src="https://www.youtube.com/embed/7HF5Oy8IMoM" frameborder="0" allowfullscreen=""></iframe>
+        
+</div>
+</div>
+</section>
+<section id="can-we-beat-mathcalon2" class="level2">
+<h2 class="anchored" data-anchor-id="can-we-beat-mathcalon2">Can we beat <span class="math inline">\mathcal{O}(n^2)</span>?</h2>
+<ul>
+<li>Generally speaking <strong>NO</strong>.</li>
+<li>The point is that we have <span class="math inline">\mathcal{O}(n^2)</span> input data, so there is no way to be faster for a general matrix.</li>
+<li>Fortunately, we can be faster <font color="red">for certain types of matrices</font>. Here are some examples:
+<ul>
+<li>The simplest example may be a matrix of all ones, which can be easily multiplied with only <span class="math inline">n-1</span> additions. This matrix is of rank one. More generally we can multiply fast by <font color="red">low-rank </font> matrices (or by matrices that have low-rank blocks)</li>
+<li><font color="red">Sparse</font> matrices (contain <span class="math inline">\mathcal{O}(n)</span> nonzero elements)</li>
+<li><font color="red">Structured</font> matrices:
+<ul>
+<li>Fourier</li>
+<li>Circulant</li>
+<li>Toeplitz</li>
+<li>Hankel</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="matrix-by-matrix-product" class="level2">
+<h2 class="anchored" data-anchor-id="matrix-by-matrix-product">Matrix-by-matrix product</h2>
+<p>Consider composition of two linear operators:</p>
+<ol type="1">
+<li><span class="math inline">y = Bx</span></li>
+<li><span class="math inline">z = Ay</span></li>
+</ol>
+<p>Then, <span class="math inline">z = Ay =  A B x = C x</span>, where <span class="math inline">C</span> is the <strong>matrix-by-matrix product</strong>.</p>
+</section>
+<section id="matrix-by-matrix-product-mm-classics" class="level2">
+<h2 class="anchored" data-anchor-id="matrix-by-matrix-product-mm-classics">Matrix-by-matrix product (MM): classics</h2>
+<p><strong>Definition</strong>. A product of an <span class="math inline">n \times k</span> matrix <span class="math inline">A</span> and a <span class="math inline">k \times m</span> matrix <span class="math inline">B</span> is a <span class="math inline">n \times m</span> matrix <span class="math inline">C</span> with the elements<br>
+<span class="math display">
+   c_{ij} = \sum_{s=1}^k a_{is} b_{sj}, \quad i = 1, \ldots, n, \quad j = 1, \ldots, m
+</span></p>
+<p>For <span class="math inline">m=k=n</span> complexity of a naïve algorithm is <span class="math inline">2n^3 - n^2 =</span> <font color="red"><span class="math inline">\mathcal{O}(n^3)</span></font>.</p>
+</section>
+<section id="discussion-of-mm" class="level2">
+<h2 class="anchored" data-anchor-id="discussion-of-mm">Discussion of MM</h2>
+<ul>
+<li><p>Matrix-by-matrix product is the <strong>core</strong> for almost all efficient algorithms in numerical linear algebra.</p></li>
+<li><p>Basically, all the dense NLA algorithms are reduced to a sequence of matrix-by-matrix products.</p></li>
+<li><p>Efficient implementation of MM reduces the complexity of numerical algorithms by the same factor.</p></li>
+<li><p>However, implementing MM is not easy at all!</p></li>
+</ul>
+</section>
+<section id="efficient-implementation-for-mm" class="level2">
+<h2 class="anchored" data-anchor-id="efficient-implementation-for-mm">Efficient implementation for MM</h2>
+<p><strong>Q1</strong>: Is it easy to multiply a matrix by a matrix in the most efficient way?</p>
+</section>
+<section id="answer-no-it-is-not-easy" class="level2">
+<h2 class="anchored" data-anchor-id="answer-no-it-is-not-easy">Answer: no, it is not easy</h2>
+<p>If you want it as fast as possible, using the computers that are at hand.</p>
+</section>
+<section id="demo" class="level2">
+<h2 class="anchored" data-anchor-id="demo">Demo</h2>
+<p>Let us do a short demo and compare a <code>np.dot()</code> procedure which in my case uses MKL with a hand-written matrix-by-matrix routine in Python and also its numba version.</p>
+<div id="cell-16" class="cell" data-code_folding="[]" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matmul(a, b):</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> a.shape[<span class="dv">0</span>]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    k <span class="op">=</span> a.shape[<span class="dv">1</span>]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> b.shape[<span class="dv">1</span>]  </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> np.zeros((n, m))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(m):</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> s <span class="kw">in</span> <span class="bu">range</span>(k):</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                c[i, j] <span class="op">+=</span> a[i, s] <span class="op">*</span> b[s, j]</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> c</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-17" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numba <span class="im">import</span> jit <span class="co"># Just-in-time compiler for Python, see http://numba.pydata.org </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">@jit</span>(nopython<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> numba_matmul(a, b):</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> a.shape[<span class="dv">0</span>]</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    k <span class="op">=</span> a.shape[<span class="dv">1</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> b.shape[<span class="dv">1</span>]</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> np.zeros((n, m))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(m):</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> s <span class="kw">in</span> <span class="bu">range</span>(k):</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>                c[i, j] <span class="op">+=</span> a[i, s] <span class="op">*</span> b[s, j]</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> c</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Then we just compare computational times.</p>
+<p>Guess the answer.</p>
+<div id="cell-19" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#from jax.config import config</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#config.update("jax_enable_x64", True)</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.random.randn(n, n)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.random.randn(n, n)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>a_jax <span class="op">=</span> jnp.array(a)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>b_jax <span class="op">=</span> jnp.array(b)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit matmul(a, b)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit numba_matmul(a, b)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit a <span class="op">@</span> b</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit (a_jax <span class="op">@</span> b_jax)<span class="co">#.block_until_ready()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Platform 'METAL' is experimental and not all JAX functionality may be correctly supported!
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1730369320.414505 6713609 mps_client.cc:510] WARNING: JAX Apple GPU support is experimental and not all JAX functionality is correctly supported!
+I0000 00:00:1730369320.451663 6713609 service.cc:145] XLA service 0x600000ce5700 initialized for platform METAL (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1730369320.451824 6713609 service.cc:153]   StreamExecutor device (0): Metal, &lt;undefined&gt;
+I0000 00:00:1730369320.453663 6713609 mps_client.cc:406] Using Simple allocator.
+I0000 00:00:1730369320.453675 6713609 mps_client.cc:384] XLA backend will use up to 11452858368 bytes on device 0 for SimpleAllocator.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Metal device set to: Apple M2 Pro
+260 μs ± 3.48 μs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+819 ns ± 2.87 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+656 ns ± 3.57 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+46.9 μs ± 1.02 μs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</code></pre>
+</div>
+</div>
+<p>Is this answer correct for any dimensions of matrices?</p>
+<div id="cell-21" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>dim_range <span class="op">=</span> [<span class="dv">10</span><span class="op">*</span>i <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">11</span>)]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>time_range_matmul <span class="op">=</span> []</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>time_range_numba_matmul <span class="op">=</span> []</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>time_range_np <span class="op">=</span> []</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n <span class="kw">in</span> dim_range:</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Dimension = </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(n))</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.random.randn(n, n)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> np.random.randn(n, n)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> <span class="op">%</span>timeit <span class="op">-</span>o <span class="op">-</span>q matmul(a, b)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    time_range_matmul.append(t.best)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> <span class="op">%</span>timeit <span class="op">-</span>o <span class="op">-</span>q numba_matmul(a, b)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    time_range_numba_matmul.append(t.best)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> <span class="op">%</span>timeit <span class="op">-</span>o <span class="op">-</span>q np.dot(a, b)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    time_range_np.append(t.best)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Dimension = 10
+Dimension = 20
+Dimension = 30
+Dimension = 40
+Dimension = 50
+Dimension = 60
+Dimension = 70
+Dimension = 80
+Dimension = 90
+Dimension = 100</code></pre>
+</div>
+</div>
+<div id="cell-22" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>plt.plot(dim_range, time_range_matmul, label<span class="op">=</span><span class="st">"Matmul"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>plt.plot(dim_range, time_range_numba_matmul, label<span class="op">=</span><span class="st">"Matmul Numba"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>plt.plot(dim_range, time_range_np, label<span class="op">=</span><span class="st">"Numpy"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">18</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Dimension"</span>, fontsize<span class="op">=</span><span class="dv">18</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Time"</span>, fontsize<span class="op">=</span><span class="dv">18</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>plt.yscale(<span class="st">"log"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-3_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="why-is-naïve-implementation-slow" class="level2">
+<h2 class="anchored" data-anchor-id="why-is-naïve-implementation-slow">Why is naïve implementation slow?</h2>
+<p>It is slow due to two issues:</p>
+<ul>
+<li>It does not use the benefits of fast memory (cache) and in general memory architecture</li>
+<li>It does not use available parallelization ability (especially important for GPU)</li>
+</ul>
+</section>
+<section id="memory-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="memory-architecture">Memory architecture</h2>
+<p><img width="80%" src="Memory-Hierarchy.jpg"></p>
+<ul>
+<li>Fast memory is small</li>
+<li>Bigger memory is slow</li>
+</ul>
+</section>
+<section id="typical-memory-hierarchy-specifications" class="level2">
+<h2 class="anchored" data-anchor-id="typical-memory-hierarchy-specifications">Typical Memory Hierarchy Specifications</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Memory Type</th>
+<th>Size</th>
+<th>Access Time</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CPU Registers</td>
+<td>Few KB</td>
+<td>&lt;1 ns</td>
+<td>Fastest, directly accessed by CPU</td>
+</tr>
+<tr class="even">
+<td>L1 Cache</td>
+<td>32-64 KB</td>
+<td>1-4 ns</td>
+<td>Split into instruction and data cache</td>
+</tr>
+<tr class="odd">
+<td>L2 Cache</td>
+<td>256 KB - 1 MB</td>
+<td>4-10 ns</td>
+<td>Unified cache</td>
+</tr>
+<tr class="even">
+<td>L3 Cache</td>
+<td>2-32 MB</td>
+<td>10-20 ns</td>
+<td>Shared between CPU cores</td>
+</tr>
+<tr class="odd">
+<td>Main Memory (RAM)</td>
+<td>8-32 GB</td>
+<td>100 ns</td>
+<td>Primary system memory</td>
+</tr>
+<tr class="even">
+<td>SSD</td>
+<td>256 GB - 2 TB</td>
+<td>10-100 μs</td>
+<td>Fast secondary storage</td>
+</tr>
+<tr class="odd">
+<td>Hard Drive</td>
+<td>1-10 TB</td>
+<td>5-10 ms</td>
+<td>Slowest but largest storage</td>
+</tr>
+</tbody>
+</table>
+<p>Key observations: - Access time increases ~10x at each level - Size increases ~10-100x at each level - Effective use of faster memory levels is crucial for performance</p>
+</section>
+<section id="cache-lines-and-cache-coherence" class="level2">
+<h2 class="anchored" data-anchor-id="cache-lines-and-cache-coherence">Cache Lines and Cache Coherence</h2>
+<ul>
+<li>Cache memory is organized into <strong>cache lines</strong> - fixed-size blocks (typically 64 bytes)</li>
+<li>When CPU needs data, it loads entire cache line containing that data</li>
+<li>This is efficient when accessing sequential memory (spatial locality)</li>
+</ul>
+<p><strong>Cache coherence</strong> ensures that: - Multiple CPU cores see consistent view of memory - When one core modifies data, other cores are notified - Prevents race conditions and data inconsistency</p>
+<p>Why it matters for matrix operations: - Sequential access to matrix rows/columns affects cache line utilization - Poor cache line usage = more cache misses = slower performance - Multi-threaded code needs coherent caches for correctness</p>
+</section>
+<section id="gpu-memory-architecture" class="level1">
+<h1>GPU Memory Architecture</h1>
+<p>Modern GPUs have a different memory hierarchy compared to CPUs:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 15%">
+<col style="width: 33%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Memory Type</th>
+<th>Size</th>
+<th>Access Time</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Registers</td>
+<td>~4 MB per SM</td>
+<td>~1 clock</td>
+<td>Fastest, per thread/block</td>
+</tr>
+<tr class="even">
+<td>Shared Memory/L1 Cache</td>
+<td>64-256 KB per SM</td>
+<td>~20-30 clocks</td>
+<td>Shared within thread block</td>
+</tr>
+<tr class="odd">
+<td>L2 Cache</td>
+<td>512KB - 60MB</td>
+<td>~200 clocks</td>
+<td>Shared across GPU</td>
+</tr>
+<tr class="even">
+<td>Global Memory (VRAM)</td>
+<td>16-80 GB</td>
+<td>~400-600 clocks</td>
+<td>Main GPU memory</td>
+</tr>
+<tr class="odd">
+<td>System RAM</td>
+<td>8-128 GB</td>
+<td>&gt;1000 clocks</td>
+<td>CPU memory, accessed via PCIe</td>
+</tr>
+</tbody>
+</table>
+<p>Key differences from CPU: - Much more parallel access (thousands of threads) - Larger register file but smaller caches - Higher memory bandwidth but higher latency - Coalesced memory access critical for performance</p>
+<p>Memory access patterns: - Coalesced: threads in a warp access consecutive memory = fast - Strided/random: threads access scattered memory = slow - Shared memory bank conflicts can limit bandwidth</p>
+<p>Best practices: - Use shared memory for frequently accessed data - Ensure coalesced global memory access - Minimize data transfer between CPU and GPU</p>
+<p>Note: The latest NVIDIA H100 GPU can have up to 80GB of HBM3 VRAM</p>
+<section id="making-algorithms-more-computationally-intensive" class="level2">
+<h2 class="anchored" data-anchor-id="making-algorithms-more-computationally-intensive">Making algorithms more computationally intensive</h2>
+<p><font color="red"><strong>Implementation in NLA</strong></font>: use block version of algorithms. <br></p>
+<p>This approach is a core of <strong><a href="http://www.netlib.org/blas/">BLAS (Basic Linear Algebra Subroutines)</a></strong>, written in Fortran many years ago, and still rules the computational world.</p>
+<p>Split the matrix into blocks! For illustration consider splitting in <span class="math inline">2 \times 2</span> block matrix:</p>
+<p><span class="math display">
+   A = \begin{bmatrix}
+         A_{11} &amp; A_{12} \\
+         A_{21} &amp; A_{22}
+        \end{bmatrix}, \quad B = \begin{bmatrix}
+         B_{11} &amp; B_{12} \\
+         B_{21} &amp; B_{22}
+        \end{bmatrix}</span></p>
+<p>Then,</p>
+<p><span class="math display">AB = \begin{bmatrix}A_{11} B_{11} + A_{12} B_{21} &amp; A_{11} B_{12} + A_{12} B_{22} \\
+            A_{21} B_{11} + A_{22} B_{21} &amp; A_{21} B_{12} + A_{22} B_{22}\end{bmatrix}.</span></p>
+<p>If <span class="math inline">A_{11}, B_{11}</span> and their product fit into the cache memory (which is 20 Mb (L3) for the <a href="https://en.wikipedia.org/wiki/List_of_Intel_processors#Desktop_(codenamed_%22Comet_Lake%22)">recent Intel Chip</a>), then we load them only once into the memory.</p>
+</section>
+<section id="blas" class="level2">
+<h2 class="anchored" data-anchor-id="blas">BLAS</h2>
+<p>BLAS has three levels: 1. BLAS-1, operations like <span class="math inline">c = a + b</span> 2. BLAS-2, operations like matrix-by-vector product 3. BLAS-3, matrix-by-matrix product</p>
+<p>What is the principal differences between them?</p>
+<p>The main difference is the number of operations vs.&nbsp;the number of input data!</p>
+<ol type="1">
+<li>BLAS-1: <span class="math inline">\mathcal{O}(n)</span> data, <span class="math inline">\mathcal{O}(n)</span> operations</li>
+<li>BLAS-2: <span class="math inline">\mathcal{O}(n^2)</span> data, <span class="math inline">\mathcal{O}(n^2)</span> operations</li>
+<li>BLAS-3: <span class="math inline">\mathcal{O}(n^2)</span> data, <span class="math inline">\mathcal{O}(n^3)</span> operations</li>
+</ol>
+</section>
+<section id="why-blas-is-so-important-and-actual" class="level2">
+<h2 class="anchored" data-anchor-id="why-blas-is-so-important-and-actual">Why BLAS is so important and actual?</h2>
+<ol type="1">
+<li>The state-of-the-art implementation of the basic linear algebra operations</li>
+<li>Provides standard names for operations in any new implementations (e.g.&nbsp;<a href="https://www.netlib.org/atlas/">ATLAS</a>, <a href="https://www.openblas.net/">OpenBLAS</a>, <a href="https://software.intel.com/en-us/mkl">MKL</a>). You can call matrix-by-matrix multiplication function (GEMM), link your code with any BLAS implementation and it will work correctly</li>
+<li>Formulate new algorithms in terms of BLAS operations</li>
+<li>There are wrappers for the most popular languages</li>
+</ol>
+</section>
+<section id="packages-related-to-blas" class="level2">
+<h2 class="anchored" data-anchor-id="packages-related-to-blas">Packages related to BLAS</h2>
+<ol type="1">
+<li><a href="http://math-atlas.sourceforge.net">ATLAS</a> - Automatic Tuned Linear Algebra Software. It automatically adapts to a particular system architechture.</li>
+<li><a href="http://www.netlib.org/lapack/">LAPACK</a> - Linear Algebra Package. It provides high-level linear algebra operations (e.g.&nbsp;matrix factorizations), which are based on calls of BLAS subroutines.</li>
+<li><a href="https://software.intel.com/en-us/intel-mkl">Intel MKL</a> - Math Kernel Library. It provides re-implementation of BLAS and LAPACK, optimized for Intel processors. Available in Anaconda Python distribution:</li>
+</ol>
+<pre><code>conda install mkl</code></pre>
+<ol start="4" type="1">
+<li><p>OpenBLAS is an optimized BLAS library based on <a href="https://en.wikipedia.org/wiki/GotoBLAS">GotoBLAS</a>.</p></li>
+<li><p>PyTorch <a href="https://pytorch.org/docs/stable/torch.html#blas-and-lapack-operations">supports</a> some calls from BLAS and LAPACK</p></li>
+<li><p>For NVIDIA GPUs, <a href="https://docs.nvidia.com/cuda/cublas/index.html">cuBLAS</a> provides a GPU-accelerated implementation of BLAS.</p></li>
+<li><p>For AMD GPUs, <a href="https://rocmdocs.amd.com/en/latest/ROCm_Libraries/ROCm_Libraries.html#rocblas">rocBLAS</a> is part of the ROCm platform and offers a BLAS implementation optimized for AMD hardware.</p></li>
+</ol>
+<p>For comparison of OpenBLAS and Intel MKL, see this <a href="https://software.intel.com/en-us/articles/performance-comparison-of-openblas-and-intel-math-kernel-library-in-r">review</a></p>
+</section>
+<section id="faster-algorithms-for-matrix-multiplication" class="level2">
+<h2 class="anchored" data-anchor-id="faster-algorithms-for-matrix-multiplication">Faster algorithms for matrix multiplication</h2>
+<p>Recall that matrix-matrix multiplication costs <span class="math inline">\mathcal{O}(n^3)</span> operations. However, storage is <span class="math inline">\mathcal{O}(n^2)</span>.</p>
+<p><strong>Question:</strong> is it possible to reduce number operations down to <span class="math inline">\mathcal{O}(n^2)</span>?</p>
+<p><strong>Answer</strong>: a quest for <span class="math inline">\mathcal{O}(n^2)</span> matrix-by-matrix multiplication algorithm is not yet done.</p>
+<ul>
+<li><p>Strassen gives <span class="math inline">\mathcal{O}(n^{2.807\dots})</span> –– sometimes used in practice</p></li>
+<li><p><a href="http://arxiv.org/pdf/1401.7714v1.pdf">Current world record</a> <span class="math inline">\mathcal{O}(n^{2.37\dots})</span> –– big constant, not practical, based on <a href="https://en.wikipedia.org/wiki/Coppersmith%E2%80%93Winograd_algorithm">Coppersmith-Winograd_algorithm</a>.</p></li>
+<li><p>It improved the previous record (Williams 2012) by <span class="math inline">3\cdot 10^{-7}</span></p></li>
+<li><p>The papers still study multiplication of <span class="math inline">3 \times 3</span> matrices and interpret it from different sides (<a href="https://arxiv.org/pdf/1905.10192.pdf">Heule, et. al.&nbsp;2019</a>)</p></li>
+</ul>
+<p>Consider Strassen in more details.</p>
+</section>
+<section id="naïve-multiplication" class="level2">
+<h2 class="anchored" data-anchor-id="naïve-multiplication">Naïve multiplication</h2>
+<p>Let <span class="math inline">A</span> and <span class="math inline">B</span> be two <span class="math inline">2\times 2</span> matrices. Naïve multiplication <span class="math inline">C = AB</span></p>
+<p><span class="math display">
+\begin{bmatrix} c_{11} &amp; c_{12} \\ c_{21} &amp; c_{22}  \end{bmatrix}  =
+\begin{bmatrix} a_{11} &amp; a_{12} \\ a_{21} &amp; a_{22}  \end{bmatrix}
+\begin{bmatrix} b_{11} &amp; b_{12} \\ b_{21} &amp; b_{22}  \end{bmatrix} =
+\begin{bmatrix}
+a_{11}b_{11} + a_{12}b_{21} &amp; a_{11}b_{21} + a_{12}b_{22} \\
+a_{21}b_{11} + a_{22}b_{21} &amp; a_{21}b_{21} + a_{22}b_{22}
+\end{bmatrix}
+</span></p>
+<p>contains <span class="math inline">8</span> multiplications and <span class="math inline">4</span> additions.</p>
+</section>
+<section id="strassen-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="strassen-algorithm">Strassen algorithm</h2>
+<p>In the work <a href="http://link.springer.com/article/10.1007%2FBF02165411?LI=true">Gaussian elimination is not optimal</a> (1969) Strassen found that one can calculate <span class="math inline">C</span> using 18 additions and only 7 multiplications: <span class="math display">
+\begin{split}
+c_{11} &amp;= f_1 + f_4 - f_5 + f_7, \\
+c_{12} &amp;= f_3 + f_5, \\
+c_{21} &amp;= f_2 + f_4, \\
+c_{22} &amp;= f_1 - f_2 + f_3 + f_6,
+\end{split}
+</span> where <span class="math display">
+\begin{split}
+f_1 &amp;= (a_{11} + a_{22}) (b_{11} + b_{22}), \\
+f_2 &amp;= (a_{21} + a_{22}) b_{11}, \\
+f_3 &amp;= a_{11} (b_{12} - b_{22}), \\
+f_4 &amp;= a_{22} (b_{21} - b_{11}), \\
+f_5 &amp;= (a_{11} + a_{12}) b_{22}, \\
+f_6 &amp;= (a_{21} - a_{11}) (b_{11} + b_{12}), \\
+f_7 &amp;= (a_{12} - a_{22}) (b_{21} + b_{22}).
+\end{split}
+</span></p>
+<p>Fortunately, these formulas hold even if <span class="math inline">a_{ij}</span> and <span class="math inline">b_{ij}</span>, <span class="math inline">i,j=1,2</span> are block matrices.</p>
+<p>Thus, Strassen algorithm looks as follows. - First of all we <font color="red">split</font> matrices <span class="math inline">A</span> and <span class="math inline">B</span> of sizes <span class="math inline">n\times n</span>, <span class="math inline">n=2^d</span> <font color="red"> into 4 blocks</font> of size <span class="math inline">\frac{n}{2}\times \frac{n}{2}</span> - Then we <font color="red">calculate multiplications</font> in the described formulas <font color="red">recursively</font></p>
+<p>This leads us again to the <strong>divide and conquer</strong> idea.</p>
+</section>
+<section id="example-of-strassen-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="example-of-strassen-algorithm">Example of Strassen algorithm</h2>
+<p>Let’s multiply two 2x2 matrices using Strassen’s method:</p>
+<p><span class="math display">A = \begin{bmatrix} 2 &amp; 3 \\ 4 &amp; 1 \end{bmatrix}, \quad B = \begin{bmatrix} 5 &amp; 7 \\ 6 &amp; 8 \end{bmatrix}</span></p>
+<p>Calculate the 7 products <span class="math inline">f_1</span> through <span class="math inline">f_7</span>:</p>
+<p><span class="math display">\begin{align*}
+f_1 &amp;= (2 + 1)(5 + 8) = 3 \cdot 13 = 39 \\
+f_2 &amp;= (4 + 1)(5) = 5 \cdot 5 = 25 \\
+f_3 &amp;= (2)(7 - 8) = 2 \cdot (-1) = -2 \\
+f_4 &amp;= (1)(6 - 5) = 1 \cdot 1 = 1 \\
+f_5 &amp;= (2 + 3)(8) = 5 \cdot 8 = 40 \\
+f_6 &amp;= (4 - 2)(5 + 7) = 2 \cdot 12 = 24 \\
+f_7 &amp;= (3 - 1)(6 + 8) = 2 \cdot 14 = 28
+\end{align*}</span></p>
+<p>Now compute the elements of result matrix <span class="math inline">C</span>:</p>
+<p><span class="math display">\begin{align*}
+c_{11} &amp;= f_1 + f_4 - f_5 + f_7 = 39 + 1 - 40 + 28 = 28 \\
+c_{12} &amp;= f_3 + f_5 = -2 + 40 = 38 \\
+c_{21} &amp;= f_2 + f_4 = 25 + 1 = 26 \\
+c_{22} &amp;= f_1 - f_2 + f_3 + f_6 = 39 - 25 - 2 + 24 = 36
+\end{align*}</span></p>
+<p>Therefore:</p>
+<p><span class="math display">C = \begin{bmatrix} 28 &amp; 38 \\ 26 &amp; 36 \end{bmatrix}</span></p>
+<p>You can verify this equals the result of standard matrix multiplication!</p>
+</section>
+<section id="complexity-of-the-strassen-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="complexity-of-the-strassen-algorithm">Complexity of the Strassen algorithm</h2>
+<section id="number-of-multiplications" class="level4">
+<h4 class="anchored" data-anchor-id="number-of-multiplications">Number of multiplications</h4>
+<p>Calculation of number of multiplications is a trivial task. Let us denote by <span class="math inline">M(n)</span> number of multiplications used to multiply 2 matrices of sizes <span class="math inline">n\times n</span> using the divide and conquer concept. Then for naïve algorithm we have number of multiplications</p>
+<p><span class="math display"> M_\text{naive}(n) = 8 M_\text{naive}\left(\frac{n}{2} \right) = 8^2 M_\text{naive}\left(\frac{n}{4} \right)
+= \dots = 8^{d-1} M(2) = 8^{d} M(1) = 8^{d} = 8^{\log_2 n} = n^{\log_2 8} = n^3 </span></p>
+<p>So, even when using divide and coquer idea we can not be better than <span class="math inline">n^3</span>.</p>
+<p>Let us calculate number of multiplications for the Strassen algorithm:</p>
+<p><span class="math display"> M_\text{strassen}(n) = 7 M_\text{strassen}\left(\frac{n}{2} \right) = 7^2 M_\text{strassen}\left(\frac{n}{4} \right)
+= \dots = 7^{d-1} M(1) = 7^{d} = 7^{\log_2 n} = n^{\log_2 7} </span></p>
+</section>
+<section id="number-of-additions" class="level4">
+<h4 class="anchored" data-anchor-id="number-of-additions">Number of additions</h4>
+<p>There is no point to estimate number of addtitions <span class="math inline">A(n)</span> for naive algorithm, as we already got <span class="math inline">n^3</span> multiplications.<br>
+For the Strassen algorithm we have:</p>
+<p><span class="math display"> A_\text{strassen}(n) = 7 A_\text{strassen}\left( \frac{n}{2} \right) + 18 \left( \frac{n}{2} \right)^2 </span></p>
+<p>since on the first level we have to add <span class="math inline">\frac{n}{2}\times \frac{n}{2}</span> matrices 18 times and then go deeper for each of the 7 multiplications. Thus,</p>
+<p><font size="2.0"></font></p><font size="2.0">
+</font><p><font size="2.0"><span class="math display"> \begin{split}
+A_\text{strassen}(n) =&amp; 7 A_\text{strassen}\left( \frac{n}{2} \right) + 18 \left( \frac{n}{2} \right)^2 = 7 \left(7 A_\text{strassen}\left( \frac{n}{4} \right) + 18 \left( \frac{n}{4} \right)^2 \right) + 18 \left( \frac{n}{2} \right)^2 =
+7^2 A_\text{strassen}\left( \frac{n}{4} \right) + 7\cdot 18 \left( \frac{n}{4} \right)^2 +  18 \left( \frac{n}{2} \right)^2 = \\
+=&amp; \dots = 18 \sum_{k=1}^d 7^{k-1} \left( \frac{n}{2^k} \right)^2 = \frac{18}{4} n^2 \sum_{k=1}^d \left(\frac{7}{4} \right)^{k-1} = \frac{18}{4} n^2 \frac{\left(\frac{7}{4} \right)^d - 1}{\frac{7}{4} - 1} = 6 n^2 \left( \left(\frac{7}{4} \right)^d - 1\right) \leqslant 6 n^2 \left(\frac{7}{4} \right)^d = 6 n^{\log_2 7}
+\end{split}
+</span> </font></p>
+<p>(since <span class="math inline">4^d = n^2</span> and <span class="math inline">7^d = n^{\log_2 7}</span>).</p>
+<p>Asymptotic behavior of <span class="math inline">A(n)</span> could be also found from the <a href="https://en.wikipedia.org/wiki/Master_theorem">master theorem</a>.</p>
+</section>
+<section id="total-complexity" class="level4">
+<h4 class="anchored" data-anchor-id="total-complexity">Total complexity</h4>
+<p>Total complexity is <span class="math inline">M_\text{strassen}(n) + A_\text{strassen}(n)=</span> <font color="red"><span class="math inline">7 n^{\log_2 7}</span></font>. Strassen algorithm becomes faster when</p>
+<p><span class="math display">\begin{align*}
+2n^3 &amp;&gt; 7 n^{\log_2 7}, \\
+n &amp;&gt; 667,
+\end{align*}</span></p>
+<p>so it is not a good idea to get to the bottom level of recursion.</p>
+</section>
+</section>
+</section>
+<section id="accelerating-mm-by-parallelization" class="level1">
+<h1>Accelerating MM by parallelization</h1>
+<p>Historically, parallel implementations of many optimized <strong>BLAS</strong> libraries rely on so-called <strong>bulk synchronous programming model</strong>: * Static work allocation and data distribution * Alternating parallel and communication regions to satisfy data dependencies: * Parallel execution * Data communications * Parallel execution * Data communications * …</p>
+</section>
+<section id="task-based-programming-model" class="level1">
+<h1>Task-based programming model</h1>
+<ul>
+<li>Another parallel programming paradigm, which requires total reimplementation of all known algotihms</li>
+<li>Entire algorithm is presented as a Directed Acyclic Graph (DAG) of asynchronously executed tasks</li>
+<li>Each node of the DAG is a task, that operates on data:
+<ul>
+<li>Incoming edge: input data</li>
+<li>Outgoing edge: output data (if the task changes data)</li>
+</ul></li>
+<li>Special library (e.g.&nbsp;StarPU, PaRSEC or OpenMP) keeps track of all data and executes tasks with satisfied dependencies</li>
+<li>Total hardware utilization is increased due to overlapped tasks executions and data communications. Therefore, wall execution time is reduced in many cases.</li>
+</ul>
+</section>
+<section id="dag-of-tasks-for-a-single-mixer-layer-order-of-execution-is-a-runtime-decision" class="level1">
+<h1>DAG of tasks for a single Mixer layer: order of execution is a runtime decision</h1>
+<p><img width="400%" src="out6.png"></p>
+</section>
+<section id="dag-of-tasks-for-a-single-mixer-layer-order-of-execution-is-a-runtime-decision-1" class="level1">
+<h1>DAG of tasks for a single Mixer layer: order of execution is a runtime decision</h1>
+<p><img width="100%" src="out6_1.png"></p>
+</section>
+<section id="starpu-library-sequential-task-based-programming-model-for-distributed-memory-systems" class="level1">
+<h1>StarPU library: sequential task-based programming model for distributed-memory systems</h1>
+<section id="typical-workflow-with-the-starpu-library-requires-only-master-thread-to-run-user-code" class="level2">
+<h2 class="anchored" data-anchor-id="typical-workflow-with-the-starpu-library-requires-only-master-thread-to-run-user-code">Typical workflow with the StarPU library requires only master thread to run user code:</h2>
+<ol type="1">
+<li>Init StarPU and all other related libraries (e.g., MPI, cuBLAS).</li>
+<li>Register data with StarPU.</li>
+<li>Submit tasks, that operate on registered data, into a pool of tasks. Tasks are inserted asynchronously, i.e., master thread continues sequential flow through the program without waiting for the result.</li>
+<li>Wait for all tasks to complete.</li>
+<li>Unregister data and free memory.</li>
+<li>Deinit StarPU and all related libraries (opposite to the initialization order).</li>
+</ol>
+</section>
+</section>
+<section id="starpu-library-sequential-task-based-programming-model-for-distributed-memory-systems-1" class="level1">
+<h1>StarPU library: sequential task-based programming model for distributed-memory systems</h1>
+<p>​ ​ ## All the rest is done by StarPU automatically: * Task executing workers for each core/device are created. StarPU supports CPU, CUDA, OpenCL and FPGA. Such a support can be extended via certain driver routines. * Data communicating worker is created in case of MPI environment. StarPU supports HPC-oriented communication library NewMadeleine https://gitlab.inria.fr/pm2/pm2. * Task is executed only when all the required input data are on the executing node. * Performance of each low-level kernel is tracked during runtime, while communication speed between different NUMA nodes of a single computer is probed at initialization time (if needed). It helps StarPU to schedule all tasks to reduce wall execution time. * Certain schedulers support work stealing from neighbour nodes. * Resilient distributed computing through asynchronous checkpointing</p>
+<section id="strassen-algorithm-and-tensor-rank-advanced-topic" class="level2">
+<h2 class="anchored" data-anchor-id="strassen-algorithm-and-tensor-rank-advanced-topic">Strassen algorithm and tensor rank (advanced topic)</h2>
+<ul>
+<li>It is not clear how Strassen found these formulas.</li>
+<li>However, now we can see that they are not artificial.</li>
+<li>There is a general approach based on the so-called tensor decomposition technique.</li>
+<li>Here by tensor we imply a multidimensional array - generalization of the matrix concept to many dimensions.</li>
+</ul>
+<p>Let us enumerate elements in the <span class="math inline">2\times 2</span> matrices as follows</p>
+<p><span class="math display">
+\begin{bmatrix} c_{1} &amp; c_{3} \\ c_{2} &amp; c_{4}  \end{bmatrix} =
+\begin{bmatrix} a_{1} &amp; a_{3} \\ a_{2} &amp; a_{4}  \end{bmatrix}
+\begin{bmatrix} b_{1} &amp; b_{3} \\ b_{2} &amp; b_{4}  \end{bmatrix}=
+\begin{bmatrix}
+a_{1}b_{1} + a_{3}b_{2} &amp; a_{1}b_{3} + a_{3}b_{4} \\
+a_{2}b_{1} + a_{4}b_{2} &amp; a_{2}b_{3} + a_{4}b_{4}
+\end{bmatrix}
+</span></p>
+<p>This can be written as</p>
+<p><span class="math display"> c_k = \sum_{i=1}^4 \sum_{j=1}^4 x_{ijk} a_i b_j, \quad k=1,2,3,4 </span></p>
+<p><span class="math inline">x_{ijk}</span> is a 3-dimensional array, that consists of zeros and ones:</p>
+<p><span class="math display">
+\begin{split}
+x_{\ :,\ :,\ 1} =
+\begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 \\
+\end{pmatrix}
+\quad
+x_{\ :,\ :,\ 2} =
+\begin{pmatrix}
+0 &amp; 0 &amp; 0 &amp; 0 \\
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+\end{pmatrix} \\
+x_{\ :,\ :,\ 3} =
+\begin{pmatrix}
+0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1 \\
+0 &amp; 0 &amp; 0 &amp; 0 \\
+\end{pmatrix}
+\quad
+x_{\ :,\ :,\ 4} =
+\begin{pmatrix}
+0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1 \\
+\end{pmatrix}
+\end{split}
+</span></p>
+<section id="trilinear-decomposition" class="level4">
+<h4 class="anchored" data-anchor-id="trilinear-decomposition">Trilinear decomposition</h4>
+<p>To get Strassen algorithm we should do the following trick –– decompose <span class="math inline">x_{ijk}</span> in the following way</p>
+<p><span class="math display"> x_{ijk} = \sum_{\alpha=1}^r u_{i\alpha} v_{j\alpha} w_{k\alpha}. </span></p>
+<p>This decomposition is called <strong>trilinear tensor decomposition</strong> and has a meaning of separation of variables: we have a sum of <span class="math inline">r</span> (called rank) summands with separated <span class="math inline">i</span>, <span class="math inline">j</span> and <span class="math inline">k</span>.</p>
+</section>
+<section id="strassen-via-trilinear" class="level4">
+<h4 class="anchored" data-anchor-id="strassen-via-trilinear">Strassen via trilinear</h4>
+<p>Now we have</p>
+<p><span class="math display"> c_k = \sum_{\alpha=1}^r w_{k\alpha} \left(\sum_{i=1}^4  u_{i\alpha} a_i \right) \left( \sum_{j=1}^4 v_{j\alpha} b_j\right), \quad k=1,2,3,4. </span></p>
+<p>Multiplications by <span class="math inline">u_{i\alpha}</span> or <span class="math inline">v_{j\alpha}</span> or <span class="math inline">w_{k\alpha}</span> do not require recursion since <span class="math inline">u, v</span> and <span class="math inline">w</span> are known precomputed matrices. Therefore, we have only <span class="math inline">r</span> multiplications of <span class="math inline">\left(\sum_{i=1}^4  u_{i\alpha} a_i \right)</span> <span class="math inline">\left( \sum_{j=1}^4 v_{j\alpha} b_j\right)</span> where both factors depend on the input data.</p>
+<p>As you might guess array <span class="math inline">x_{ijk}</span> has rank <span class="math inline">r=7</span>, which leads us to <span class="math inline">7</span> multiplications and to the Strassen algorithm!</p>
+</section>
+</section>
+<section id="alphatensor" class="level2">
+<h2 class="anchored" data-anchor-id="alphatensor">AlphaTensor</h2>
+<p>Recent <a href="https://www.deepmind.com/blog/discovering-novel-algorithms-with-alphatensor">AlphaTensor</a> paper has shown how modern deep reinforcement learning can be used to get new decompositions of tensors.</p>
+</section>
+</section>
+<section id="visualization" class="level1">
+<h1>Visualization</h1>
+<p><img width="100%" src="sasha-slide-1.png"></p>
+</section>
+<section id="rl-interpretation" class="level1">
+<h1>RL interpretation</h1>
+<p>In reinforcement learning agent learns to make <strong>actions</strong> based on the state and reward.</p>
+<p>In this case, the state is the tensor.</p>
+<p>The action is subtraction of a rank-one tensor.</p>
+<p>If you get non-zero in the end, you get the reward.</p>
+<p>Then, you do millions of different actions, and reinforce good results.</p>
+<section id="selected-results" class="level2">
+<h2 class="anchored" data-anchor-id="selected-results">Selected results</h2>
+<ul>
+<li><p>Better ranks for certain matrix sizes</p></li>
+<li><p>New variants for 4x4 Strassen that work on real hardware faster (but only for this specific hardware!)</p></li>
+<li><p>Better antisymmetric matrix-by-vector product</p></li>
+</ul>
+</section>
+<section id="summary-of-mm-part" class="level2">
+<h2 class="anchored" data-anchor-id="summary-of-mm-part">Summary of MM part</h2>
+<ul>
+<li>MM is the core of NLA. You have to think in block terms, if you want high efficiency</li>
+<li>This is all about computer memory hierarchy</li>
+<li>Concept of block algorithms</li>
+<li>(Advanced topic) Strassen and trilinear form</li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.dev/MerkulovDaniil/nla360/blob/main/lectures/lecture-3/lecture-3.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>

@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.45">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Lecture-7: Matrix decompositions review. How to compute QR decomposition and Schur decomposition</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/copy-tex.min.js" integrity="sha384-ww/583aHhxWkz5DEVn6OKtNiIaLi2iBRNZXfJRiY1Ai7tnJ9UXpEsyvOITVpTl4A" crossorigin="anonymous"></script>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Lecture-7: Matrix decompositions review. How to compute QR decomposition and Schur decomposition">
+<meta property="og:description" content="">
+<meta name="twitter:title" content="Lecture-7: Matrix decompositions review. How to compute QR decomposition and Schur decomposition">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../logo.svg" alt="nla360.fmin.xyz" class="navbar-logo">
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../program.html"> 
+<span class="menu-text">🚀 Материалы</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../projects.html"> 
+<span class="menu-text">📽️ Проекты</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/MerkulovDaniil/nla360" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="https://www.youtube.com/@fmin" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-youtube"></i></a>
+    <a href="https://t.me/nla360" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-telegram"></i></a>
+    <a href="" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-table"></i></a>
+    <a href="https://fmin.xyz" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-gem"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header">
+</header>
+
+
+<section id="recap-of-the-previous-lecture" class="level2">
+<h2 class="anchored" data-anchor-id="recap-of-the-previous-lecture">Recap of the previous lecture</h2>
+<ul>
+<li>Eigenvectors and eigenvalues</li>
+<li>Characteristic polynomial and why it is a bad idea</li>
+<li>Power method to find leading (maximum absolute value) eigenvalue and eigenvector</li>
+<li>Gershgorin theorem</li>
+<li>Schur theorem: <span class="math inline">A = U T U^*</span></li>
+<li>Normal matrices: <span class="math inline">A^* A = A A^*</span></li>
+<li>Advanced topic: pseudospectrum</li>
+</ul>
+</section>
+<section id="today-lecture" class="level2">
+<h2 class="anchored" data-anchor-id="today-lecture">Today lecture</h2>
+<ul>
+<li><p>Today we will talk about <strong>matrix factorizations</strong> as general tool</p></li>
+<li><p>Basic <strong>matrix factorizations</strong> in numerical linear algebra:</p>
+<ul>
+<li>LU decomposition and Gaussian elimination — already covered</li>
+<li>QR decomposition and Gram-Schmidt algorithm</li>
+<li>Schur decomposition and QR-algorithm</li>
+<li>Methods for computing SVD decomposition in the second part</li>
+</ul></li>
+<li><p>We already introduced QR decomposition some time ago, but now we are going to discuss it in more details.</p></li>
+</ul>
+</section>
+<section id="general-concept-of-matrix-factorization" class="level2">
+<h2 class="anchored" data-anchor-id="general-concept-of-matrix-factorization">General concept of matrix factorization</h2>
+<ul>
+<li><p>In numerical linear algebra we need to solve different tasks, for example:</p>
+<ul>
+<li>Solve linear systems <span class="math inline">Ax = f</span></li>
+<li>Compute eigenvalues / eigenvectors</li>
+<li>Compute singular values / singular vectors</li>
+<li>Compute inverses, even sometimes determinants</li>
+<li>Compute <strong>matrix functions</strong> like <span class="math inline">\exp(A), \cos(A)</span> (these are not elementwise functions)</li>
+</ul></li>
+<li><p>In order to do this, we represent the matrix as a sum and/or product of matrices with <strong>simpler structure</strong>, such that we can solve mentioned tasks faster / in a more stable form.</p></li>
+<li><p>What is a <strong>simpler structure</strong>?</p></li>
+</ul>
+</section>
+<section id="what-is-a-simpler-structure" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-a-simpler-structure">What is a simpler structure</h2>
+<ul>
+<li><p>We already encountered several classes of matrices <strong>with structure</strong>.</p></li>
+<li><p>For dense matrices the most important classes are</p>
+<ul>
+<li><strong>unitary matrices</strong></li>
+<li><strong>upper/lower triangular matrices</strong></li>
+<li><strong>diagonal matrices</strong></li>
+</ul></li>
+</ul>
+</section>
+<section id="other-classes-of-structured-matrices" class="level2">
+<h2 class="anchored" data-anchor-id="other-classes-of-structured-matrices">Other classes of structured matrices</h2>
+<ul>
+<li>For <strong>sparse matrices</strong> the sparse constraints are often included in the factorizations.</li>
+<li>For <strong>Toeplitz matrices</strong> an important class of matrices is the class of matrices with <strong>low displacement rank</strong>, which is based on the low-rank matrices.</li>
+<li>The class of <strong>low-rank matrices</strong> and <strong>block low-rank matrices</strong> appears in many applications.</li>
+</ul>
+</section>
+<section id="plan" class="level2">
+<h2 class="anchored" data-anchor-id="plan">Plan</h2>
+<p>The plan for today’s lecture is to discuss the decompositions one-by-one and point out: - How to compute a particular decomposition - When the decomposition exists - What is done in <strong>real life</strong> (LAPACK).</p>
+</section>
+<section id="decompositions-we-want-to-discuss-today" class="level2">
+<h2 class="anchored" data-anchor-id="decompositions-we-want-to-discuss-today">Decompositions we want to discuss today</h2>
+<ul>
+<li>LU factorization &amp; Cholesky factorization — quick reminder, already done.</li>
+<li>QR decomposition and Gram-Schmidt algorithm</li>
+<li>One slide about the SVD (more details in the second part of today lecture)</li>
+</ul>
+</section>
+<section id="plu-decomposition" class="level2">
+<h2 class="anchored" data-anchor-id="plu-decomposition">PLU decomposition</h2>
+<ul>
+<li>Any nonsingular matrix can be factored as</li>
+</ul>
+<p><span class="math display"> A = P L U, </span></p>
+<p>where <span class="math inline">P</span> is a permutation matrix, <span class="math inline">L</span> is a <strong>lower triangular matrix</strong>, <span class="math inline">U</span> is an <strong>upper triangular</strong>.</p>
+<ul>
+<li><strong>Main goal</strong> of the LU decomposition is to solve linear systems, because</li>
+</ul>
+<p><span class="math display"> A^{-1} f = (L U)^{-1} f = U^{-1} L^{-1} f, </span></p>
+<p>and this reduces to the solution of two linear systems</p>
+<p><span class="math display"> L y = f,  \quad U x = y </span></p>
+<p>with lower and upper triangular matrices respectively.</p>
+<p><strong>Q</strong>: what is the complexity of solving these linear systems?</p>
+</section>
+<section id="positive-definite-matrices-and-cholesky-decomposition-reminder" class="level2">
+<h2 class="anchored" data-anchor-id="positive-definite-matrices-and-cholesky-decomposition-reminder">Positive definite matrices and Cholesky decomposition, reminder</h2>
+<p>If the matrix is Hermitian positive definite, i.e.&nbsp;</p>
+<p><span class="math display"> A = A^*, \quad (Ax, x) &gt; 0, \quad x \ne 0, </span></p>
+<p>then it can be factored as</p>
+<p><span class="math display"> A = RR^*, </span></p>
+<p>where <span class="math inline">R</span> is lower triangular.</p>
+<p>We will need this for the QR decomposition.</p>
+</section>
+<section id="qr-decomposition" class="level2">
+<h2 class="anchored" data-anchor-id="qr-decomposition">QR decomposition</h2>
+<ul>
+<li>The next decomposition: <strong>QR</strong> decomposition.</li>
+<li>Again from the name it is clear that a matrix is represented as a product</li>
+</ul>
+<p><span class="math display">
+    A = Q R,
+</span></p>
+<p>where <span class="math inline">Q</span> is an <strong>column orthogonal (unitary)</strong> matrix and <span class="math inline">R</span> is <strong>upper triangular</strong>.</p>
+<ul>
+<li><p>The matrix sizes: <span class="math inline">Q</span> is <span class="math inline">n \times m</span>, <span class="math inline">R</span> is <span class="math inline">m \times m</span> if <span class="math inline">n\geq m</span>. See our <a href="decompositions.pdf">poster</a> for visualization of QR decomposition</p></li>
+<li><p>QR decomposition is defined for <strong>any rectangular matrix</strong>.</p></li>
+</ul>
+</section>
+<section id="qr-decomposition-applications" class="level2">
+<h2 class="anchored" data-anchor-id="qr-decomposition-applications">QR decomposition: applications</h2>
+<p>This decomposition plays a crucial role in many problems: - Computing orthogonal bases in a linear space - Used in the preprocessing step for the SVD - QR-algorithm for the computation of eigenvectors and eigenvalues (<a href="https://archive.siam.org/pdf/news/637.pdf">one of the 10 most important algorithms of the 20th century</a>) is based on the QR decomposition - Solving overdetermined systems of linear equations (linear least-squares problem)</p>
+</section>
+<section id="qr-decomposition-and-least-squares-reminder" class="level2">
+<h2 class="anchored" data-anchor-id="qr-decomposition-and-least-squares-reminder">QR decomposition and least squares, reminder</h2>
+<ul>
+<li>Suppose we need to solve</li>
+</ul>
+<p><span class="math display"> \Vert A x - b \Vert_2 \rightarrow \min_x, </span></p>
+<p>where <span class="math inline">A</span> is <span class="math inline">n \times m</span>, <span class="math inline">n \geq m</span>.</p>
+<ul>
+<li>Then we factorize</li>
+</ul>
+<p><span class="math display"> A = Q R, </span></p>
+<p>and use equation for pseudo-inverse matrix in the case of the full rank matrix <span class="math inline">A</span>:</p>
+<p><span class="math display"> x = A^{\dagger}b = (A^*A)^{-1}A^*b = ((QR)^*(QR))^{-1}(QR)^*b = (R^*Q^*QR)^{-1}R^*Q^*b = R^{-1}Q^*b. </span></p>
+<p>thus <span class="math inline">x</span> can be recovered from</p>
+<p><span class="math display">R x = Q^*b</span></p>
+<ul>
+<li>Note that this is a square system of linear equations with lower triangular matrix. What is the complexity of solving this system?</li>
+</ul>
+</section>
+<section id="existence-of-qr-decomposition" class="level2">
+<h2 class="anchored" data-anchor-id="existence-of-qr-decomposition">Existence of QR decomposition</h2>
+<p><strong>Theorem.</strong> Every rectangular <span class="math inline">n \times m</span> matrix has a QR decomposition.</p>
+<p>There are several ways to prove it and compute it:</p>
+<ul>
+<li>Theoretical: using the Gram matrices and Cholesky factorization</li>
+<li>Geometrical: using the Gram-Schmidt orthogonalization</li>
+<li>Practical: using Householder/Givens transformations</li>
+</ul>
+<section id="proof-using-cholesky-decomposition" class="level3">
+<h3 class="anchored" data-anchor-id="proof-using-cholesky-decomposition">Proof using Cholesky decomposition</h3>
+<p>If we have the representation of the form</p>
+<p><span class="math display">A = QR,</span></p>
+<p>then <span class="math inline">A^* A = ( Q R)^* (QR)  = R^* (Q^* Q) R = R^* R</span>, the matrix <span class="math inline">A^* A</span> is called <strong>Gram matrix</strong>, and its elements are scalar products of the columns of <span class="math inline">A</span>.</p>
+</section>
+<section id="proof-using-cholesky-decomposition-full-column-rank" class="level3">
+<h3 class="anchored" data-anchor-id="proof-using-cholesky-decomposition-full-column-rank">Proof using Cholesky decomposition (full column rank)</h3>
+<ul>
+<li>Assume that <span class="math inline">A</span> has <strong>full column rank</strong>. Then, it is simple to show that <span class="math inline">A^* A</span> is positive definite:</li>
+</ul>
+<p><span class="math display"> (A^* A y, y) = (Ay, Ay) = \Vert Ay \Vert^2  &gt; 0, \quad y\not = 0. </span></p>
+<ul>
+<li><p>Therefore, <span class="math inline">A^* A = R^* R</span> always exists.</p></li>
+<li><p>Then the matrix <span class="math inline">Q = A R^{-1}</span> is unitary:</p></li>
+</ul>
+<p><span class="math display"> (A R^{-1})^* (AR^{-1})= R^{-*} A^* A R^{-1} = R^{-*} R^* R R^{-1} = I. </span></p>
+</section>
+<section id="proof-using-cholesky-decomposition-rank-deficient-case" class="level3">
+<h3 class="anchored" data-anchor-id="proof-using-cholesky-decomposition-rank-deficient-case">Proof using Cholesky decomposition (rank-deficient case)</h3>
+<ul>
+<li><p>When an <span class="math inline">n \times m</span> matrix does not have full column rank, it is said to be <strong>rank-deficient</strong>.</p></li>
+<li><p>The QR decomposition, however, also exists.</p></li>
+<li><p>For any <strong>rank-deficient matrix</strong> there is a sequence of full-column rank matrices <span class="math inline">A_k</span> such that <span class="math inline">A_k \rightarrow A</span> (<strong>why?</strong>).</p></li>
+<li><p>Each <span class="math inline">A_k</span> can be decomposed as <span class="math inline">A_k = Q_k R_k</span>.</p></li>
+<li><p>The set of all unitary matrices is compact, thus there exists a converging subsequence <span class="math inline">Q_{n_k} \rightarrow Q</span> (<strong>why?</strong>), and <span class="math inline">Q^* A_k \rightarrow Q^* A = R</span>, which is triangular.</p></li>
+</ul>
+</section>
+</section>
+<section id="stability-of-qr-decomposition-via-cholesky-decomposition" class="level2">
+<h2 class="anchored" data-anchor-id="stability-of-qr-decomposition-via-cholesky-decomposition">Stability of QR decomposition via Cholesky decomposition</h2>
+<ul>
+<li>So, the simplest way to compute QR decomposition is then</li>
+</ul>
+<p><span class="math display">A^* A = R^* R,</span></p>
+<p>and</p>
+<p><span class="math display">Q = A R^{-1}.</span></p>
+<ul>
+<li>It is a <strong>bad idea</strong> for numerical stability. Let us do some demo (for a submatrix of the Hilbert matrix).</li>
+</ul>
+<div id="cell-19" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax.config <span class="im">import</span> config</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>config.update(<span class="st">"jax_enable_x64"</span>, <span class="va">True</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="dv">6</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span> <span class="op">/</span> (i <span class="op">+</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(r)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> jnp.array(a)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>q, Rmat <span class="op">=</span> jnp.linalg.qr(a)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>e <span class="op">=</span> jnp.eye(r)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Built-in QR orth'</span>, jnp.linalg.norm(jnp.dot(q.T, q) <span class="op">-</span> e))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>gram_matrix <span class="op">=</span> a.T.dot(a)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>Rmat1 <span class="op">=</span> jnp.linalg.cholesky(gram_matrix)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">#q1 = jnp.dot(a, jnp.linalg.inv(Rmat1.T))</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>q1 <span class="op">=</span> jnp.linalg.solve(Rmat1, a.T).T</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Via Cholesky:'</span>, jnp.linalg.norm(jnp.dot(q1.T, q1) <span class="op">-</span> e))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Built-in QR orth 8.184741451905057e-16
+Via Cholesky: 2.614491817325585e-05</code></pre>
+</div>
+</div>
+</section>
+<section id="second-way-gram-schmidt-orthogonalization" class="level2">
+<h2 class="anchored" data-anchor-id="second-way-gram-schmidt-orthogonalization">Second way: Gram-Schmidt orthogonalization</h2>
+<ul>
+<li>QR decomposition is a mathematical way of writing down the Gram-Schmidt orthogonalization process.<br>
+</li>
+<li>Given a sequence of vectors <span class="math inline">a_1, \ldots, a_m</span> we want to find orthogonal basis <span class="math inline">q_1, \ldots, q_m</span> such that every <span class="math inline">a_i</span> is a linear combination of such vectors.</li>
+</ul>
+<p><strong>Gram-Schmidt:</strong> 1. <span class="math inline">q_1 := a_1/\Vert a_1 \Vert</span> 2. <span class="math inline">q_2 := a_2 - (a_2, q_1) q_1, \quad q_2 := q_2/\Vert q_2 \Vert</span> 3. <span class="math inline">q_3 := a_3 - (a_3, q_1) q_1 - (a_3, q_2) q_2, \quad q_3 := q_3/\Vert q_3 \Vert</span> 4. And so on</p>
+<p>Note that the transformation from <span class="math inline">Q</span> to <span class="math inline">A</span> has triangular structure, since from the <span class="math inline">k</span>-th vector we subtract only the previous ones. It follows from the fact that the product of triangular matrices is a triangular matrix.</p>
+</section>
+<section id="modified-gram-schmidt" class="level2">
+<h2 class="anchored" data-anchor-id="modified-gram-schmidt">Modified Gram-Schmidt</h2>
+<ul>
+<li><p>Gram-Schmidt can be very unstable (i.e., the produced vectors will be not orthogonal, especially if <span class="math inline">q_k</span> has small norm).<br>
+This is called <strong>loss of orthogonality</strong>.</p></li>
+<li><p>There is a remedy, called <strong>modified Gram-Schmidt</strong> method. Instead of doing</p></li>
+</ul>
+<p><span class="math display">q_k := a_k - (a_k, q_1) q_1 - \ldots - (a_k, q_{k-1}) q_{k-1}</span></p>
+<p>we do it step-by-step. First we set <span class="math inline">q_k := a_k</span> and orthogonalize sequentially:</p>
+<p><span class="math display">
+   q_k := q_k - (q_k, q_1)q_1, \quad q_k := q_{k} - (q_k,q_2)q_2, \ldots
+</span></p>
+<ul>
+<li><p>In exact arithmetic, it is the same. In floating point it is absolutely different!</p></li>
+<li><p>Note that the complexity is <span class="math inline">\mathcal{O}(nm^2)</span> operations</p></li>
+</ul>
+</section>
+<section id="qr-decomposition-the-almost-practical-way" class="level2">
+<h2 class="anchored" data-anchor-id="qr-decomposition-the-almost-practical-way">QR decomposition: the (almost) practical way</h2>
+<ul>
+<li>If <span class="math inline">A = QR</span>, then</li>
+</ul>
+<p><span class="math display"> R = Q^* A, </span></p>
+<p>and we need to find a certain orthogonal matrix <span class="math inline">Q</span> that brings a matrix into upper triangular form.<br>
+- For simplicity, we will look for an <span class="math inline">n \times n</span> matrix such that</p>
+<p><span class="math display"> Q^* A = \begin{bmatrix} * &amp; * &amp; *  \\ 0 &amp; * &amp; * \\ 0 &amp; 0 &amp; * \\ &amp; 0_{(n-m) \times m} \end{bmatrix} </span></p>
+<ul>
+<li>We will do it column-by-column.<br>
+</li>
+<li>First, we find a Householder matrix <span class="math inline">H_1 = (I - 2 uu^{\top})</span> such that (we illustrate on a <span class="math inline">4 \times 3</span> matrix)</li>
+</ul>
+<p><span class="math display"> H_1 A = \begin{bmatrix} * &amp; * &amp; * \\ 0 &amp; * &amp; * \\ 0 &amp; * &amp; * \\ 0 &amp; * &amp; * \end{bmatrix} </span></p>
+<p>Then,</p>
+<p><span class="math display"> H_2 H_1 A = \begin{bmatrix} * &amp; * &amp; * \\ 0 &amp; * &amp; * \\ 0 &amp; 0 &amp; * \\ 0 &amp; 0 &amp; * \end{bmatrix}, </span></p>
+<p>where</p>
+<p><span class="math display"> H_2 = \begin{bmatrix} 1 &amp; 0 \\ 0 &amp; H'_2, \end{bmatrix} </span></p>
+<p>and <span class="math inline">H'_2</span> is a <span class="math inline">3 \times 3</span> Householder matrix.</p>
+<p>Finally,</p>
+<p><span class="math display"> H_3 H_2 H_1 A = \begin{bmatrix} * &amp; * &amp; * \\ 0 &amp; * &amp; * \\ 0 &amp; 0 &amp; * \\ 0 &amp; 0 &amp; 0 \end{bmatrix}, </span></p>
+<p>You can try to implement it yourself, it is simple.</p>
+</section>
+<section id="qr-decomposition-real-life" class="level2">
+<h2 class="anchored" data-anchor-id="qr-decomposition-real-life">QR decomposition: real life</h2>
+<ul>
+<li><p>In reality, since this is a dense matrix factorization, you should implement the algorithm in terms of blocks (why?).</p></li>
+<li><p>Instead of using Householder transformation, we use <strong>block Householder</strong> transformation of the form</p></li>
+</ul>
+<p><span class="math display">H = I - 2UU^*, </span></p>
+<p>where <span class="math inline">U^* U = I</span>.</p>
+<ul>
+<li>This allows us to use BLAS-3 operations.</li>
+</ul>
+</section>
+<section id="rank-revealing-qr-decomposition" class="level2">
+<h2 class="anchored" data-anchor-id="rank-revealing-qr-decomposition">Rank-revealing QR-decomposition</h2>
+<ul>
+<li><p>The QR-decomposition can be also used to compute the (numerical) rank of the matrix, see <a href="http://scgroup.hpclab.ceid.upatras.gr/class/SCII/Various/HongPan.pdf">Rank-Revealing QR Factorizations and the Singular Value Decomposition, Y. P. Hong; C.-T. Pan</a></p></li>
+<li><p>It is done via so-called <strong>rank-revealing</strong> factorization.</p></li>
+<li><p>It is based on the representation</p></li>
+</ul>
+<p><span class="math display">P A = Q R,</span></p>
+<p>where <span class="math inline">P</span> is the permutation matrix (it permutes columns), and <span class="math inline">R</span> has the block form</p>
+<p><span class="math display">R = \begin{bmatrix} R_{11} &amp; R_{12} \\ 0 &amp; R_{22}\end{bmatrix}.</span></p>
+<ul>
+<li><p>The goal is to find <span class="math inline">P</span> such that the norm of <span class="math inline">R_{22}</span> is <strong>small</strong>, so you can find the numerical rank by looking at it.</p></li>
+<li><p>An estimate is <span class="math inline">\sigma_{r+1} \leq \Vert R_{22} \Vert_2</span> (check why).</p></li>
+</ul>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li><p>LU and QR decompositions can be computed using <strong>direct methods</strong> in finite amount of operations.</p></li>
+<li><p>What about Schur form and SVD?</p></li>
+<li><p>They can not be computed by <strong>direct methods</strong> (why?) they can only be computed by <strong>iterative methods</strong>.</p></li>
+<li><p>Although iterative methods still have the same <span class="math inline">\mathcal{O}(n^3)</span> complexity in floating point arithmetic thanks to fast convergence.</p></li>
+</ul>
+</section>
+<section id="schur-form" class="level2">
+<h2 class="anchored" data-anchor-id="schur-form">Schur form</h2>
+<ul>
+<li>Recall that every matrix can be written in the <strong>Schur form</strong></li>
+</ul>
+<p><span class="math display">A = Q T Q^*,</span></p>
+<p>with upper triangular <span class="math inline">T</span> and unitary <span class="math inline">Q</span> and this decomposition gives eigenvalues of the matrix (they are on the diagonal of <span class="math inline">T</span>).</p>
+<ul>
+<li>The first and the main algorithm for computing the Schur form is the <strong>QR algorithm</strong>.</li>
+</ul>
+</section>
+<section id="qr-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="qr-algorithm">QR algorithm</h2>
+<ul>
+<li><p>The QR algorithm was independently proposed in 1961 by Kublanovskaya and Francis.</p></li>
+<li><p><font color="red"> Do not <strong>mix</strong> QR algorithm and QR decomposition! </font></p></li>
+<li><p>QR decomposition is the representation of a matrix, whereas QR algorithm uses QR decomposition to compute the eigenvalues!</p></li>
+</ul>
+</section>
+<section id="way-to-qr-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="way-to-qr-algorithm">Way to QR algorithm</h2>
+<ul>
+<li>Consider the equation</li>
+</ul>
+<p><span class="math display">A = Q T Q^*,</span></p>
+<p>and rewrite it in the form</p>
+<p><span class="math display"> Q T = A Q. </span></p>
+<ul>
+<li><p>On the left we can see QR factorization of the matrix <span class="math inline">AQ</span>.</p></li>
+<li><p>We can use this to derive fixed-point iteration for the Schur form, also known as <strong>QR algorithm.</strong></p></li>
+</ul>
+</section>
+<section id="derivation-of-the-qr-algorithm-as-fixed-point-iteration" class="level2">
+<h2 class="anchored" data-anchor-id="derivation-of-the-qr-algorithm-as-fixed-point-iteration">Derivation of the QR algorithm as fixed-point iteration</h2>
+<p>We can write down the iterative process</p>
+<p><span class="math display">
+    Q_{k+1} R_{k+1} = A Q_k, \quad Q_{k+1}^* A = R_{k+1} Q^*_k
+</span></p>
+<p>Introduce</p>
+<p><span class="math display">A_k = Q^* _k A Q_k = Q^*_k Q_{k+1} R_{k+1} = \widehat{Q}_k R_{k+1}</span></p>
+<p>and the new approximation reads</p>
+<p><span class="math display">A_{k+1} = Q^*_{k+1} A Q_{k+1} = ( Q_{k+1}^* A = R_{k+1} Q^*_k)  = R_{k+1} \widehat{Q}_k.</span></p>
+<p>So we arrive at the standard form of the QR algorithm.</p>
+<p>The final formulas are then written in the classical <strong>QRRQ</strong>-form:</p>
+<ol type="1">
+<li>Start from <span class="math inline">A_0 = A</span>.</li>
+<li>Compute QR factorization of <span class="math inline">A_k = Q_k R_k</span>.</li>
+<li>Set <span class="math inline">A_{k+1} = R_k Q_k</span>.</li>
+</ol>
+<p>Iterate until <span class="math inline">A_k</span> is <strong>triangular enough</strong> (e.g.&nbsp;norm of subdiagonal part is small enough).</p>
+</section>
+<section id="what-about-the-convergence-and-complexity" class="level2">
+<h2 class="anchored" data-anchor-id="what-about-the-convergence-and-complexity">What about the convergence and complexity</h2>
+<p><strong>Statement</strong></p>
+<p>Matrices <span class="math inline">A_k</span> are unitary similar to <span class="math inline">A</span></p>
+<p><span class="math display">A_k = Q^*_{k-1} A_{k-1} Q_{k-1} = (Q_{k-1} \ldots Q_1)^* A (Q_{k-1} \ldots Q_1)</span></p>
+<p>and the product of unitary matrices is a unitary matrix.</p>
+<ul>
+<li><p>Complexity of each step is <span class="math inline">\mathcal{O}(n^3)</span>, if a general QR decomposition is done.</p></li>
+<li><p>Our hope is that <span class="math inline">A_k</span> will be <strong>very close to the triangular matrix</strong> for suffiently large <span class="math inline">k</span>.</p></li>
+</ul>
+<div id="cell-35" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span><span class="op">/</span>(i <span class="op">-</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> jnp.array(a)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>niters <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(niters):</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    q, rmat <span class="op">=</span> jnp.linalg.qr(a)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> rmat.dot(q)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Leading 3x3 block of a:'</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(a[:<span class="dv">4</span>, :<span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Leading 3x3 block of a:
+[[ 1.68842566e+00  2.39874769e+00 -4.91278296e-01  4.55588011e-01]
+ [-2.27337624e+00  1.13938512e+00 -1.02951549e+00  5.70268353e-01]
+ [-1.39868453e-15 -3.77840299e-15  2.37335976e+00  1.79215981e+00]
+ [-4.11289213e-16 -5.73344858e-16 -9.26030829e-01  2.20080588e+00]]</code></pre>
+</div>
+</div>
+</section>
+<section id="convergence-and-complexity-of-the-qr-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="convergence-and-complexity-of-the-qr-algorithm">Convergence and complexity of the QR algorithm</h2>
+<ul>
+<li><p>The convergence of the QR algorithm is from the <strong>largest eigenvalues</strong> to the smallest.</p></li>
+<li><p>At least 2-3 iterations is needed for an eigenvalue.</p></li>
+<li><p>Each step is one QR factorization and one matrix-by-matrix product, as a result <span class="math inline">\mathcal{O}(n^3)</span> complexity.</p></li>
+</ul>
+<p><strong>Q</strong>: does it mean <span class="math inline">\mathcal{O}(n^4)</span> complexity totally?</p>
+<p><strong>A</strong>: fortunately, not.</p>
+<ul>
+<li><p>We can speedup the QR algorithm by using <strong>shifts</strong>, since <span class="math inline">A_k - \lambda I</span> has the same Schur vectors.</p></li>
+<li><p>We will discuss these details later</p></li>
+</ul>
+</section>
+<section id="convergence-of-qr-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="convergence-of-qr-algorithm">Convergence of QR algorithm</h2>
+<p>Does QR algorithm always convergence?</p>
+<p>Provide an example.</p>
+</section>
+<section id="counterexample" class="level2">
+<h2 class="anchored" data-anchor-id="counterexample">Counterexample</h2>
+<p>For a matrix <span class="math inline">A = \begin{bmatrix} 0 &amp; 1 \\
+                                  1 &amp; 0 \end{bmatrix}</span></p>
+<p>we have <span class="math inline">A_k = A</span>.</p>
+</section>
+<section id="connection-to-orthogonal-iteration" class="level2">
+<h2 class="anchored" data-anchor-id="connection-to-orthogonal-iteration">Connection to orthogonal iteration</h2>
+<p>In the previous lecture, we considered <strong>power iteration</strong>, which is <span class="math inline">A^k v</span> – approximation of the eigenvector.</p>
+<p>The QR algorithm computes (implicitly) QR-factorization of the matrix <span class="math inline">A^k</span>:</p>
+<p><span class="math display">A^k = A \cdot \ldots \cdot A = Q_1 R_1 Q_1 R_1 \ldots = Q_1 Q_2 R_2 Q_2 R_2 \ldots (R_2 R_1) = \ldots (Q_1 Q_2 \ldots Q_k) (R_k \ldots R_1).</span></p>
+</section>
+<section id="a-few-words-about-the-svd" class="level2">
+<h2 class="anchored" data-anchor-id="a-few-words-about-the-svd">A few words about the SVD</h2>
+<ul>
+<li>Last but not least: the <strong>singular value decomposition</strong> of matrix.</li>
+</ul>
+<p><span class="math display">A = U \Sigma V^*.</span></p>
+<ul>
+<li>We can compute it via eigendecomposition of</li>
+</ul>
+<p><span class="math display">A^* A = V^* \Sigma^2 V,</span></p>
+<p>and/or</p>
+<p><span class="math display">AA^* = U^* \Sigma^2 U</span></p>
+<p>with QR algorithm, but it is a <strong>bad idea</strong> (c.f. Gram matrices).</p>
+<ul>
+<li>We will discuss methods for computing SVD later.</li>
+</ul>
+</section>
+<section id="bonus-cs-cosine-sine-decomposition" class="level2">
+<h2 class="anchored" data-anchor-id="bonus-cs-cosine-sine-decomposition">Bonus: CS (Cosine-Sine) decomposition</h2>
+<ul>
+<li>Let <span class="math inline">Q</span> be square unitary matrix with even number of rows and it is splitted in four equal size blocks</li>
+</ul>
+<p><span class="math display"> Q = \begin{bmatrix} Q_{11} &amp; Q_{12} \\ Q_{21} &amp; Q_{22} \end{bmatrix} </span></p>
+<ul>
+<li>Then there exist unitary matrices <span class="math inline">U_1, U_2, V_1, V_2</span> such that</li>
+</ul>
+<p><span class="math display"> \begin{bmatrix} U_1^* &amp; 0 \\ 0 &amp; U_2^* \end{bmatrix} \begin{bmatrix} Q_{11} &amp; Q_{12} \\ Q_{21} &amp; Q_{22} \end{bmatrix} \begin{bmatrix} V_1 &amp; 0 \\ 0 &amp; V_2 \end{bmatrix} = \begin{bmatrix} C &amp; S \\ -S &amp; C \end{bmatrix}, </span></p>
+<p>where <span class="math inline">C = \mathrm{diag}(c)</span> and <span class="math inline">S = \mathrm{diag}(s)</span> such that <span class="math inline">c_i \geq 0, s_i \geq 0</span> and <span class="math inline">c_i^2 + s_i^2 = 1</span></p>
+<ul>
+<li><p><strong>Q</strong>: how many SVD do we have inside the CS decomposition?</p></li>
+<li><p>The case of rectangular matrix with orthonormal columns</p></li>
+</ul>
+<p><span class="math display"> \begin{bmatrix} U_1^* &amp; 0 \\ 0 &amp; U_2^* \end{bmatrix} \begin{bmatrix} Q_{1} \\ Q_{2} \end{bmatrix} V = \begin{bmatrix} C \\ S \end{bmatrix} </span></p>
+<ul>
+<li><p>The algorithm for computing this decomposition is presented <a href="https://arxiv.org/pdf/0707.1838.pdf">here</a></p></li>
+<li><p>This decomposition naturally arises in the problem of finding distances and angles between subspaces</p></li>
+</ul>
+</section>
+<section id="summary-1" class="level2">
+<h2 class="anchored" data-anchor-id="summary-1">Summary</h2>
+<ul>
+<li>QR decomposition and Gram-Schmidt algorithm, reduction to a simpler form by Householder transformations</li>
+<li>Schur decomposition and QR algorithm</li>
+</ul>
+</section>
+<section id="next-steps" class="level2">
+<h2 class="anchored" data-anchor-id="next-steps">Next steps</h2>
+<ul>
+<li>Efficient implementation of QR algorithm and its convergence</li>
+<li>Efficient computation of the SVD: 4 algorithms</li>
+<li>More applications of the SVD</li>
+</ul>
+<section id="questions" class="level3">
+<h3 class="anchored" data-anchor-id="questions">Questions?</h3>
+<div id="cell-45" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"./styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> HTML(styles)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>css_styling()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.dev/MerkulovDaniil/nla360/blob/main/lectures/lecture-7/lecture-7.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>

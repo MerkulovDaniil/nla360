@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.45">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Lecture 15. Structured matrices, FFT, convolutions, Toeplitz matrices</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/copy-tex.min.js" integrity="sha384-ww/583aHhxWkz5DEVn6OKtNiIaLi2iBRNZXfJRiY1Ai7tnJ9UXpEsyvOITVpTl4A" crossorigin="anonymous"></script>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Lecture 15. Structured matrices, FFT, convolutions, Toeplitz matrices">
+<meta property="og:description" content="">
+<meta name="twitter:title" content="Lecture 15. Structured matrices, FFT, convolutions, Toeplitz matrices">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../logo.svg" alt="nla360.fmin.xyz" class="navbar-logo">
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../program.html"> 
+<span class="menu-text">🚀 Материалы</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../projects.html"> 
+<span class="menu-text">📽️ Проекты</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/MerkulovDaniil/nla360" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="https://www.youtube.com/@fmin" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-youtube"></i></a>
+    <a href="https://t.me/nla360" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-telegram"></i></a>
+    <a href="" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-table"></i></a>
+    <a href="https://fmin.xyz" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-gem"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header">
+</header>
+
+
+<section id="previous-lecture" class="level2">
+<h2 class="anchored" data-anchor-id="previous-lecture">Previous lecture</h2>
+<ul>
+<li>Krylov methods: Arnoldi relation, CG, GMRES</li>
+<li>Preconditioners
+<ul>
+<li>Jacobi</li>
+<li>Gauss-Seidel</li>
+<li>SSOR</li>
+<li>ILU and its modifications</li>
+</ul></li>
+</ul>
+</section>
+<section id="other-structured-matrices" class="level2">
+<h2 class="anchored" data-anchor-id="other-structured-matrices">Other structured matrices</h2>
+<ul>
+<li>Up to now, we discussed preconditioning only for <strong>sparse matrices</strong></li>
+<li>But iterative methods work well for any matrices that have fast black-box matrix-by-vector product</li>
+<li>Important class of such matrices are <strong>Toeplitz matrices</strong> (and <strong>Hankel matrices</strong>) and their <strong>multilevel</strong> variants</li>
+</ul>
+<p>They are directly connected to the <strong>convolution</strong> operation and <strong>Fast Fourier Transform</strong>.</p>
+</section>
+<section id="convolution" class="level2">
+<h2 class="anchored" data-anchor-id="convolution">Convolution</h2>
+<ul>
+<li><p>One of the key operation in signal processing/machine learning is the <strong>convolution of two functions</strong>.</p></li>
+<li><p>Let <span class="math inline">x(t)</span> and <span class="math inline">y(t)</span> be two given functions. Their convolution is defined as</p></li>
+</ul>
+<p><span class="math display">(x * y)(t) = \int_{-\infty}^{\infty} x(\tau) y(t -  \tau) d \tau.</span></p>
+</section>
+<section id="convolution-theorem-and-fourier-transform" class="level2">
+<h2 class="anchored" data-anchor-id="convolution-theorem-and-fourier-transform">Convolution theorem and Fourier transform</h2>
+<p>A well-known fact: a <em>convolution</em> in the <strong>time domain</strong> is a <em>product</em> in the <strong>frequency domain</strong>.</p>
+<ul>
+<li>Time-frequency transformation is given by the <strong>Fourier transform</strong>:</li>
+</ul>
+<p><span class="math display">\widehat{x}(w) = (\mathcal{F}(x))(w) = \int_{-\infty}^{\infty} e^{i w t} x(t) dt.</span></p>
+<ul>
+<li>Then,</li>
+</ul>
+<p><span class="math display">\mathcal{F}(x * y) = \mathcal{F}(x) \mathcal{F}(y).</span></p>
+<ul>
+<li>Thus, the “algorithm” for the computation of the convolution can be:</li>
+</ul>
+<ol type="1">
+<li>Compute Fourier transform of <span class="math inline">x(t)</span> and <span class="math inline">y(t)</span>.</li>
+<li>Compute their product</li>
+<li>Compute inverse Fourier transform</li>
+</ol>
+</section>
+<section id="discrete-convolution-operation" class="level2">
+<h2 class="anchored" data-anchor-id="discrete-convolution-operation">Discrete convolution operation</h2>
+<p><span class="math display">(x * y)(t) = \int_{-\infty}^{\infty} x(\tau) y(t -  \tau) d \tau.</span></p>
+<p>Let us approximate the integral by a quadrature sum on a uniform grid, and store the signal at equidistant points.</p>
+<p>Then we are left with the summation</p>
+<p><span class="math display">z_i = \sum_{j=0}^{n-1} x_j y_{i - j},</span></p>
+<p>which is called <strong>discrete convolution</strong>. This can be thought as an application of a filter with coefficients <span class="math inline">x</span> to a signal <span class="math inline">y</span>.</p>
+<p>There are different possible filters for different purposes, but they all utilize the <strong>shift-invariant structure</strong>.</p>
+</section>
+<section id="discrete-convolution-and-toeplitz-matrices" class="level2">
+<h2 class="anchored" data-anchor-id="discrete-convolution-and-toeplitz-matrices">Discrete convolution and Toeplitz matrices</h2>
+<p>A discrete convolution can be thought as a matrix-by-vector product:</p>
+<p><span class="math display">z_i = \sum_{j=0}^{n-1} x_j y_{i - j}, \Leftrightarrow z = Ax</span></p>
+<p>where the matrix <span class="math inline">A</span> elements are given as <span class="math inline">a_{ij} = y_{i-j}</span>, i.e., they depend only on the difference between the row index and the column index.</p>
+</section>
+<section id="toeplitz-matrices-definition" class="level2">
+<h2 class="anchored" data-anchor-id="toeplitz-matrices-definition">Toeplitz matrices: definition</h2>
+<p>A matrix is called <strong>Toeplitz</strong> if its elements are defined as</p>
+<p><span class="math display">a_{ij} = t_{i - j}.</span></p>
+<ul>
+<li><p>A Toeplitz matrix is completely defined by its first column and first row (i.e., <span class="math inline">2n-1</span> parameters).</p></li>
+<li><p>It is a <strong>dense matrix</strong>, however it is a <strong>structured matrix</strong> (i.e., defined by <span class="math inline">\mathcal{O}(n)</span> parameters).</p></li>
+<li><p>And the main operation in the discrete convolution is the product of Toeplitz matrix by vector.</p></li>
+<li><p>Can we compute it faster than <span class="math inline">\mathcal{O}(n^2)</span>?</p></li>
+</ul>
+</section>
+<section id="toeplitz-and-circulant-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="toeplitz-and-circulant-matrix">Toeplitz and circulant matrix</h2>
+<ul>
+<li><p>For a special class of Toeplitz matrices, named <strong>circulant matrices</strong> the fast matrix-by-vector product can be done.</p></li>
+<li><p>A matrix <span class="math inline">C</span> is called <strong>circulant</strong>, if</p></li>
+</ul>
+<p><span class="math display">C_{ij} = c_{i - j \mod n},</span></p>
+<p>i.e.&nbsp;it periodicaly wraps</p>
+<p><span class="math display">C = \begin{bmatrix}
+c_0 &amp; c_3 &amp; c_2 &amp; c_1 \\
+c_1 &amp; c_0 &amp; c_3 &amp; c_2 \\
+c_2 &amp; c_1 &amp; c_0 &amp; c_3 \\
+c_3 &amp; c_2 &amp; c_1 &amp; c_0 \\
+\end{bmatrix}.
+</span></p>
+<ul>
+<li>These matrices have the same <strong>eigenvectors</strong>, given by the Discrete Fourier Transform (DFT).</li>
+</ul>
+</section>
+<section id="spectral-theorem-for-circulant-matrices" class="level2">
+<h2 class="anchored" data-anchor-id="spectral-theorem-for-circulant-matrices">Spectral theorem for circulant matrices</h2>
+<p><strong>Theorem:</strong></p>
+<p>Any circulant matrix can be represented in the form</p>
+<p><span class="math display">C = \frac{1}{n} F^* \Lambda F,</span></p>
+<p>where <span class="math inline">F</span> is the <strong>Fourier matrix</strong> with the elements</p>
+<p><span class="math display">F_{kl} = w_n^{kl}, \quad k, l = 0, \ldots, n-1, \quad w_n = e^{-\frac{2 \pi i}{n}},</span></p>
+<p>and matrix <span class="math inline">\Lambda = \text{diag}(\lambda)</span> is the diagonal matrix and</p>
+<p><span class="math display">\lambda = F c, </span></p>
+<p>where <span class="math inline">c</span> is the first column of the circulant matrix <span class="math inline">C</span>.</p>
+<p>The proof will be later: now we need to study the FFT matrix.</p>
+</section>
+<section id="fourier-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="fourier-matrix">Fourier matrix</h2>
+<p>The Fourier matrix is defined as:</p>
+<p><span class="math display">
+F_n =
+\begin{pmatrix}
+1 &amp; 1 &amp; 1 &amp; \dots &amp; 1 \\
+1 &amp; w^{1\cdot 1}_n &amp; w^{1\cdot 2}_n &amp; \dots &amp; w^{1\cdot (n-1)}_n\\
+1 &amp; w^{2\cdot 1}_n &amp; w^{2\cdot 2}_n &amp; \dots &amp; w^{2\cdot (n-1)}_n\\
+\dots &amp; \dots &amp; \dots &amp;\dots &amp;\dots \\
+1 &amp; w^{(n-1)\cdot 1}_n &amp; w^{(n-1)\cdot 2}_n &amp; \dots &amp; w^{(n-1)\cdot (n-1)}_n\\
+\end{pmatrix},
+</span></p>
+<p>or equivalently</p>
+<p><span class="math display"> F_n = \{ w_n^{kl} \}_{k,l=0}^{n-1}, </span></p>
+<p>where</p>
+<p><span class="math display">w_n = e^{-\frac{2\pi i}{n}}.</span></p>
+<p><strong>Properties:</strong> * Symmetric (not Hermitian!) * Unitary up to a scaling factor: <span class="math inline">F_n^* F_n = F_n F_n^* = nI</span> (check this fact). Therefore <span class="math inline">F_n^{-1} = \frac{1}{n}F^*_n</span> * Can be multiplied by a vector (called discrete Fourier transform or DFT) with <font color="red"><span class="math inline">\mathcal{O}(n \log n)</span></font> complexity (called fast Fourier transform or <font color="red">FFT</font>)! FFT helps to analyze spectrum of a signal and, as we will see later, helps to do fast mutiplications with certain types of matrices.</p>
+<div id="cell-13" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> <span class="fl">800.0</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="fl">0.0</span>, N<span class="op">*</span>dt, N)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.sin(<span class="fl">50.0</span> <span class="op">*</span> <span class="fl">2.0</span><span class="op">*</span>np.pi<span class="op">*</span>x) <span class="op">+</span> <span class="fl">0.5</span><span class="op">*</span>np.sin(<span class="fl">80.0</span> <span class="op">*</span> <span class="fl">2.0</span><span class="op">*</span>np.pi<span class="op">*</span>x) <span class="op">+</span> <span class="fl">0.2</span><span class="op">*</span>np.sin(<span class="fl">300.0</span> <span class="op">*</span> <span class="fl">2.0</span><span class="op">*</span>np.pi<span class="op">*</span>x)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>plt.plot(x, y)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time'</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Signal'</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Initial signal'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>Text(0.5, 1.0, 'Initial signal')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-15_files/figure-html/cell-2-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-14" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>yf <span class="op">=</span> np.fft.fft(y)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>xf <span class="op">=</span> np.linspace(<span class="fl">0.0</span>, <span class="fl">1.0</span><span class="op">/</span>(<span class="fl">2.0</span><span class="op">*</span>dt), N<span class="op">//</span><span class="dv">2</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>plt.plot(xf, <span class="fl">2.0</span><span class="op">/</span>N <span class="op">*</span> np.<span class="bu">abs</span>(yf[<span class="dv">0</span>:N<span class="op">//</span><span class="dv">2</span>])) <span class="co">#Note: N/2 to N will give negative frequencies</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Frequency'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Amplitude'</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Discrete Fourier transform'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>Text(0.5, 1.0, 'Discrete Fourier transform')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-15_files/figure-html/cell-3-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="fast-fourier-transform-fft" class="level2">
+<h2 class="anchored" data-anchor-id="fast-fourier-transform-fft">Fast Fourier transform (FFT)</h2>
+<p>Here we consider a matrix interpretation of the standard <a href="https://www.ams.org/journals/mcom/1965-19-090/S0025-5718-1965-0178586-1/S0025-5718-1965-0178586-1.pdf">Cooley-Tukey algorithm (1965)</a>, which has underlying <strong>divide and conquer</strong> idea. Note that in packages more advanced versions are used.</p>
+<ul>
+<li><p>Let <span class="math inline">n</span> be a power of 2.</p></li>
+<li><p>First of all we <font color="red"> permute the rows </font> of the Fourier matrix such that the first <span class="math inline">n/2</span> rows of the new matrix had row numbers <font color="red"><span class="math inline">1,3,5,\dots,n-1</span></font> and the last <span class="math inline">n/2</span> rows had row numbers <font color="red"><span class="math inline">2,4,6\dots,n</span></font>.</p></li>
+<li><p>This permutation can be expressed in terms of multiplication by permutation matrix <span class="math inline">P_n</span>:</p></li>
+</ul>
+<p><span class="math display">
+P_n =
+\begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 &amp; \dots &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 &amp;\dots &amp; 0 &amp; 0 \\
+\vdots &amp; &amp; &amp; &amp; &amp; &amp; \vdots \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp;\dots &amp; 1 &amp; 0 \\
+\hline
+0 &amp; 1 &amp; 0 &amp; 0 &amp; \dots &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1 &amp;\dots &amp; 0 &amp; 0 \\
+\vdots &amp; &amp; &amp; &amp; &amp; &amp; \vdots \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp;\dots &amp; 0 &amp; 1
+\end{pmatrix},
+</span></p>
+<p>Hence,</p>
+<p><span class="math display">
+P_n F_n =
+\begin{pmatrix}
+1 &amp; 1 &amp; 1 &amp; \dots &amp; 1 \\
+1 &amp; w^{2\cdot 1}_n &amp; w^{2\cdot 2}_n &amp; \dots &amp; w^{2\cdot (n-1)}_n\\
+1 &amp; w^{4\cdot 1}_n &amp; w^{4\cdot 2}_n &amp; \dots &amp; w^{4\cdot (n-1)}_n\\
+\vdots &amp; &amp; &amp; &amp; \vdots\\
+1 &amp; w^{(n-2)\cdot 1}_n &amp; w^{(n-2)\cdot 2}_n &amp; \dots &amp; w^{(n-2)\cdot (n-1)}_n\\
+\hline
+1 &amp; w^{1\cdot 1}_n &amp; w^{1\cdot 2}_n &amp; \dots &amp; w^{1\cdot (n-1)}_n\\
+1 &amp; w^{3\cdot 1}_n &amp; w^{3\cdot 2}_n &amp; \dots &amp; w^{3\cdot (n-1)}_n\\           
+\vdots &amp; &amp; &amp; &amp; \vdots\\
+1 &amp; w^{(n-1)\cdot 1}_n &amp; w^{(n-1)\cdot 2}_n &amp; \dots &amp; w^{(n-1)\cdot (n-1)}_n\\
+\end{pmatrix},
+</span></p>
+<p>Now let us imagine that we separated its columns and rows by two parts each of size <span class="math inline">n/2</span>.</p>
+<p>As a result we get <font color="red"><span class="math inline">2\times 2</span> block matrix</font> that has the following form</p>
+<p><span class="math display">
+P_n F_n =
+\begin{pmatrix}
+\left\{w^{2kl}_n\right\} &amp; \left\{w_n^{2k\left(\frac{n}{2} + l\right)}\right\} \\
+\left\{w_n^{(2k+1)l}\right\} &amp; \left\{w_n^{(2k+1)\left(\frac{n}{2} + l\right)}\right\}
+\end{pmatrix},
+\quad k,l = 0,\dots, \frac{n}{2}-1.
+</span></p>
+<p>So far it does not look like something that works faster :) But we will see that in a minute. Lets have a more precise look at the first block <span class="math inline">\left\{w^{2kl}_n\right\}</span>:</p>
+<p><span class="math display">
+w^{2kl}_n = e^{-2kl\frac{2\pi i}{n}} = e^{-kl\frac{2\pi i}{n/2}} = w^{kl}_{n/2}.
+</span></p>
+<p>So this block is exactly twice smaller Fourier matrix <span class="math inline">F_{n/2}</span>!</p>
+<!---
+Now we can write
+
+$$
+\begin{pmatrix}
+F_{n/2} & \left\{w_n^{2k\left(\frac{n}{2} + l\right)}\right\} \\
+\left\{w_n^{(2k+1)l}\right\} & \left\{w_n^{(2k+1)\left(\frac{n}{2} + l\right)}\right\}
+\end{pmatrix}
+$$
+
+-->
+<p>The block <span class="math inline">\left\{w_n^{(2k+1)l}\right\}</span> can be written as</p>
+<p><span class="math display">
+w_n^{(2k+1)l} = w_n^{2kl + l} = w_n^{l} w_n^{2kl} = w_n^{l} w_{n/2}^{kl},
+</span></p>
+<p>which can be written as <span class="math inline">W_{n/2}F_{n/2}</span>, where</p>
+<p><span class="math display">W_{n/2} = \text{diag}(1,w_n,w_n^2,\dots,w_n^{n/2-1}).</span></p>
+<p>Doing the same tricks for the other blocks we will finally get</p>
+<p><span class="math display">
+P_n F_n =
+\begin{pmatrix}
+F_{n/2} &amp; F_{n/2} \\
+F_{n/2}W_{n/2} &amp; -F_{n/2}W_{n/2}
+\end{pmatrix} =
+\begin{pmatrix}
+F_{n/2} &amp; 0 \\
+0 &amp; F_{n/2}
+\end{pmatrix}
+\begin{pmatrix}
+I_{n/2} &amp; I_{n/2} \\
+W_{n/2} &amp; -W_{n/2}
+\end{pmatrix}.
+</span></p>
+<ul>
+<li>Thus, we <font color="red">reduced multiplication by <span class="math inline">F_n</span> to 2 multiplications by <span class="math inline">F_{n/2}</span></font> and cheap multiplications by diagonal matrices.</li>
+<li>If we apply the obtained expressions recursively to <span class="math inline">F_{n/2}</span>, we will get <font color="red"><span class="math inline">\mathcal{O}(n\log n)</span> </font> complexity.</li>
+</ul>
+<div id="cell-19" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#FFT vs full matvec</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.linalg</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10000</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>F <span class="op">=</span> sp.linalg.dft(n)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.randn(n)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>y_full <span class="op">=</span> F.dot(x)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>full_mv_time <span class="op">=</span> <span class="op">%</span>timeit <span class="op">-</span>q <span class="op">-</span>o F.dot(x)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Full matvec time ='</span>, full_mv_time.average)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>y_fft <span class="op">=</span> np.fft.fft(x)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>fft_mv_time <span class="op">=</span> <span class="op">%</span>timeit <span class="op">-</span>q <span class="op">-</span>o np.fft.fft(x)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'FFT time ='</span>, fft_mv_time.average)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Relative error ='</span>, (np.linalg.norm(y_full <span class="op">-</span> y_fft)) <span class="op">/</span> np.linalg.norm(y_full))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Full matvec time = 0.016554963692857142
+FFT time = 6.18095107428571e-05
+Relative error = 1.5329028805883414e-12</code></pre>
+</div>
+</div>
+</section>
+<section id="circulant-matrices" class="level2">
+<h2 class="anchored" data-anchor-id="circulant-matrices">Circulant matrices</h2>
+<p>FFT helps to multiply fast by certain types of matrices. We start from a circulant matrix:</p>
+<p><span class="math display">
+C =
+\begin{pmatrix}
+c_0 &amp; c_{n-1} &amp; c_{n-2} &amp; \dots &amp; c_1 \\
+c_{1} &amp; c_{0} &amp; c_{n-1} &amp; \dots &amp; c_2 \\
+c_{2} &amp; c_{1} &amp; c_0 &amp; \dots &amp; c_3 \\
+\dots &amp; \dots &amp; \dots &amp; \dots &amp; \dots \\
+c_{n-1} &amp; c_{n-2} &amp; c_{n-3} &amp; \dots &amp; c_0
+\end{pmatrix}
+</span></p>
+<p><strong>Theorem.</strong> Let <span class="math inline">C</span> be a circulant matrix of size <span class="math inline">n\times n</span> and let <span class="math inline">c</span> be it’s first column , then</p>
+<p><span class="math display">
+C = \frac{1}{n} F_n^* \text{diag}(F_n c) F_n
+</span></p>
+<p><em>Proof.</em> - Consider a number</p>
+<p><span class="math display">\lambda (\omega) = c_0 + \omega c_1 + \dots + \omega^{n-1} c_{n-1},</span></p>
+<p>where <span class="math inline">\omega</span> is any number such that <span class="math inline">\omega^n=1</span>. - Lets multiply <span class="math inline">\lambda</span> by <span class="math inline">1,\omega,\dots, \omega^{n-1}</span>:</p>
+<p><span class="math display">
+\begin{split}
+\lambda &amp; = c_0 &amp;+&amp; \omega c_1 &amp;+&amp; \dots &amp;+&amp; \omega^{n-1} c_{n-1},\\
+\lambda\omega &amp; = c_{n-1} &amp;+&amp; \omega c_0 &amp;+&amp; \dots &amp;+&amp; \omega^{n-1} c_{n-2},\\
+\lambda\omega^2 &amp; = c_{n-2} &amp;+&amp; \omega c_{n-1} &amp;+&amp; \dots &amp;+&amp; \omega^{n-1} c_{n-3},\\
+&amp;\dots\\
+\lambda\omega^{n-1} &amp; = c_{1} &amp;+&amp; \omega c_{2} &amp;+&amp; \dots &amp;+&amp; \omega^{n-1} c_{0}.
+\end{split}
+</span></p>
+<ul>
+<li>Therefore,</li>
+</ul>
+<p><span class="math display">
+\lambda(\omega) \cdot \begin{pmatrix} 1&amp;\omega &amp; \dots&amp; \omega^{n-1} \end{pmatrix} =
+\begin{pmatrix} 1&amp;\omega&amp;\dots&amp; \omega^{n-1} \end{pmatrix} \cdot C.
+</span></p>
+<ul>
+<li>Writing this for <span class="math inline">\omega = 1,w_n, \dots, w_n^{n-1}</span> we get</li>
+</ul>
+<p><span class="math display">
+\Lambda F_n = F_n C
+</span></p>
+<p>and finally</p>
+<p><span class="math display">
+C = \frac{1}{n} F^*_n \Lambda F_n, \quad \text{where}\quad \Lambda = \text{diag}(F_nc) \qquad\blacksquare
+</span></p>
+</section>
+<section id="fast-matvec-with-circulant-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="fast-matvec-with-circulant-matrix">Fast matvec with circulant matrix</h2>
+<ul>
+<li>Representation $C = F^* (F_n c) F_n $ gives us an explicit way to multiply a vector <span class="math inline">x</span> by <span class="math inline">C</span> in <span class="math inline">\mathcal{O}(n\log n)</span> operations.</li>
+<li>Indeed,</li>
+</ul>
+<p><span class="math display">
+Cx = \frac{1}{n} F_n^* \text{diag}(F_n c) F_n x = \text{ifft}\left( \text{fft}(c) \circ \text{fft}(x)\right)
+</span></p>
+<p>where <span class="math inline">\circ</span> denotes elementwise product (Hadamard product) of two vectors (since <span class="math inline">\text{diag}(a)b = a\circ b</span>) and <code>ifft</code> denotes inverse Fourier transform <span class="math inline">F^{-1}_n</span>.</p>
+<div id="cell-24" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.linalg</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> circulant_matvec(c, x):</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.fft.ifft(np.fft.fft(c) <span class="op">*</span> np.fft.fft(x))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">5000</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> np.random.random(n)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> sp.linalg.circulant(c)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.randn(n)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>y_full <span class="op">=</span> C.dot(x)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>full_mv_time <span class="op">=</span> <span class="op">%</span>timeit <span class="op">-</span>q <span class="op">-</span>o C.dot(x)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Full matvec time ='</span>, full_mv_time.average)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>y_fft <span class="op">=</span> circulant_matvec(c, x)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>fft_mv_time <span class="op">=</span> <span class="op">%</span>timeit <span class="op">-</span>q <span class="op">-</span>o circulant_matvec(c, x)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'FFT time ='</span>, fft_mv_time.average)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Relative error ='</span>, (np.linalg.norm(y_full <span class="op">-</span> y_fft)) <span class="op">/</span> np.linalg.norm(y_full))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Full matvec time = 0.003428939464285707
+FFT time = 0.0001001016214142856
+Relative error = 1.307050346126901e-15</code></pre>
+</div>
+</div>
+</section>
+<section id="toeplitz-matrices" class="level2">
+<h2 class="anchored" data-anchor-id="toeplitz-matrices">Toeplitz matrices</h2>
+<p>Now we get back to Toeplitz matrices!</p>
+<p><span class="math display">
+T =
+\begin{pmatrix}
+t_0 &amp; t_{-1} &amp; t_{-2} &amp; t_{-3}&amp; \dots &amp; t_{1-n} \\
+t_{1} &amp; t_{0} &amp; t_{-1} &amp; t_{-2}&amp; \dots &amp; t_{2-n} \\
+t_{2} &amp; t_{1} &amp; t_0 &amp; t_{-1} &amp;\dots &amp; t_{3-n} \\
+t_{3} &amp; t_{2} &amp; t_1 &amp; t_0 &amp; \dots &amp; t_{4-n} \\
+\dots &amp; \dots &amp; \dots &amp; \dots &amp; \dots &amp; \dots\\
+t_{n-1} &amp; t_{n-2} &amp; t_{n-3} &amp; t_{n-4} &amp;\dots &amp;t_0
+\end{pmatrix},
+</span></p>
+<p>or equivalently <span class="math inline">T_{ij} = t_{i-j}</span>.</p>
+<p>Matvec operation can be written as</p>
+<p><span class="math display">
+y_i = \sum_{j=1}^n t_{i-j} x_j,
+</span></p>
+<p>which can be interpreted as a discrete <font color="red">convolution</font> of filter <span class="math inline">t_i</span> and signal <span class="math inline">x_i</span>. For simplicity the size of the filter <span class="math inline">t</span> is such that the sizes of the input and output signals are the same. Generally, filter size can be arbitrary.</p>
+<p>Fast convolution computation has a variety of applications, for instance, in signal processing or partial differential and integral equations. For instance, here is the smoothing of a signal:</p>
+<div id="cell-27" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> signal</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>alpha <span class="op">=</span> <span class="fl">0.01</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.repeat([<span class="fl">0.</span>, <span class="fl">1.</span>, <span class="fl">0.</span>], <span class="dv">100</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>filt <span class="op">=</span> np.exp(<span class="op">-</span>alpha <span class="op">*</span> (np.arange(<span class="dv">100</span>)<span class="op">-</span><span class="dv">50</span>)<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>filtered <span class="op">=</span> signal.convolve(sig, filt, mode<span class="op">=</span><span class="st">'same'</span>) <span class="op">/</span> <span class="bu">sum</span>(filt)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>fig, (ax_orig, ax_filt, ax_filtered) <span class="op">=</span> plt.subplots(<span class="dv">3</span>, <span class="dv">1</span>, sharex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>ax_orig.plot(sig)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>ax_orig.margins(<span class="dv">0</span>, <span class="fl">0.1</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>ax_filt.plot(filt)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>ax_filt.margins(<span class="dv">0</span>, <span class="fl">0.1</span>)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>ax_filtered.plot(filtered)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>ax_filtered.margins(<span class="dv">0</span>, <span class="fl">0.1</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>ax_orig.set_title(<span class="st">'Original signal'</span>)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>ax_filt.set_title(<span class="st">'Filter'</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>ax_filtered.set_title(<span class="st">'Convolution'</span>)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-15_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="fast-matvec-with-toeplitz-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="fast-matvec-with-toeplitz-matrix">Fast matvec with Toeplitz matrix</h2>
+<p><strong>Key point</strong>: the multiplication by a Toeplitz matrix can be reduced to the multiplication by a circulant.</p>
+<ul>
+<li>Indeed, every Toeplitz matrix of size <span class="math inline">n\times n</span> can be embedded into a Circulant matrix <span class="math inline">C</span> of size <span class="math inline">(2n - 1) \times (2n - 1)</span>:</li>
+</ul>
+<p><span class="math display">
+C =
+\begin{pmatrix}
+T &amp; \dots \\
+\dots &amp; \dots
+\end{pmatrix}.
+</span></p>
+<ul>
+<li>The <span class="math inline">3\times 3</span> matrix <span class="math inline">T = \begin{pmatrix}
+t_0 &amp; t_{-1} &amp; t_{-2} \\
+t_{1} &amp; t_{0} &amp; t_{-1} \\
+t_{2} &amp; t_{1} &amp; t_0 \\
+\end{pmatrix}</span> can be embedded as follows</li>
+</ul>
+<p><span class="math display">
+C =
+\begin{pmatrix}
+t_0 &amp; t_{-1} &amp; t_{-2} &amp; t_{2} &amp; t_{1}\\
+t_{1} &amp; t_{0} &amp; t_{-1} &amp; t_{-2} &amp; t_{2} \\
+t_{2} &amp; t_{1} &amp; t_0 &amp; t_{-1} &amp; t_{-2} \\
+t_{-2}&amp; t_{2} &amp; t_{1} &amp; t_0 &amp; t_{-1}  \\
+t_{-1} &amp; t_{-2} &amp; t_{2} &amp; t_{1} &amp; t_0  
+\end{pmatrix}.
+</span></p>
+<ul>
+<li>For matvec $
+<span class="math display">\begin{pmatrix} y_1 \\ y_2 \\ y_3 \end{pmatrix}</span>
+=
+<span class="math display">\begin{pmatrix}
+t_0 &amp; t_{-1} &amp; t_{-2} \\
+t_{1} &amp; t_{0} &amp; t_{-1} \\
+t_{2} &amp; t_{1} &amp; t_0 \\
+\end{pmatrix}
+\begin{pmatrix} x_1 \\ x_2 \\ x_3 \end{pmatrix}</span>
+$ we pad vector <span class="math inline">x</span> with zeros:</li>
+</ul>
+<p><span class="math display">
+\begin{pmatrix} y_1 \\ y_2 \\ y_3 \\ \star \\ \star \end{pmatrix} =
+\begin{pmatrix}
+t_0 &amp; t_{-1} &amp; t_{-2} &amp; t_{2} &amp; t_{1}\\
+t_{1} &amp; t_{0} &amp; t_{-1} &amp; t_{-2} &amp; t_{2} \\
+t_{2} &amp; t_{1} &amp; t_0 &amp; t_{-1} &amp; t_{-2} \\
+t_{-2}&amp; t_{2} &amp; t_{1} &amp; t_0 &amp; t_{-1}  \\
+t_{-1} &amp; t_{-2} &amp; t_{2} &amp; t_{1} &amp; t_0  
+\end{pmatrix}
+\begin{pmatrix} x_1 \\ x_2 \\ x_3 \\ 0 \\ 0 \end{pmatrix}=
+\text{ifft}(\text{fft}(\begin{pmatrix} t_0 \\ t_{1} \\ t_{2} \\ t_{-2} \\ t_{-1} \end{pmatrix})\circ \text{fft}(\begin{pmatrix} x_1 \\ x_2 \\ x_3 \\ 0 \\ 0 \end{pmatrix})).
+</span></p>
+<ul>
+<li>Note that you <strong>do not need to form and store</strong> the whole matrix <span class="math inline">T</span></li>
+<li>From the Cooley-Tukey algorithm follows that the preferable size of circulant matrix is <span class="math inline">2^k</span> for some <span class="math inline">k</span>. You can do it with zero padding of the appropriate size.</li>
+</ul>
+</section>
+<section id="multilevel-toeplitz-matrices" class="level2">
+<h2 class="anchored" data-anchor-id="multilevel-toeplitz-matrices">Multilevel Toeplitz matrices</h2>
+<p>The 2-dimensional convolution is defined as</p>
+<p><span class="math display">
+y_{i_1i_2} = \sum_{j_1,j_2=1}^n t_{i_1-j_1, i_2-j_2} x_{j_1 j_2}.
+</span></p>
+<p>Note that <span class="math inline">x</span> and <span class="math inline">y</span> are 2-dimensional arrays and <span class="math inline">T</span> is 4-dimensional. To reduce this expression to matrix-by-vector product we have to reshape <span class="math inline">x</span> and <span class="math inline">y</span> into long vectors:</p>
+<p><span class="math display">
+\text{vec}(x) =
+\begin{pmatrix}
+x_{11} \\ \vdots \\ x_{1n} \\ \hline \\ \vdots \\ \hline \\ x_{n1} \\ \vdots \\ x_{nn}
+\end{pmatrix},
+\quad
+\text{vec}(y) =
+\begin{pmatrix}
+y_{11} \\ \vdots \\ y_{1n} \\ \hline \\ \vdots \\ \hline \\ y_{n1} \\ \vdots \\ y_{nn}
+\end{pmatrix}.
+</span></p>
+<p>In this case matrix <span class="math inline">T</span> is <strong>block Toeplitz with Toeplitz blocks:</strong> (BTTB)</p>
+<p><span class="math display">
+T =
+\begin{pmatrix}
+T_0 &amp; T_{-1} &amp; T_{-2} &amp;  \dots &amp; T_{1-n} \\
+T_{1} &amp; T_{0} &amp; T_{-1} &amp; \dots &amp; T_{2-n} \\
+T_{2} &amp; T_{1} &amp; T_0 &amp; \dots &amp; T_{3-n} \\
+\dots &amp; \dots &amp; \dots &amp;  \dots &amp; \dots\\
+T_{n-1} &amp; T_{n-2} &amp; T_{n-3}  &amp;\dots &amp;T_0
+\end{pmatrix},
+\quad \text{where} \quad
+T_k = t_{k, i_2 - j_2}\quad  \text{are Toeplitz matrices}
+</span></p>
+</section>
+<section id="fast-matvec-with-multilevel-toeplitz-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="fast-matvec-with-multilevel-toeplitz-matrix">Fast matvec with multilevel Toeplitz matrix</h2>
+<p>To get fast matvec we need to embed block Toeplitz matrix with Toeplitz blocks into the block circulant matrix with circulant blocks. The analog of <span class="math display">\begin{pmatrix} y_1 \\ y_2 \\ y_3 \\ \star \\ \star \end{pmatrix} =
+\text{ifft}(\text{fft}(\begin{pmatrix} t_0 \\ t_{1} \\ t_{2} \\ t_{-2} \\ t_{-1} \end{pmatrix})\circ\text{fft}(\begin{pmatrix} x_1 \\ x_2 \\ x_3 \\ 0 \\ 0 \end{pmatrix})).</span> will look like <span class="math display"> \begin{pmatrix} y_{11} &amp; y_{12} &amp; y_{13} &amp; \star &amp; \star \\
+y_{21} &amp; y_{22} &amp; y_{23} &amp; \star &amp; \star \\  
+y_{31} &amp; y_{32} &amp; y_{33} &amp; \star &amp; \star \\
+\star &amp; \star &amp; \star &amp; \star &amp; \star \\  
+\star &amp; \star &amp; \star &amp; \star &amp; \star \\  
+\end{pmatrix} = \text{ifft2d}(\text{fft2d}(\begin{pmatrix} t_{0,0} &amp; t_{1,0} &amp; t_{2,0} &amp; t_{-2,0} &amp; t_{-1,0} \\
+t_{0,1} &amp; t_{1,1} &amp; t_{2,1} &amp; t_{-2,1} &amp; t_{-1,1} \\  
+t_{0,2} &amp; t_{1,2} &amp; t_{2,2} &amp; t_{-2,2} &amp; t_{-1,2} \\
+t_{0,-2} &amp; t_{1,-2} &amp; t_{2,-2} &amp; t_{-2,-2} &amp; t_{-1,-2} \\
+t_{0,-1} &amp; t_{1,-1} &amp; t_{2,-1} &amp; t_{-2,-1} &amp; t_{-1,-1}
+\end{pmatrix}) \circ \text{fft2d}(\begin{pmatrix}x_{11} &amp; x_{12} &amp; x_{13} &amp; 0 &amp; 0 \\
+x_{21} &amp; x_{22} &amp; x_{23} &amp; 0 &amp; 0 \\  
+x_{31} &amp; x_{32} &amp; x_{33} &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\  
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\  
+\end{pmatrix})),</span> where fft2d is 2-dimensional fft that consists of one-dimensional transforms, applied first to rows and and then to columns (or vice versa).</p>
+<div id="cell-31" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Blurring and Sharpening Lena by convolution</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> signal</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib  inline</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> misc</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> imageio</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>filter_size <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>filter_blur <span class="op">=</span> np.ones((filter_size, filter_size)) <span class="op">/</span> filter_size<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>lena <span class="op">=</span> imageio.imread(<span class="st">'./lena512.jpg'</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co">#lena = misc.face()</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co">#lena = lena[:, :, 0]</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>blurred <span class="op">=</span> signal.convolve2d(lena, filter_blur, boundary<span class="op">=</span><span class="st">'symm'</span>, mode<span class="op">=</span><span class="st">'same'</span>)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>, <span class="dv">0</span>].imshow(lena[<span class="dv">200</span>:<span class="dv">300</span>, <span class="dv">200</span>:<span class="dv">300</span>], cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>, <span class="dv">0</span>].set_title(<span class="st">'Original Lena'</span>)</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>, <span class="dv">1</span>].imshow(blurred[<span class="dv">200</span>:<span class="dv">300</span>, <span class="dv">200</span>:<span class="dv">300</span>], cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>, <span class="dv">1</span>].set_title(<span class="st">'Blurred Lena'</span>)</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>, <span class="dv">0</span>].imshow((lena <span class="op">-</span> blurred)[<span class="dv">200</span>:<span class="dv">300</span>, <span class="dv">200</span>:<span class="dv">300</span>], cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>, <span class="dv">0</span>].set_title(<span class="st">'Lena $-$ Blurred Lena'</span>)</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>, <span class="dv">1</span>].imshow(((lena <span class="op">-</span> blurred)<span class="op">*</span><span class="dv">3</span> <span class="op">+</span> blurred)[<span class="dv">200</span>:<span class="dv">300</span>, <span class="dv">200</span>:<span class="dv">300</span>], cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>, <span class="dv">1</span>].set_title(<span class="st">'$3\cdot$(Lena $-$ Blurred Lena) + Blurred Lena'</span>)</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ModuleNotFoundError</span>                       Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [7], line 8</span>
+<span class="ansi-green-fg ansi-bold">      6</span> get_ipython()<span style="color:rgb(98,98,98)">.</span>run_line_magic(<span style="color:rgb(175,0,0)">'</span><span style="color:rgb(175,0,0)">matplotlib</span><span style="color:rgb(175,0,0)">'</span>, <span style="color:rgb(175,0,0)">'</span><span style="color:rgb(175,0,0)"> inline</span><span style="color:rgb(175,0,0)">'</span>)
+<span class="ansi-green-fg ansi-bold">      7</span> <span style="font-weight:bold;color:rgb(0,135,0)">from</span> <span style="font-weight:bold;color:rgb(0,0,255)">scipy</span> <span style="font-weight:bold;color:rgb(0,135,0)">import</span> misc
+<span class="ansi-green-fg">----&gt; 8</span> <span style="font-weight:bold;color:rgb(0,135,0)">import</span> <span style="font-weight:bold;color:rgb(0,0,255)">imageio</span>
+<span class="ansi-green-fg ansi-bold">     10</span> filter_size <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(98,98,98)">5</span>
+<span class="ansi-green-fg ansi-bold">     11</span> filter_blur <span style="color:rgb(98,98,98)">=</span> np<span style="color:rgb(98,98,98)">.</span>ones((filter_size, filter_size)) <span style="color:rgb(98,98,98)">/</span> filter_size<span style="color:rgb(98,98,98)">*</span><span style="color:rgb(98,98,98)">*</span><span style="color:rgb(98,98,98)">2</span>
+
+<span class="ansi-red-fg">ModuleNotFoundError</span>: No module named 'imageio'</pre>
+</div>
+</div>
+</div>
+</section>
+<section id="solving-linear-systems-with-toeplitz-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="solving-linear-systems-with-toeplitz-matrix">Solving linear systems with Toeplitz matrix</h2>
+<ul>
+<li>Convolution is ok; but what about <strong>deconvolution</strong>, or solving linear systems with Toeplitz matrices?</li>
+</ul>
+<p><span class="math display">T x = f.</span></p>
+<ul>
+<li>For the periodic case, where <span class="math inline">T = C</span> is circulant,</li>
+</ul>
+<p>we have the spectral theorem</p>
+<p><span class="math display">C = \frac{1}{n}F^* \Lambda F, \quad C^{-1} = \frac{1}{n}F^* \Lambda^{-1} F,</span></p>
+<p>but for a general Toeplitz matrices, it is not a trivial question.</p>
+</section>
+<section id="iterative-methods" class="level2">
+<h2 class="anchored" data-anchor-id="iterative-methods">Iterative methods</h2>
+<ul>
+<li><p>Not-a-bad recipe for Toeplitz linear system is to use <strong>iterative method</strong> (fast matvec is available).</p></li>
+<li><p>A good choice for a preconditioner is a <strong>circulant matrix</strong>.</p></li>
+</ul>
+</section>
+<section id="circulant-preconditioner" class="level2">
+<h2 class="anchored" data-anchor-id="circulant-preconditioner">Circulant preconditioner</h2>
+<ul>
+<li><p>A natural idea is to use <strong>circulants</strong> as preconditioners, since they are easy to invert.</p></li>
+<li><p>The first preconditioner was the preconditioner by <strong>Raymond Chan and Gilbert Strang</strong>, who proposed to take the first column of the matrix and use it to generate the circulant.</p></li>
+<li><p>The second preconditioner is the <strong>Tony Chan</strong> preconditioner, which is also very natural:</p></li>
+</ul>
+<p><span class="math display">C = \arg \min_P \Vert P - T \Vert_F.</span></p>
+<ul>
+<li>A simple formula for the entries of <span class="math inline">C</span> can be derived.</li>
+</ul>
+<div id="cell-35" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.linalg</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> np.zeros(n)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>c[<span class="dv">0</span>] <span class="op">=</span> <span class="op">-</span><span class="dv">2</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>c[<span class="dv">1</span>] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>Tm <span class="op">=</span> sp.linalg.toeplitz(c, c)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>c1 <span class="op">=</span> sp.linalg.circulant(c) <span class="co">#Strang preconditioner</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>Fmat <span class="op">=</span> <span class="fl">1.0</span><span class="op">/</span>np.sqrt(n) <span class="op">*</span> np.fft.fft(np.eye(n)) <span class="co">#Poor man's Fourier matrix</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>d2 <span class="op">=</span> np.diag(Fmat.conj().dot(Tm).dot(Fmat))</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>c2 <span class="op">=</span> Fmat.dot(np.diag(d2)).dot(Fmat.conj().T)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>mat <span class="op">=</span> np.linalg.inv(c1).dot(Tm)</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>ev <span class="op">=</span> np.linalg.eigvals(mat).real</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>plt.plot(np.sort(ev), np.ones(n), <span class="st">'o'</span>)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Eigenvalues for Strang preconditioner'</span>)</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>plt.gca().get_yaxis().set_visible(<span class="va">False</span>)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>mat <span class="op">=</span> np.linalg.inv(c2).dot(Tm)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>ev <span class="op">=</span> np.linalg.eigvals(mat).real</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>plt.plot(np.sort(ev), np.ones(n), <span class="st">'o'</span>)</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Eigenvalues for T. Chan Preconditioner'</span>)</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>plt.gca().get_yaxis().set_visible(<span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="convolutions-in-neural-networks" class="level2">
+<h2 class="anchored" data-anchor-id="convolutions-in-neural-networks">Convolutions in neural networks</h2>
+<ul>
+<li>The revolution in deep learning and computer vision is related to using Convolutional Neural Networks (CNN)</li>
+<li>The most famous examples are
+<ul>
+<li><a href="https://proceedings.neurips.cc/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf">AlexNet</a>, 2012</li>
+<li><a href="https://arxiv.org/pdf/1409.4842.pdf">GoogLeNet</a>, 2014</li>
+<li><a href="https://www.robots.ox.ac.uk/~vgg/publications/2015/Simonyan15/simonyan15.pdf">VGG</a>, 2015</li>
+</ul></li>
+<li>Further improvements are based on more advanced tricks like normalizations, skip connections and so on</li>
+<li>More details will be presented in Deep learning/computer vision courses</li>
+</ul>
+</section>
+<section id="what-is-convolution-in-nn" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-convolution-in-nn">What is convolution in NN?</h2>
+<ul>
+<li>In neural networks the convolution means not convolution but <strong>cross-correlation</strong>!</li>
+</ul>
+<p><span class="math display"> (x \star y)(t) = \int_{-\infty}^{+\infty} x(\tau)y(\tau + t)d \tau </span></p>
+<ul>
+<li>Compare with the definition of convolution from the first slide</li>
+</ul>
+<p><span class="math display">(x * y)(t) = \int_{-\infty}^{+\infty} x(\tau) y(t -  \tau) d \tau.</span></p>
+<p><img width="400" src="./cross_correlation.svg"></p>
+<p>Source is <a href="https://en.wikipedia.org/wiki/Cross-correlation">here</a></p>
+<ul>
+<li>Convolution and cross-correlation are related as</li>
+</ul>
+<p><span class="math display"> x(t) \star y(t) = x(-t) * y(t) </span></p>
+<ul>
+<li>How this operation is performed in neural networks?</li>
+</ul>
+<p><img src="./conv_nn.gif"></p>
+<p>Source of gif is <a href="https://towardsdatascience.com/covolutional-neural-network-cb0883dd6529">here</a></p>
+<ul>
+<li>Also nice presentation about the difference of this operations, detailed comparison and PyTorch examples is <a href="https://engineering.purdue.edu/DeepLearn/pdf-kak/week6.pdf">here</a></li>
+</ul>
+</section>
+<section id="additional-remarks-about-this-operation" class="level2">
+<h2 class="anchored" data-anchor-id="additional-remarks-about-this-operation">Additional remarks about this operation</h2>
+<ul>
+<li>This operation reflects the relations between the neighbour pixels in image</li>
+<li>Multiple filters/kernels can fit different features of the image</li>
+<li>This is still <strong>linear</strong> transformation of the input, but it focus on local properties of data</li>
+<li>It can be efficiently computed with GPU since the single set of simple instructions have to be applied to multiple data</li>
+<li>The trained parameters here are filters that is used to produce the output, for batch of 3D images (RGB) they are 4-dimensional tensors</li>
+</ul>
+</section>
+<section id="how-the-trained-filters-and-result-image-representation-looks-like" class="level2">
+<h2 class="anchored" data-anchor-id="how-the-trained-filters-and-result-image-representation-looks-like">How the trained filters and result image representation looks like</h2>
+<div id="cell-40" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torchvision.models <span class="im">as</span> models</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>vgg16 <span class="op">=</span> models.vgg16(pretrained<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(vgg16)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-41" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ch <span class="kw">in</span> vgg16.children():</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    features <span class="op">=</span> ch</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">break</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(features)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, param <span class="kw">in</span> features.named_parameters(): </span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(name, param.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-42" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">17</span>))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, <span class="bu">filter</span> <span class="kw">in</span> <span class="bu">enumerate</span>(features[<span class="dv">2</span>].weight):</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    plt.subplot(<span class="dv">16</span>, <span class="dv">16</span>, i<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    plt.imshow(<span class="bu">filter</span>[<span class="dv">0</span>, :, :].detach(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    plt.axis(<span class="st">'off'</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-43" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> Image.<span class="bu">open</span>(<span class="st">"./tiger.jpeg"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>plt.imshow(img)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-44" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torchvision <span class="im">import</span> transforms</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>transform <span class="op">=</span> transforms.Compose([</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    transforms.RandomResizedCrop(<span class="dv">224</span>),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    transforms.ToTensor(),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    transforms.Normalize([<span class="fl">0.485</span>, <span class="fl">0.456</span>, <span class="fl">0.406</span>], [<span class="fl">0.229</span>, <span class="fl">0.224</span>, <span class="fl">0.225</span>])</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>img_ <span class="op">=</span> transform(img)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>img_ <span class="op">=</span> img_.unsqueeze(<span class="dv">0</span>)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(img_.size())</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_[<span class="dv">0</span>].permute(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-45" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># After the first convolutional layer</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>output1 <span class="op">=</span> features[<span class="dv">0</span>](img_)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(output1.size())</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">17</span>))</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, f_map <span class="kw">in</span> <span class="bu">enumerate</span>(output1[<span class="dv">0</span>]):</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    plt.subplot(<span class="dv">8</span>, <span class="dv">8</span>, i<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    plt.imshow(f_map.detach(), cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    plt.axis(<span class="st">'off'</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-46" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># After the second convolutional layer</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>output2 <span class="op">=</span> features[<span class="dv">2</span>](features[<span class="dv">1</span>](output1))</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(output2.size())</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">17</span>))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, f_map <span class="kw">in</span> <span class="bu">enumerate</span>(output2[<span class="dv">0</span>]):</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    plt.subplot(<span class="dv">8</span>, <span class="dv">8</span>, i<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    plt.imshow(f_map.detach(), cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    plt.axis(<span class="st">'off'</span>)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-47" class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>output3 <span class="op">=</span> features[<span class="dv">5</span>](features[<span class="dv">4</span>](features[<span class="dv">3</span>](output2)))</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(output3.size())</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">20</span>))</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, f_map <span class="kw">in</span> <span class="bu">enumerate</span>(output3[<span class="dv">0</span>]):</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> i <span class="op">+</span> <span class="dv">1</span> <span class="op">==</span> <span class="dv">65</span>:</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    plt.subplot(<span class="dv">8</span>, <span class="dv">8</span>, i<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    plt.imshow(f_map.detach(), cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    plt.axis(<span class="st">'off'</span>)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="image-transformations" class="level2">
+<h2 class="anchored" data-anchor-id="image-transformations">Image transformations</h2>
+<ul>
+<li>Different filters highlight different features of the image</li>
+<li>Pooling operation reduces the spatial dimensions and further convolutional layer moves it to channels dimension</li>
+<li>After all <code>feature</code> block one gets 512 channels (we start from 3 (RGB)) and significant reduction of the spatial size of image</li>
+<li>Such operation extracts useful features to help classifier work better</li>
+<li>Exactly this property of VGG-type networks is one of the ingredients of style transfer networks, see more details <a href="https://medium.com/@mirzezadeh.elvin/neural-style-transfer-with-deep-vgg-model-26b11ea06b7e">here</a></li>
+</ul>
+</section>
+<section id="low-rank-and-fourier-transform" class="level2">
+<h2 class="anchored" data-anchor-id="low-rank-and-fourier-transform">Low-rank and Fourier transform</h2>
+<p>Recent achievements for learning structured matrices include [Monarch matrices] (https://arxiv.org/pdf/2204.00595.pdf) and here <a href="https://arxiv.org/pdf/2310.12109.pdf">Monarch mixer</a></p>
+<p>Monarch matrix is given as</p>
+<p><span class="math display">\mathbf{M}=\left(\prod_{i=1}^p \mathbf{P}_i \mathbf{B}_i\right) \mathbf{P}_0</span></p>
+<p>where each <span class="math inline">\mathbf{P}_i</span> is related to the ‘base <span class="math inline">\sqrt[p]{N}</span>’ variant of the bit-reversal permutation, and <span class="math inline">\mathbf{B}_i</span> is a block-diagonal matrix with block size <span class="math inline">b</span>. Setting <span class="math inline">b=\sqrt[p]{N}</span> achieves sub-quadratic compute cost. For example, for <span class="math inline">p=2, b=\sqrt{N}</span>, Monarch matrices require <span class="math inline">O\left(N^{3 / 2}\right)</span> compute in sequence length <span class="math inline">N</span>.</p>
+</section>
+<section id="low-rank-characteristic-of-monarch-matrices" class="level2">
+<h2 class="anchored" data-anchor-id="low-rank-characteristic-of-monarch-matrices">Low-rank characteristic of Monarch matrices</h2>
+<p>If we treat Monarch matrix as a block matrix with <span class="math inline">m \times m</span> block, the elements have the form:</p>
+<p><span class="math display">M_{\ell j k i}=L_{j \ell k} R_{k j i}</span></p>
+<p>This is rank-1 approximation in disguise.</p>
+</section>
+<section id="small-demo" class="level2">
+<h2 class="anchored" data-anchor-id="small-demo">Small demo</h2>
+<div id="cell-52" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;subslide&quot;}" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1024</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> np.fft.fft(np.eye(n))</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Rectangular block, approximate low rank'</span>)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.linalg.svd(f[:<span class="dv">16</span>, :n<span class="op">//</span><span class="dv">16</span>])[<span class="dv">1</span>])</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Special low-rank submatrices, exact low-rank'</span>)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>m1 <span class="op">=</span> f[::<span class="dv">16</span>, ::n<span class="op">//</span><span class="dv">16</span>]</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(m1.shape)</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.linalg.svd(m1)[<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="take-home-message" class="level2">
+<h2 class="anchored" data-anchor-id="take-home-message">Take home message</h2>
+<ul>
+<li>Toeplitz and circulant matrices</li>
+<li>Spectral theorem</li>
+<li>FFT</li>
+<li>Multilevel Toeplitz matrices</li>
+<li>Intro to convolutional neural networks</li>
+</ul>
+<div id="cell-54" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"./styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> HTML(styles)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>css_styling()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">FileNotFoundError</span>                         Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [1], line 5</span>
+<span class="ansi-green-fg ansi-bold">      3</span>     styles <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)">open</span>(<span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">./styles/custom.css</span><span style="color:rgb(175,0,0)">"</span>, <span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">r</span><span style="color:rgb(175,0,0)">"</span>)<span style="color:rgb(98,98,98)">.</span>read()
+<span class="ansi-green-fg ansi-bold">      4</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> HTML(styles)
+<span class="ansi-green-fg">----&gt; 5</span> <span class="ansi-yellow-bg">css_styling</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+Cell <span class="ansi-green-fg">In [1], line 3</span>, in <span class="ansi-cyan-fg">css_styling</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg ansi-bold">      2</span> <span style="font-weight:bold;color:rgb(0,135,0)">def</span> <span style="color:rgb(0,0,255)">css_styling</span>():
+<span class="ansi-green-fg">----&gt; 3</span>     styles <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)" class="ansi-yellow-bg">open</span><span class="ansi-yellow-bg">(</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">"</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">./styles/custom.css</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">"</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">r</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">"</span><span class="ansi-yellow-bg">)</span><span style="color:rgb(98,98,98)">.</span>read()
+<span class="ansi-green-fg ansi-bold">      4</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> HTML(styles)
+
+File <span class="ansi-green-fg">~/miniconda3/envs/tensorflow/lib/python3.9/site-packages/IPython/core/interactiveshell.py:282</span>, in <span class="ansi-cyan-fg">_modified_open</span><span class="ansi-blue-fg">(file, *args, **kwargs)</span>
+<span class="ansi-green-fg ansi-bold">    275</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> file <span style="font-weight:bold;color:rgb(175,0,255)">in</span> {<span style="color:rgb(98,98,98)">0</span>, <span style="color:rgb(98,98,98)">1</span>, <span style="color:rgb(98,98,98)">2</span>}:
+<span class="ansi-green-fg ansi-bold">    276</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">ValueError</span>(
+<span class="ansi-green-fg ansi-bold">    277</span>         <span style="color:rgb(175,0,0)">f</span><span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">IPython won</span><span style="color:rgb(175,0,0)">'</span><span style="color:rgb(175,0,0)">t let you open fd=</span><span style="font-weight:bold;color:rgb(175,95,135)">{</span>file<span style="font-weight:bold;color:rgb(175,95,135)">}</span><span style="color:rgb(175,0,0)"> by default </span><span style="color:rgb(175,0,0)">"</span>
+<span class="ansi-green-fg ansi-bold">    278</span>         <span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">as it is likely to crash IPython. If you know what you are doing, </span><span style="color:rgb(175,0,0)">"</span>
+<span class="ansi-green-fg ansi-bold">    279</span>         <span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">you can use builtins</span><span style="color:rgb(175,0,0)">'</span><span style="color:rgb(175,0,0)"> open.</span><span style="color:rgb(175,0,0)">"</span>
+<span class="ansi-green-fg ansi-bold">    280</span>     )
+<span class="ansi-green-fg">--&gt; 282</span> <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">io_open</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">file</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-red-fg">FileNotFoundError</span>: [Errno 2] No such file or directory: './styles/custom.css'</pre>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.dev/MerkulovDaniil/nla360/blob/main/lectures/lecture-15/lecture-15.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>

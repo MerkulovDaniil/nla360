@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.45">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Lecture 11: Sparse direct solvers</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/copy-tex.min.js" integrity="sha384-ww/583aHhxWkz5DEVn6OKtNiIaLi2iBRNZXfJRiY1Ai7tnJ9UXpEsyvOITVpTl4A" crossorigin="anonymous"></script>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Lecture 11: Sparse direct solvers">
+<meta property="og:description" content="">
+<meta name="twitter:title" content="Lecture 11: Sparse direct solvers">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../logo.svg" alt="nla360.fmin.xyz" class="navbar-logo">
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../program.html"> 
+<span class="menu-text">🚀 Материалы</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../projects.html"> 
+<span class="menu-text">📽️ Проекты</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/MerkulovDaniil/nla360" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="https://www.youtube.com/@fmin" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-youtube"></i></a>
+    <a href="https://t.me/nla360" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-telegram"></i></a>
+    <a href="" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-table"></i></a>
+    <a href="https://fmin.xyz" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-gem"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header">
+</header>
+
+
+<section id="recap-of-the-previous-part" class="level2">
+<h2 class="anchored" data-anchor-id="recap-of-the-previous-part">Recap of the previous part</h2>
+<ul>
+<li>Distributed memory for huge dense matrices</li>
+<li>Sparse matrix formats (COO, CSR, CSC)</li>
+<li>Matrix-by-vector product</li>
+<li>Inefficiency of sparse matrix processing</li>
+<li>Approaches to reduce cache misses</li>
+</ul>
+</section>
+<section id="plan-for-this-week-how-to-solve-large-sparse-linear-systems" class="level2">
+<h2 class="anchored" data-anchor-id="plan-for-this-week-how-to-solve-large-sparse-linear-systems">Plan for this week: how to solve large sparse linear systems</h2>
+<ul>
+<li>Direct methods (start today and continue in the next lecture)
+<ul>
+<li>LU decomposition</li>
+<li>Number of reordering techniques to minimize fill-in</li>
+</ul></li>
+<li>Krylov methods</li>
+</ul>
+</section>
+<section id="plan-for-today" class="level2">
+<h2 class="anchored" data-anchor-id="plan-for-today">Plan for today</h2>
+<p>Sparse direct solvers:</p>
+<ul>
+<li>LU decomposition of sparse matrices</li>
+<li>fill-in of <span class="math inline">L</span> and <span class="math inline">U</span> factors</li>
+<li>nested dissection</li>
+<li>spectral clustering in details</li>
+</ul>
+</section>
+<section id="direct-methods-for-sparse-matrix-lu-decomposition" class="level2">
+<h2 class="anchored" data-anchor-id="direct-methods-for-sparse-matrix-lu-decomposition">Direct methods for sparse matrix: LU decomposition</h2>
+<ul>
+<li><p>Why sparse linear systems can be solved faster, what is the technique?</p></li>
+<li><p>In the LU factorization of the matrix <span class="math inline">A</span> the factors <span class="math inline">L</span> and <span class="math inline">U</span> can be also sparse:</p></li>
+</ul>
+<p><span class="math display">A = L U</span></p>
+<ul>
+<li>And solving linear systems with <strong>sparse</strong> triangular matrices is very easy.</li>
+</ul>
+<p><span style="color:red"> Note that the inverse matrix to sparse matrix is not sparse! </span></p>
+<div id="cell-6" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> spsp</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">7</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> np.ones(n)<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> spsp.spdiags(np.vstack((ex,  np.random.rand(n), np.random.rand(n))), [<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], n, n, <span class="st">'csr'</span>)<span class="op">;</span> </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.array(np.linalg.inv(a.toarray()))</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(a.toarray())</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(b)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>np.linalg.svd(b[:<span class="dv">3</span>, <span class="dv">4</span>:])[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[0.81628124 0.46963379 0.         0.         0.         0.
+  0.        ]
+ [1.         0.4010937  0.52590463 0.         0.         0.
+  0.        ]
+ [0.         1.         0.31569952 0.05086576 0.         0.
+  0.        ]
+ [0.         0.         1.         0.92964368 0.53328924 0.
+  0.        ]
+ [0.         0.         0.         1.         0.03959506 0.01950792
+  0.        ]
+ [0.         0.         0.         0.         1.         0.19991324
+  0.40202748]
+ [0.         0.         0.         0.         0.         1.
+  0.83648376]]
+[[ 8.27969626e-01  3.24143929e-01 -5.18854601e-01 -6.66664548e-03
+   3.25895391e-02  2.26486550e-03 -1.08853060e-03]
+ [ 6.90205720e-01 -5.63401979e-01  9.01833054e-01  1.15874490e-02
+  -5.66446236e-02 -3.93661455e-03  1.89199994e-03]
+ [-2.10077402e+00  1.71482242e+00  2.98790004e-01  3.83908521e-03
+  -1.87671623e-02 -1.30425589e-03  6.26846250e-04]
+ [-5.30658931e-01  4.33166929e-01  7.54748405e-02 -2.51631866e-01
+   1.23008889e+00  8.54871214e-02 -4.10864784e-02]
+ [ 4.86433539e+00 -3.97066571e+00 -6.91847278e-01  2.30660735e+00
+  -2.10913161e+00 -1.46577692e-01  7.04475839e-02]
+ [ 1.73291328e+01 -1.41454460e+01 -2.46469711e+00  8.21725928e+00
+  -7.51375447e+00 -4.08466841e+00  1.96315700e+00]
+ [-2.07166398e+01  1.69106044e+01  2.94649725e+00 -9.82357295e+00
+   8.98254670e+00  4.88314130e+00 -1.15143537e+00]]</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>array([6.81937164e-02, 3.86855873e-17, 2.42041921e-19])</code></pre>
+</div>
+</div>
+</section>
+<section id="and-the-factors" class="level2">
+<h2 class="anchored" data-anchor-id="and-the-factors">And the factors…</h2>
+<p><span class="math inline">L</span> and <span class="math inline">U</span> are typically sparse. In the tridiagonal case they are even bidiagonal!</p>
+<div id="cell-8" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.sparse.linalg <span class="im">import</span> splu</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> splu(a.tocsc(), permc_spec<span class="op">=</span><span class="st">"NATURAL"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(T.L.toarray())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[ 1.          0.          0.          0.          0.          0.
+   0.        ]
+ [-0.5         1.          0.          0.          0.          0.
+   0.        ]
+ [ 0.         -0.66666667  1.          0.          0.          0.
+   0.        ]
+ [ 0.          0.         -0.75        1.          0.          0.
+   0.        ]
+ [ 0.          0.          0.         -0.8         1.          0.
+   0.        ]
+ [ 0.          0.          0.          0.         -0.83333333  1.
+   0.        ]
+ [ 0.          0.          0.          0.          0.         -0.85714286
+   1.        ]]</code></pre>
+</div>
+</div>
+<p>Interesting to note that <code>splu</code> without <code>permc_spec</code> will produce permutations which will not yield the bidiagonal factor:</p>
+<div id="cell-10" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.sparse.linalg <span class="im">import</span> splu</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> splu(a.tocsc())</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(T.L.todense())</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(T.perm_c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[ 1.          0.          0.          0.          0.          0.
+   0.        ]
+ [ 0.          1.          0.          0.          0.          0.
+   0.        ]
+ [ 0.          0.          1.          0.          0.          0.
+   0.        ]
+ [ 0.          0.          0.          1.          0.          0.
+   0.        ]
+ [ 0.          0.          0.          0.          1.          0.
+   0.        ]
+ [ 0.          0.          0.          0.          0.19991324  1.
+   0.        ]
+ [ 0.81628124  0.14222853 -0.47418756  0.43359091 -0.00845846  0.23571107
+   1.        ]]
+[0 1 2 3 5 4 6]</code></pre>
+</div>
+</div>
+</section>
+<section id="d-case" class="level2">
+<h2 class="anchored" data-anchor-id="d-case">2D-case</h2>
+<p>From a matrix that comes as a discretization of a two-dimensional problem everything is much worse:</p>
+<div id="cell-12" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> spsp</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse.linalg</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">128</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> np.ones(n)<span class="op">;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>lp1 <span class="op">=</span> sp.sparse.spdiags(np.vstack((ex,  <span class="op">-</span><span class="dv">2</span><span class="op">*</span>ex, ex)), [<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], n, n, <span class="st">'csr'</span>)<span class="op">;</span> </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>e <span class="op">=</span> sp.sparse.eye(n)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> sp.sparse.kron(lp1, e) <span class="op">+</span> sp.sparse.kron(e, lp1)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> spsp.csc_matrix(A)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> spsp.linalg.splu(A, permc_spec<span class="op">=</span><span class="st">"NATURAL"</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>plt.spy(T.L, marker<span class="op">=</span><span class="st">'.'</span>, color<span class="op">=</span><span class="st">'k'</span>, markersize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>T.L</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.spy(A, marker='.', color='k', markersize=8)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>&lt;16384x16384 sparse matrix of type '&lt;class 'numpy.float64'&gt;'
+    with 2097279 stored elements in Compressed Sparse Column format&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-11_files/figure-html/cell-5-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>For correct permutation in 2D case the number of nonzeros in <span class="math inline">L</span> factor grows as <span class="math inline">\mathcal{O}(N \log N)</span>. But complexity is <span class="math inline">\mathcal{O}(N^{3/2})</span>.</p>
+</section>
+<section id="main-challenge-how-to-make-factors-l-and-u-as-sparse-as-possible" class="level2">
+<h2 class="anchored" data-anchor-id="main-challenge-how-to-make-factors-l-and-u-as-sparse-as-possible">Main challenge: how to make factors <span class="math inline">L</span> and <span class="math inline">U</span> as sparse as possible?</h2>
+</section>
+<section id="main-tool-to-analyze-factors-sparsity-graph-theory" class="level2">
+<h2 class="anchored" data-anchor-id="main-tool-to-analyze-factors-sparsity-graph-theory">Main tool to analyze factors sparsity: graph theory</h2>
+<ul>
+<li><p>The number of nonzeros in LU decomposition has a deep connection to the graph theory.</p></li>
+<li><p><code>networkx package</code> can be used to visualize graphs, given only the adjacency matrix.</p></li>
+<li><p>It may even recover to some extend the graph structure.</p></li>
+</ul>
+<div id="cell-16" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>ex <span class="op">=</span> np.ones(n)<span class="op">;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>lp1 <span class="op">=</span> sp.sparse.spdiags(np.vstack((ex,  <span class="op">-</span><span class="dv">2</span><span class="op">*</span>ex, ex)), [<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], n, n, <span class="st">'csr'</span>)<span class="op">;</span> </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>e <span class="op">=</span> sp.sparse.eye(n)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> sp.sparse.kron(sp.sparse.kron(lp1, e), e) <span class="op">+</span> sp.sparse.kron(sp.sparse.kron(e, lp1), e) <span class="op">+</span> sp.sparse.kron(sp.sparse.kron(e, e), lp1)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> spsp.csc_matrix(A)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>G <span class="op">=</span> nx.Graph(A)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>nx.draw(G, pos<span class="op">=</span>nx.spectral_layout(G))<span class="co">#, node_size=1)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-11_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="what-is-fill-in" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-fill-in">What is fill-in?</h2>
+<ul>
+<li><p>The fill-in of a matrix are those entries which change from an initial zero to a nonzero value during the execution of an algorithm.</p></li>
+<li><p>The fill-in is different for different permutations. So, before factorization we need to find reordering which produces the smallest fill-in.</p></li>
+</ul>
+<p><strong>Example</strong></p>
+<p><span class="math display">A = \begin{bmatrix} * &amp; * &amp; * &amp; * &amp; *\\ * &amp; * &amp; 0 &amp; 0 &amp; 0 \\ * &amp; 0  &amp; * &amp; 0 &amp; 0 \\ * &amp; 0 &amp; 0&amp; * &amp; 0 \\ * &amp; 0 &amp; 0&amp; 0 &amp; * \end{bmatrix} </span></p>
+<p>If we eliminate elements from the top to the bottom, then we will obtain dense matrix. However, we could maintain sparsity if elimination was done from the bottom to the top.</p>
+</section>
+<section id="example-of-dense-factors-after-lu" class="level2">
+<h2 class="anchored" data-anchor-id="example-of-dense-factors-after-lu">Example of dense factors after LU</h2>
+<p>Given matrix <span class="math inline">A=A^*&gt;0</span> we calculate its Cholesky decomposition <span class="math inline">A = LL^*</span>.</p>
+<p>Factor <span class="math inline">L</span> can be dense even if <span class="math inline">A</span> is sparse:</p>
+<p><span class="math display">
+\begin{bmatrix} * &amp; * &amp; * &amp; * \\ * &amp; * &amp;  &amp;  \\ * &amp;  &amp; * &amp;  \\ * &amp;  &amp;  &amp; * \end{bmatrix} =
+\begin{bmatrix} * &amp;  &amp;  &amp;  \\ * &amp; * &amp;  &amp;  \\ * &amp; * &amp; * &amp;  \\ * &amp; * &amp; * &amp; * \end{bmatrix}
+\begin{bmatrix} * &amp; * &amp; * &amp; * \\  &amp; * &amp; * &amp; * \\  &amp;  &amp; * &amp; * \\  &amp;  &amp;  &amp; * \end{bmatrix}
+</span></p>
+<p>How to make factors sparse, i.e.&nbsp;to minimize the <strong>fill-in</strong>?</p>
+</section>
+<section id="why-permutations-can-reduce-fill-in-here-the-example" class="level2">
+<h2 class="anchored" data-anchor-id="why-permutations-can-reduce-fill-in-here-the-example">Why permutations can reduce fill-in? Here the example…</h2>
+<p>We need to find a permutation of indices so that factors are sparse, i.e.&nbsp;we build Cholesky factorisation of <span class="math inline">PAP^\top</span>, where <span class="math inline">P</span> is a permutation matrix.</p>
+<p>For the example from the previous slide</p>
+<p><span class="math display">
+P \begin{bmatrix} * &amp; * &amp; * &amp; * \\ * &amp; * &amp;  &amp;  \\ * &amp;  &amp; * &amp;  \\ * &amp;  &amp;  &amp; * \end{bmatrix} P^\top =
+\begin{bmatrix} * &amp;  &amp;  &amp; *  \\  &amp; * &amp;  &amp; * \\  &amp;  &amp; * &amp; * \\ * &amp; * &amp; * &amp; * \end{bmatrix} =
+\begin{bmatrix} * &amp;  &amp;  &amp;  \\  &amp; * &amp;  &amp;  \\  &amp;  &amp; * &amp;  \\ * &amp; * &amp; * &amp; * \end{bmatrix}
+\begin{bmatrix} * &amp;  &amp;  &amp; *  \\  &amp; * &amp;  &amp; * \\  &amp;  &amp; * &amp; * \\  &amp; &amp;  &amp; * \end{bmatrix}
+</span></p>
+<p>where</p>
+<p><span class="math display">
+P = \begin{bmatrix}  &amp;  &amp;  &amp; 1 \\  &amp;  &amp; 1 &amp;  \\  &amp; 1 &amp;  &amp;  \\ 1 &amp;  &amp;  &amp;  \end{bmatrix}
+</span></p>
+<ul>
+<li>Arrowhead form of the matrix gives sparse factors in LU decomposition</li>
+</ul>
+<div id="cell-20" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> spsp</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse.linalg <span class="im">as</span> spsplin</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.linalg <span class="im">as</span> splin</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> spsp.coo_matrix((np.random.randn(<span class="dv">10</span>), ([<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>], </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>                                           [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">3</span>])))</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original matrix"</span>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>plt.spy(A)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>lu <span class="op">=</span> spsplin.splu(A.tocsc(), permc_spec<span class="op">=</span><span class="st">"NATURAL"</span>)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"L factor"</span>)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>plt.spy(lu.L)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"U factor"</span>)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>plt.spy(lu.U)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Column permutation:"</span>, lu.perm_c)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Row permutation:"</span>, lu.perm_r)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Original matrix</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-11_files/figure-html/cell-7-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>L factor</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-11_files/figure-html/cell-7-output-4.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>U factor</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-11_files/figure-html/cell-7-output-6.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Column permutation: [0 1 2 3]
+Row permutation: [1 3 2 0]</code></pre>
+</div>
+</div>
+</section>
+<section id="block-version-of-appropriate-sparsity-pattern-arrowhead-structure" class="level2">
+<h2 class="anchored" data-anchor-id="block-version-of-appropriate-sparsity-pattern-arrowhead-structure">Block version of appropriate sparsity pattern (arrowhead structure)</h2>
+<p><span class="math display">
+PAP^\top = \begin{bmatrix} A_{11} &amp;  &amp; A_{13} \\  &amp; A_{22} &amp; A_{23} \\ A_{31} &amp; A_{32} &amp; A_{33}\end{bmatrix}
+</span></p>
+<p>then</p>
+<p><span class="math display">
+PAP^\top = \begin{bmatrix} A_{11} &amp; 0 &amp; 0 \\ 0 &amp; A_{22} &amp; 0 \\ A_{31} &amp; A_{32} &amp; A_{33} - A_{31}A_{11}^{-1} A_{13} - A_{32}A_{22}^{-1}A_{23} \end{bmatrix} \begin{bmatrix}  I &amp; 0 &amp; A_{11}^{-1}A_{13} \\ 0 &amp; I &amp; A_{22}^{-1}A_{23} \\ 0 &amp; 0 &amp; I\end{bmatrix}
+</span></p>
+<ul>
+<li>Block $ A_{33} - A_{31}A_{11}^{-1} A_{13} - A_{32}A_{22}^{-1}A_{23}$ is Schur complement for block diagonal matrix <span class="math inline">\begin{bmatrix} A_{11} &amp; 0 \\ 0 &amp; A_{22} \end{bmatrix}</span></li>
+<li>We reduce problem to solving smaller linear systems with <span class="math inline">A_{11}</span> and <span class="math inline">A_{22}</span></li>
+</ul>
+</section>
+<section id="what-we-can-do-to-minimize-fill-in" class="level2">
+<h2 class="anchored" data-anchor-id="what-we-can-do-to-minimize-fill-in">What we can do to minimize fill-in?</h2>
+<ul>
+<li><p>Reordering the rows and the columns of the sparse matrix in order to reduce the number of nonzeros in <span class="math inline">L</span> and <span class="math inline">U</span> factors is called <strong>fill-in</strong> minimization.</p></li>
+<li><p>Unfortunately, <a href="http://i.stanford.edu/pub/cstr/reports/cs/tr/75/531/CS-TR-75-531.pdf">this paper</a> by Rose and Tarjan in 1975 proves that fill-in minimization problem is <strong>NP-complete</strong>.</p></li>
+<li><p>But, many heuristics exist:</p>
+<ul>
+<li><strong>Markowitz pivoting</strong> - order by the product of nonzeros in column and row and stability constraint</li>
+<li><strong>Minimum degree ordering</strong> - order by the degree of the vertex</li>
+<li><strong>Cuthill–McKee algorithm</strong> (and reverse Cuthill-McKee) - reorder to minimize the bandwidth (does not exploit graph representation).</li>
+<li><strong>Nested dissection</strong>: split the graph into two with minimal number of vertices on the separator (set of vertices removed after we separate the graph into two distinct connected graphs). <br> Complexity of the algorithm depends on the size of the graph separator. For 1D Laplacian separator contains only 1 vertex, in 2D - <span class="math inline">\sqrt{N}</span> vertices.</li>
+</ul></li>
+</ul>
+<section id="how-can-we-find-permutation" class="level3">
+<h3 class="anchored" data-anchor-id="how-can-we-find-permutation">How can we find permutation?</h3>
+<ul>
+<li>Key idea comes from graph theory</li>
+<li>Sparse matrix can be treated as an <strong>adjacency matrix</strong> of a certain graph: the vertices <span class="math inline">(i, j)</span> are connected, if the corresponding matrix element is non-zero.</li>
+</ul>
+</section>
+<section id="example" class="level3">
+<h3 class="anchored" data-anchor-id="example">Example</h3>
+<p>Graphs of <span class="math inline">\begin{bmatrix} * &amp; * &amp; * &amp; * \\ * &amp; * &amp;  &amp;  \\ * &amp;  &amp; * &amp;  \\ * &amp;  &amp;  &amp; * \end{bmatrix}</span> and <span class="math inline">\begin{bmatrix} * &amp;  &amp;  &amp; *  \\  &amp; * &amp;  &amp; * \\  &amp;  &amp; * &amp; * \\ * &amp; * &amp; * &amp; * \end{bmatrix}</span> have the following form:</p>
+<p><img src="graph_dense.png" width="300" align="center"> and <img src="graph_sparse.png" width="300" align="center"></p>
+<ul>
+<li>Why the second ordering is better than the first one?</li>
+</ul>
+</section>
+</section>
+<section id="fill-in-upper-bound-minimization-markowitz-pivoting" class="level2">
+<h2 class="anchored" data-anchor-id="fill-in-upper-bound-minimization-markowitz-pivoting">Fill-in upper bound minimization: Markowitz pivoting</h2>
+<ul>
+<li>General purpose approach to ordering the elements of sparse matrix that will be eliminated</li>
+<li>The Markowitz merit for every non-zero element with indices <span class="math inline">(i, j)</span> is computed as <span class="math inline">(r_i - 1)(c_j - 1)</span>, where <span class="math inline">r_i</span> is number of nonzeros elements in the <span class="math inline">i</span>-th row and <span class="math inline">c_j</span> is a number of non-zero elements in the <span class="math inline">j</span>-th column</li>
+<li>This value is an upper abound on the fill-in after eliminating the <span class="math inline">(i, j)</span> element. <strong>Why?</strong></li>
+<li>We can order elements with respect to these values, select the one with minimum value, eliminate it and update matrix. What about stability?</li>
+<li>Then re-compute these values and repeat the procedure</li>
+<li>This method gives us the permutations of rows and columns and sparse factors</li>
+<li>Main drawback is efficient supporting number of nnz in every row and column after matrix update without complete re-calculating</li>
+<li>More details can be found in book <a href="https://oxford.universitypressscholarship.com/view/10.1093/acprof:oso/9780198508380.001.0001/acprof-9780198508380">Direct Methods for Sparse Matrices by I. S. Duff, A. M. Erisman, and J. K. Reid</a></li>
+<li>De facto standard approach in solving Linear programming (LP) problems and their MILP modifications</li>
+</ul>
+</section>
+<section id="what-if-consider-only-neighbours-we-get-minimal-degree-ordering" class="level2">
+<h2 class="anchored" data-anchor-id="what-if-consider-only-neighbours-we-get-minimal-degree-ordering">What if consider only neighbours? We get minimal degree ordering!</h2>
+<ul>
+<li><p>The idea is to eliminate rows and/or columns with fewer non-zeros, update fill-in and then repeat. How it relates to Markowitz pivoting?</p></li>
+<li><p>Efficient implementation is an issue (adding/removing elements).</p></li>
+<li><p>Current champion is “approximate minimal degree” by Amestoy, Davis, Duff.</p></li>
+<li><p>It is <strong>suboptimal</strong> even for 2D PDE problems</p></li>
+<li><p>SciPy sparse package <a href="https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.sparse.linalg.splu.html">uses</a> minimal ordering approach for different matrices (<span class="math inline">A^{\top}A</span>, <span class="math inline">A + A^{\top}</span>)</p></li>
+</ul>
+</section>
+<section id="but-in-these-methods-we-ignore-the-knowledge-of-good-structure-for-sparse-lu-lets-exploit-it-explicitly-in-the-method" class="level2">
+<h2 class="anchored" data-anchor-id="but-in-these-methods-we-ignore-the-knowledge-of-good-structure-for-sparse-lu-lets-exploit-it-explicitly-in-the-method">But in these methods we ignore the knowledge of good structure for sparse LU! Let’s exploit it explicitly in the method!</h2>
+</section>
+<section id="how-to-formalize-reduction-to-block-arrowhead-form" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-formalize-reduction-to-block-arrowhead-form">How to formalize reduction to block arrowhead form?</h2>
+<p><strong>Definition.</strong> A <strong>separator</strong> in a graph <span class="math inline">G</span> is a set <span class="math inline">S</span> of vertices whose removal leaves at least two connected components.</p>
+<p>Separator <span class="math inline">S</span> gives the following ordering for an <span class="math inline">N</span>-vertex graph <span class="math inline">G</span>: - Find a separator <span class="math inline">S</span>, whose removal leaves connected components <span class="math inline">T_1</span>, <span class="math inline">T_2</span>, <span class="math inline">\ldots</span>, <span class="math inline">T_k</span> - Number the vertices of <span class="math inline">S</span> from <span class="math inline">N − |S| + 1</span> to <span class="math inline">N</span> - Recursively, number the vertices of each component: <span class="math inline">T_1</span> from <span class="math inline">1</span> to <span class="math inline">|T_1|</span>, <span class="math inline">T_2</span> from <span class="math inline">|T_1| + 1</span> to <span class="math inline">|T_1| + |T_2|</span>, etc - If a component is small enough, enumeration in this component is arbitrarily</p>
+<section id="separator-and-block-arrowhead-structure-example" class="level3">
+<h3 class="anchored" data-anchor-id="separator-and-block-arrowhead-structure-example">Separator and block arrowhead structure: example</h3>
+<p>Separator for the 2D Laplacian matrix</p>
+<p><span class="math display">
+A_{2D} = I \otimes A_{1D} + A_{1D} \otimes I, \quad A_{1D} = \mathrm{tridiag}(-1, 2, -1),
+</span></p>
+<p>is as follows</p>
+<p><img src="separator.png" width="300"> </p>
+<p>Once we have enumerated first indices in <span class="math inline">\alpha</span>, then in <span class="math inline">\beta</span> and separators indices in <span class="math inline">\sigma</span> we get the following matrix</p>
+<p><span class="math display">
+PAP^\top = \begin{bmatrix} A_{\alpha\alpha} &amp;  &amp; A_{\alpha\sigma} \\  &amp; A_{\beta\beta} &amp; A_{\beta\sigma} \\ A_{\sigma\alpha} &amp; A_{\sigma\beta} &amp; A_{\sigma\sigma}\end{bmatrix}
+</span></p>
+<p>which has arrowhrad structure.</p>
+<ul>
+<li>Thus, the problem of finding <strong>permutation</strong> was reduced to the problem of finding <strong>graph separator</strong>!</li>
+</ul>
+</section>
+</section>
+<section id="the-method-of-recursive-reduction-to-block-arrowhead-structure-nested-dissection" class="level2">
+<h2 class="anchored" data-anchor-id="the-method-of-recursive-reduction-to-block-arrowhead-structure-nested-dissection">The method of recursive reduction to block arrowhead structure – Nested dissection</h2>
+<ul>
+<li><p>For blocks <span class="math inline">A_{\alpha\alpha}</span>, <span class="math inline">A_{\beta\beta}</span> we continue splitting recursively.</p></li>
+<li><p>When the recursion is done, we need to eliminate blocks <span class="math inline">A_{\sigma\alpha}</span> and <span class="math inline">A_{\sigma\beta}</span>.</p></li>
+<li><p>This makes block in the position of <span class="math inline">A_{\sigma\sigma}\in\mathbb{R}^{n\times n}</span> dense.</p></li>
+</ul>
+<p>Calculation of Cholesky of this block costs <span class="math inline">\mathcal{O}(n^3) = \mathcal{O}(N^{3/2})</span>, where <span class="math inline">N = n^2</span> is the total number of nodes.</p>
+<p>So, the complexity is <span class="math inline">\mathcal{O}(N^{3/2})</span></p>
+</section>
+<section id="packages-for-nested-dissection" class="level2">
+<h2 class="anchored" data-anchor-id="packages-for-nested-dissection">Packages for nested dissection</h2>
+<ul>
+<li>MUltifrontal Massively Parallel sparse direct Solver (<a href="http://mumps.enseeiht.fr/">MUMPS</a>)</li>
+<li><a href="https://www.pardiso-project.org/">Pardiso</a></li>
+<li><a href="http://faculty.cse.tamu.edu/davis/suitesparse.html">Umfpack as part of SuiteSparse</a></li>
+</ul>
+<p>All of them have interfaces for C/C++, Fortran and Matlab</p>
+<section id="nested-dissection-summary" class="level3">
+<h3 class="anchored" data-anchor-id="nested-dissection-summary">Nested dissection summary</h3>
+<ul>
+<li>Enumeration: find a separator.</li>
+<li>Divide-and-conquer paradigm</li>
+<li>Recursively process two subsets of vertices after separation</li>
+<li>In theory, nested dissection gives optimal complexity.</li>
+<li>In practice, it beats others only for very large problems.</li>
+</ul>
+</section>
+</section>
+<section id="separators-in-practice" class="level2">
+<h2 class="anchored" data-anchor-id="separators-in-practice">Separators in practice</h2>
+<ul>
+<li><p>Computing separators is not a <strong>trivial task</strong>.</p></li>
+<li><p>Graph partitioning heuristics has been an active research area for many years, often motivated by partitioning for parallel computation.</p></li>
+</ul>
+<p>Existing approaches:</p>
+<ul>
+<li>Spectral partitioning (uses eigenvectors of Laplacian matrix of graph) - more details below</li>
+<li>Geometric partitioning (for meshes with specified vertex coordinates) <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.31.4886&amp;rep=rep1&amp;type=pdf">review and analysis</a></li>
+<li>Iterative-swapping (<a href="http://xilinx.asia/_hdl/4/eda.ee.ucla.edu/EE201A-04Spring/kl.pdf">(Kernighan-Lin, 1970)</a>, <a href="https://dl.acm.org/citation.cfm?id=809204">(Fiduccia-Matheysses, 1982</a>)</li>
+<li>Breadth-first search <a href="http://www.cs.princeton.edu/courses/archive/fall06/cos528/handouts/sepplanar.pdf">(Lipton, Tarjan 1979)</a></li>
+<li>Multilevel recursive bisection (heuristic, currently most practical) (<a href="https://people.csail.mit.edu/jshun/6886-s18/lectures/lecture13-1.pdf">review</a> and <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.499.4130&amp;rep=rep1&amp;type=pdf">paper</a>). Package for such kind of partitioning is called METIS, written in C, and available <a href="http://glaros.dtc.umn.edu/gkhome/views/metis">here</a></li>
+</ul>
+</section>
+<section id="one-of-the-ways-to-construct-separators-spectral-graph-partitioning" class="level2">
+<h2 class="anchored" data-anchor-id="one-of-the-ways-to-construct-separators-spectral-graph-partitioning">One of the ways to construct separators – spectral graph partitioning</h2>
+<ul>
+<li><p>The idea of spectral partitioning goes back to Miroslav Fiedler, who studied connectivity of graphs (<a href="https://dml.cz/bitstream/handle/10338.dmlcz/101168/CzechMathJ_23-1973-2_11.pdf">paper</a>).</p></li>
+<li><p>We need to split the vertices into two sets.</p></li>
+<li><p>Consider +1/-1 labeling of vertices and <strong>the cost</strong></p></li>
+</ul>
+<p><span class="math display">E_c(x) = \sum_{j} \sum_{i \in N(j)} (x_i - x_j)^2, \quad N(j) \text{ denotes set of neighbours of a node } j. </span></p>
+<ul>
+<li>We need a balanced partition, thus</li>
+</ul>
+<p><span class="math display">\sum_i x_i =  0 \quad \Longleftrightarrow \quad x^\top e = 0, \quad e = \begin{bmatrix}1 &amp; \dots &amp; 1\end{bmatrix}^\top,</span></p>
+<p>and since we have +1/-1 labels, we have</p>
+<p><span class="math display">\sum_i x^2_i = n \quad \Longleftrightarrow \quad \|x\|_2^2 = n.</span></p>
+</section>
+<section id="graph-laplacian" class="level2">
+<h2 class="anchored" data-anchor-id="graph-laplacian">Graph Laplacian</h2>
+<p>Cost <span class="math inline">E_c</span> can be written as (check why)</p>
+<p><span class="math display">E_c = (Lx, x)</span></p>
+<p>where <span class="math inline">L</span> is the <strong>graph Laplacian</strong>, which is defined as a symmetric matrix with</p>
+<p><span class="math display">L_{ii} = \mbox{degree of node $i$},</span></p>
+<p><span class="math display">L_{ij} = -1, \quad \mbox{if $i \ne j$  and there is an edge},</span></p>
+<p>and <span class="math inline">0</span> otherwise.</p>
+<ul>
+<li>Rows of <span class="math inline">L</span> sum to zero, thus there is an eigenvalue <span class="math inline">0</span> and gives trivial eigenvector of all ones.</li>
+<li>Eigenvalues are non-negative (why?).</li>
+</ul>
+</section>
+<section id="partitioning-as-an-optimization-problem" class="level2">
+<h2 class="anchored" data-anchor-id="partitioning-as-an-optimization-problem">Partitioning as an optimization problem</h2>
+<ul>
+<li><p>Minimization of <span class="math inline">E_c</span> with the mentioned constraints leads to a partitioning that tries to minimize number of edges in a separator, while keeping the partition balanced.</p></li>
+<li><p>We now relax the integer quadratic programming to the continuous quadratic programming</p></li>
+</ul>
+<p><span class="math display">E_c(x) = (Lx, x)\to \min_{\substack{x^\top e =0, \\ \|x\|_2^2 = n}}</span></p>
+</section>
+<section id="from-fiedler-vector-to-separator" class="level2">
+<h2 class="anchored" data-anchor-id="from-fiedler-vector-to-separator">From Fiedler vector to separator</h2>
+<ul>
+<li>The solution to the minimization problem is given by the eigenvector (called Fiedler vector) corresponding to the second smallest eigenvalue of the graph Laplacian. Indeed,</li>
+</ul>
+<p><span class="math display">
+    \min_{\substack{x^\top e =0, \\ \|x\|_2^2 = n}} (Lx, x) = n \cdot \min_{{x^\top e =0}} \frac{(Lx, x)}{(x, x)} = n \cdot \min_{{x^\top e =0}} R(x), \quad R(x) \text{ is the Rayleigh quotient}
+</span></p>
+<ul>
+<li><p>Since <span class="math inline">e</span> is the eigenvector, corresponding to the smallest eigenvalue, on the space <span class="math inline">x^\top e =0</span> we get the second minimal eigevalue.</p></li>
+<li><p>The sign <span class="math inline">x_i</span> indicates the partitioning.</p></li>
+<li><p>In computations, we need to find out, how to find this second minimal eigenvalue –– we at least know about power method, but it finds the largest. We will discuss iterative methods for eigenvalue problems later in our course.</p></li>
+<li><p>This is the main goal of the iterative methods for large-scale linear problems, and can be achieved via few matrix-by-vector products.</p></li>
+</ul>
+<div id="cell-39" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>kn <span class="op">=</span> nx.read_gml(<span class="st">'karate.gml'</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of vertices = </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(kn.number_of_nodes()))</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of edges = </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(kn.number_of_edges()))</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>nx.draw_networkx(kn, node_color<span class="op">=</span><span class="st">"red"</span>) <span class="co">#Draw the graph</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of vertices = 34
+Number of edges = 78</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-11_files/figure-html/cell-8-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-40" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse.linalg <span class="im">as</span> spsplin</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>Laplacian <span class="op">=</span> nx.laplacian_matrix(kn).asfptype()</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>plt.spy(Laplacian, markersize<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Graph laplacian"</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">"off"</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>eigval, eigvec <span class="op">=</span> spsplin.eigsh(Laplacian, k<span class="op">=</span><span class="dv">3</span>, which<span class="op">=</span><span class="st">"SM"</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The 2 smallest eigenvalues ="</span>, eigval)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-11_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The 2 smallest eigenvalues = [2.52665709e-17 4.68525227e-01 9.09247664e-01]</code></pre>
+</div>
+</div>
+<div id="cell-41" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.scatter(np.arange(len(eigvec[:, 1])), np.sign(eigvec[:, 1]))</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>plt.scatter(np.arange(<span class="bu">len</span>(eigvec[:, <span class="dv">1</span>])), eigvec[:, <span class="dv">1</span>])</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Sum of elements in Fiedler vector = </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(np.<span class="bu">sum</span>(eigvec[:, <span class="dv">1</span>].real)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-11_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sum of elements in Fiedler vector = -8.493206138382448e-15</code></pre>
+</div>
+</div>
+<div id="cell-42" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>nx.draw_networkx(kn, node_color<span class="op">=</span>np.sign(eigvec[:, <span class="dv">1</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-11_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="summary-on-demo" class="level3">
+<h3 class="anchored" data-anchor-id="summary-on-demo">Summary on demo</h3>
+<ul>
+<li>Here we call SciPy sparse function to find fixed number of eigenvalues (and eigenvectors) that are smallest (other options are possible)</li>
+<li>Details of the underlying method we will discuss soon</li>
+<li>Fiedler vector gives simple separation of the graph</li>
+<li>To separate graph on more than two parts you should use eigenvectors of laplacian as feature vectors and run some clustering algorithm, e.g.&nbsp;<span class="math inline">k</span>-means</li>
+</ul>
+</section>
+</section>
+<section id="from-fiedler-vector-to-separator-1" class="level2">
+<h2 class="anchored" data-anchor-id="from-fiedler-vector-to-separator-1">From Fiedler vector to separator</h2>
+<ul>
+<li>Elements of eigenvector <span class="math inline">v</span> corresponding to the second smallest eigenvalue of the Laplacian indicate the partitioning of vertices</li>
+<li>If we select some small positive <span class="math inline">\tau &gt;0</span>, then we can split the vertices in three groups
+<ul>
+<li><span class="math inline">v_i &lt; -\tau</span></li>
+<li><span class="math inline">v_i \in [-\tau, \tau]</span></li>
+<li><span class="math inline">v_i &gt; \tau</span></li>
+</ul></li>
+<li>After that the separator is composed with the vertices corresponding to elements of <span class="math inline">v</span> such that <span class="math inline">v_i \in [-\tau, \tau]</span></li>
+<li>The size of separator can be tuned by the magnitude of <span class="math inline">\tau</span></li>
+<li>The distribution of elements in <span class="math inline">v</span> is important to identify the size of separator</li>
+</ul>
+<section id="fiedler-vector-and-algebraic-connectivity-of-a-graph" class="level3">
+<h3 class="anchored" data-anchor-id="fiedler-vector-and-algebraic-connectivity-of-a-graph">Fiedler vector and algebraic connectivity of a graph</h3>
+<p><strong>Definition.</strong> The algebraic connectivity of a graph is the second-smallest eigenvalue of the Laplacian matrix.</p>
+<p><strong>Claim.</strong> The algebraic connectivity of a graph is greater than 0 if and only if a graph is a connected graph.</p>
+</section>
+</section>
+<section id="practical-problems" class="level2">
+<h2 class="anchored" data-anchor-id="practical-problems">Practical problems</h2>
+<p>Computing bisection recursively is expensive.</p>
+<p>As an alternative, one typically computes <strong>multilevel bisection</strong> that consists of 3 phases.</p>
+<ul>
+<li>Graph coarsening: From a given graph, we join vertices into larger nodes, and get sequences of graphs <span class="math inline">G_1, \ldots, G_m</span>.</li>
+<li>At the coarse level, we do high-quality bisection</li>
+<li>Then, we do <strong>uncoarsening</strong>: we propagate the splitting from <span class="math inline">G_k</span> to <span class="math inline">G_{k-1}</span> and improve the quality of the split by local optimization algorithms (refinement).</li>
+</ul>
+</section>
+<section id="practical-problems-2" class="level2">
+<h2 class="anchored" data-anchor-id="practical-problems-2">Practical problems (2)</h2>
+<ul>
+<li><p>Once the permutation has been computed, we need to implement the elimination, making use of efficient computational kernels.</p></li>
+<li><p>If in the elemination we will be able to get the elements into <strong>blocks</strong>, we will be able to use BLAS-3 computations.</p></li>
+<li><p>It is done by <strong>supernodal</strong> data structures:</p></li>
+<li><p>If adjacent rows have the same sparsity structure, they can be stored in <strong>blocks</strong>:</p></li>
+<li><p>Also, we can use such structure in efficient computations!</p></li>
+</ul>
+<p><a href="https://arxiv.org/pdf/1907.05309.pdf">Details in this survey</a></p>
+</section>
+<section id="take-home-message" class="level2">
+<h2 class="anchored" data-anchor-id="take-home-message">Take home message</h2>
+<ul>
+<li>Sparse matrices &amp; graphs ordering</li>
+<li>Ordering is important for LU fill-in: more details in the next lecture</li>
+<li>Markowitz pivoting and minimal degree ordering</li>
+<li>Orderings from SciPy sparse package</li>
+<li>Separators and how do they help in fill-in minimization</li>
+<li>Nested dissection idea</li>
+<li>Fiedler vector and spectral bipartitioning</li>
+</ul>
+</section>
+<section id="plan-for-the-next-lecture" class="level2">
+<h2 class="anchored" data-anchor-id="plan-for-the-next-lecture">Plan for the next lecture</h2>
+<ul>
+<li>Basic iterative methods for solving large linear systems</li>
+<li>Convergence</li>
+<li>Acceleration</li>
+</ul>
+</section>
+<section id="questions" class="level1">
+<h1>Questions?</h1>
+<div id="cell-51" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"./styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> HTML(styles)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>css_styling()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">FileNotFoundError</span>                         Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In[1], line 5</span>
+<span class="ansi-green-fg ansi-bold">      3</span>     styles <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)">open</span>(<span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">./styles/custom.css</span><span style="color:rgb(175,0,0)">"</span>, <span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">r</span><span style="color:rgb(175,0,0)">"</span>)<span style="color:rgb(98,98,98)">.</span>read()
+<span class="ansi-green-fg ansi-bold">      4</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> HTML(styles)
+<span class="ansi-green-fg">----&gt; 5</span> <span class="ansi-yellow-bg">css_styling</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+Cell <span class="ansi-green-fg">In[1], line 3</span>, in <span class="ansi-cyan-fg">css_styling</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg ansi-bold">      2</span> <span style="font-weight:bold;color:rgb(0,135,0)">def</span> <span style="color:rgb(0,0,255)">css_styling</span>():
+<span class="ansi-green-fg">----&gt; 3</span>     styles <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)" class="ansi-yellow-bg">open</span><span class="ansi-yellow-bg">(</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">"</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">./styles/custom.css</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">"</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">r</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">"</span><span class="ansi-yellow-bg">)</span><span style="color:rgb(98,98,98)">.</span>read()
+<span class="ansi-green-fg ansi-bold">      4</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> HTML(styles)
+
+File <span class="ansi-green-fg">~/miniconda3/envs/teaching/lib/python3.11/site-packages/IPython/core/interactiveshell.py:282</span>, in <span class="ansi-cyan-fg">_modified_open</span><span class="ansi-blue-fg">(file, *args, **kwargs)</span>
+<span class="ansi-green-fg ansi-bold">    275</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> file <span style="font-weight:bold;color:rgb(175,0,255)">in</span> {<span style="color:rgb(98,98,98)">0</span>, <span style="color:rgb(98,98,98)">1</span>, <span style="color:rgb(98,98,98)">2</span>}:
+<span class="ansi-green-fg ansi-bold">    276</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">ValueError</span>(
+<span class="ansi-green-fg ansi-bold">    277</span>         <span style="color:rgb(175,0,0)">f</span><span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">IPython won</span><span style="color:rgb(175,0,0)">'</span><span style="color:rgb(175,0,0)">t let you open fd=</span><span style="font-weight:bold;color:rgb(175,95,135)">{</span>file<span style="font-weight:bold;color:rgb(175,95,135)">}</span><span style="color:rgb(175,0,0)"> by default </span><span style="color:rgb(175,0,0)">"</span>
+<span class="ansi-green-fg ansi-bold">    278</span>         <span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">as it is likely to crash IPython. If you know what you are doing, </span><span style="color:rgb(175,0,0)">"</span>
+<span class="ansi-green-fg ansi-bold">    279</span>         <span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">you can use builtins</span><span style="color:rgb(175,0,0)">'</span><span style="color:rgb(175,0,0)"> open.</span><span style="color:rgb(175,0,0)">"</span>
+<span class="ansi-green-fg ansi-bold">    280</span>     )
+<span class="ansi-green-fg">--&gt; 282</span> <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">io_open</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">file</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-red-fg">FileNotFoundError</span>: [Errno 2] No such file or directory: './styles/custom.css'</pre>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.dev/MerkulovDaniil/nla360/blob/main/lectures/lecture-11/lecture-11.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>

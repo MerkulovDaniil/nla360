@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.45">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Lecture 8: Symmetric eigenvalue problem and SVD</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/copy-tex.min.js" integrity="sha384-ww/583aHhxWkz5DEVn6OKtNiIaLi2iBRNZXfJRiY1Ai7tnJ9UXpEsyvOITVpTl4A" crossorigin="anonymous"></script>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Lecture 8: Symmetric eigenvalue problem and SVD">
+<meta property="og:description" content="">
+<meta name="twitter:title" content="Lecture 8: Symmetric eigenvalue problem and SVD">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../logo.svg" alt="nla360.fmin.xyz" class="navbar-logo">
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../program.html"> 
+<span class="menu-text">🚀 Материалы</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../projects.html"> 
+<span class="menu-text">📽️ Проекты</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/MerkulovDaniil/nla360" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="https://www.youtube.com/@fmin" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-youtube"></i></a>
+    <a href="https://t.me/nla360" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-telegram"></i></a>
+    <a href="" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-table"></i></a>
+    <a href="https://fmin.xyz" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-gem"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header">
+</header>
+
+
+<section id="recap-of-the-previous-part" class="level2">
+<h2 class="anchored" data-anchor-id="recap-of-the-previous-part">Recap of the previous part</h2>
+<ul>
+<li>QR decomposition and Gram-Schmidt algorithm</li>
+<li>Schur decomposition and QR-algorithm (basic)</li>
+</ul>
+</section>
+<section id="plan-for-today" class="level2">
+<h2 class="anchored" data-anchor-id="plan-for-today">Plan for today</h2>
+<p>Today we will talk about:</p>
+<ul>
+<li>Algorithms for the symmetric eigenvalue problems
+<ul>
+<li>QR algorithm (in more details)</li>
+<li>Divide-and-Conquer</li>
+<li>bisection</li>
+</ul></li>
+<li>Algorithms for SVD computation</li>
+</ul>
+</section>
+<section id="schur-form-computation" class="level2">
+<h2 class="anchored" data-anchor-id="schur-form-computation">Schur form computation</h2>
+<ul>
+<li><p>Recall that we are trying to avoid <span class="math inline">\mathcal{O}(n^3)</span> complexity for each iteration.</p></li>
+<li><p>The idea is to make a matrix have a simpler structure so that each step of QR algorithm becomes cheaper.</p></li>
+<li><p>In case of a general matrix we can use the <strong>Hessenberg form</strong>.</p></li>
+</ul>
+</section>
+<section id="hessenberg-form" class="level2">
+<h2 class="anchored" data-anchor-id="hessenberg-form">Hessenberg form</h2>
+<p>The matrix <span class="math inline">A</span> is said to be in the Hessenberg form, if</p>
+<p><span class="math display">a_{ij} = 0, \quad \mbox{if } i \geq j+2.</span></p>
+<p><span class="math display">H = \begin{bmatrix} * &amp; * &amp; * &amp; * &amp; * \\ * &amp; * &amp; * &amp; * &amp; * \\ 0 &amp; * &amp; * &amp; * &amp; *\\ 0 &amp; 0 &amp; * &amp; * &amp; *\\ 0 &amp; 0 &amp; 0 &amp; * &amp; * \\ \end{bmatrix}.</span></p>
+</section>
+<section id="reduction-any-matrix-to-hessenberg-form" class="level2">
+<h2 class="anchored" data-anchor-id="reduction-any-matrix-to-hessenberg-form">Reduction any matrix to Hessenberg form</h2>
+<ul>
+<li>By applying Householder reflections we can reduce any matrix to the Hessenberg form</li>
+</ul>
+<p><span class="math display">U^* A U = H</span></p>
+<ul>
+<li><p>The only difference with Schur decomposition is that we have to map the first column to the vector with two non-zeros, and the first element is not changed.</p></li>
+<li><p>The computational cost of such reduction is <span class="math inline">\mathcal{O}(n^3)</span> operations.</p></li>
+<li><p>In a Hessenberg form, computation of one iteration of the QR algorithm costs <span class="math inline">\mathcal{O}(n^2)</span> operations (e.g.&nbsp;using Givens rotations, how?), and the Hessenberg form is preserved by the QR iteration (check why).</p></li>
+</ul>
+</section>
+<section id="symmetric-hermitian-case" class="level2">
+<h2 class="anchored" data-anchor-id="symmetric-hermitian-case">Symmetric (Hermitian) case</h2>
+<ul>
+<li><p>In the symmetric case, we have <span class="math inline">A = A^*</span>, then <span class="math inline">H = H^*</span> and the upper Hessenberg form becomes tridiagonal matrix.</p></li>
+<li><p>From now on we will talk about the case of symmetric tridiagonal form.</p></li>
+<li><p>Any symmetric (Hermitian) matrix can be reduced to the tridiagonal form by Householder reflections.</p></li>
+<li><p><strong>Key point</strong> is that tridiagonal form is preserved by the QR algorithm, and the cost of one step can be reduced to <span class="math inline">\mathcal{O}(n)</span>!</p></li>
+</ul>
+</section>
+<section id="qr-algorithm-iterations" class="level2">
+<h2 class="anchored" data-anchor-id="qr-algorithm-iterations">QR algorithm: iterations</h2>
+<ul>
+<li>The iterations of the QR algorithm have the following form:</li>
+</ul>
+<p><span class="math display">A_k = Q_k R_k, \quad A_{k+1} = R_k Q_k.</span></p>
+<ul>
+<li>If <span class="math inline">A_0 = A</span> is <font color="red"> tridiagonal symmetric matrix </font>, this form is preserved by the QR algorithm.</li>
+</ul>
+<p>Let us see..</p>
+<div id="cell-9" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax.config <span class="im">import</span> config</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>config.update(<span class="st">"jax_enable_x64"</span>, <span class="va">True</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Generate a random tridiagonal matrix</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> jax.random.normal(jax.random.PRNGKey(<span class="dv">0</span>), (n, ))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>sub_diag <span class="op">=</span> jax.random.normal(jax.random.PRNGKey(<span class="dv">1</span>), (n<span class="op">-</span><span class="dv">1</span>,))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>mat <span class="op">=</span> jnp.diag(d) <span class="op">+</span> jnp.diag(sub_diag, <span class="op">-</span><span class="dv">1</span>) <span class="op">+</span> jnp.diag(sub_diag, <span class="dv">1</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>mat1 <span class="op">=</span> jnp.<span class="bu">abs</span>(mat)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>mat1 <span class="op">=</span> mat1<span class="op">/</span>jnp.<span class="bu">max</span>(mat1.flatten())</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>plt.spy(mat)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>q, r <span class="op">=</span> jnp.linalg.qr(mat)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> r.dot(q)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># b[abs(b) &lt;= 1e-12] = 0</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> b.at[<span class="bu">abs</span>(b) <span class="op">&lt;=</span> <span class="fl">1e-12</span>].<span class="bu">set</span>(<span class="fl">0.0</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">#b = jax.ops.index_update(b, jax.ops.index[abs(b) &lt;= 1e-12], 0)</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>plt.spy(b)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.figure()</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.imshow(np.abs(r.dot(q)))</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>b[<span class="dv">0</span>, :]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>Array([-1.47168069, -0.75157939,  0.        ,  0.        ,  0.        ,
+        0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+        0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+        0.        ,  0.        ,  0.        ,  0.        ,  0.        ],      dtype=float64)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-8_files/figure-html/cell-2-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-8_files/figure-html/cell-2-output-3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="tridiagonal-form" class="level2">
+<h2 class="anchored" data-anchor-id="tridiagonal-form">Tridiagonal form</h2>
+<ul>
+<li>In the tridiagonal form, you do not have to compute the <span class="math inline">Q</span> matrix: you only have to compute the <strong>triadiagonal part</strong> that appears after the iterations</li>
+</ul>
+<p><span class="math display">A_k = Q_k R_k, \quad A_{k+1}  = R_k Q_k,</span></p>
+<p>in the case when <span class="math inline">A_k = A^*_k</span> and is also tridiagonal.</p>
+<ul>
+<li><p>Such matrix is defined by <span class="math inline">\mathcal{O}(n)</span> parameters; computation of the QR is more complicated, but it is possible to compute <span class="math inline">A_{k+1}</span> directly without computing <span class="math inline">Q_k</span>.</p></li>
+<li><p>This is called <strong>implicit QR-step</strong>.</p></li>
+</ul>
+</section>
+<section id="theorem-on-implicit-qr-iteration" class="level2">
+<h2 class="anchored" data-anchor-id="theorem-on-implicit-qr-iteration">Theorem on implicit QR iteration</h2>
+<p>All the implicit QR algorithms are based on the following <strong>theorem</strong>:</p>
+<p>Let</p>
+<p><span class="math display">Q^* A Q = H</span></p>
+<p>be an irreducible upper Hessenberg matrix. Then, the first column of the matrix <span class="math inline">Q</span> defines all of its other columns. It can be found from the equation</p>
+<p><span class="math display">A Q = Q H. </span></p>
+</section>
+<section id="convergence-of-the-qr-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="convergence-of-the-qr-algorithm">Convergence of the QR-algorithm</h2>
+<ul>
+<li>The convergence of the QR-algorithm is a very <strong>delicate issue</strong> (see E. E. Tyrtyshnikov, “Brief introduction to numerical analysis” for details).</li>
+</ul>
+<p><strong>Summary.</strong> If we have a decomposition of the form</p>
+<p><span class="math display">A = X \Lambda X^{-1}, \quad A = \begin{bmatrix}A_{11} &amp; A_{12} \\ A_{21} &amp; A_{22}\end{bmatrix}</span></p>
+<p>and</p>
+<p><span class="math display">
+\Lambda = \begin{bmatrix} \Lambda_1 &amp; 0 \\
+0 &amp; \Lambda_2 \end{bmatrix}, \quad \lambda(\Lambda_1)=\{\lambda_1,\dots,\lambda_m\}, \ \lambda(\Lambda_2)=\{\lambda_{m+1},\dots,\lambda_r\},
+</span></p>
+<p>and there is a <strong>gap</strong> between the eigenvalues of <span class="math inline">\Lambda_1</span> and <span class="math inline">\Lambda_2</span> (<span class="math inline">|\lambda_1|\geq \dots \geq |\lambda_m| &gt; |\lambda_{m+1}| \geq\dots \geq |\lambda_r| &gt;0</span>), then the <span class="math inline">A^{(k)}_{21}</span> block of <span class="math inline">A_k</span> in the QR-iteration goes to zero with</p>
+<p><span class="math display">\Vert A^{(k)}_{21} \Vert \leq  C q^k, \quad q = \left| \frac{\lambda_{m+1}}{\lambda_{m}}  \right |,</span></p>
+<p>where <span class="math inline">m</span> is the size of <span class="math inline">\Lambda_1</span>.</p>
+<p>So we need to increase the gap! It can be done by the <strong>QR algorithm with shifts</strong>.</p>
+</section>
+<section id="qr-algorithm-with-shifts" class="level2">
+<h2 class="anchored" data-anchor-id="qr-algorithm-with-shifts">QR-algorithm with shifts</h2>
+<p><span class="math display">A_{k} - s_k I = Q_k R_k, \quad A_{k+1} = R_k Q_k + s_k I</span></p>
+<p>The convergence rate for a shifted version is then</p>
+<p><span class="math display">\left| \frac{\lambda_{m+1} - s_k}{\lambda_{m} - s_k}  \right |,</span></p>
+<p>where <span class="math inline">\lambda_m</span> is the <span class="math inline">m</span>-th largest eigenvalue of the matrix in modulus. - If the shift is close to the eigenvalue, then the convergence speed is better. - There are different strategies to choose shifts. - Introducing shifts is a general strategy to improve convergence of iterative methods of finding eigenvalues. - In next slides we will illustrate how to choose shift on a simpler algorithm.</p>
+</section>
+<section id="shifts-and-power-method" class="level2">
+<h2 class="anchored" data-anchor-id="shifts-and-power-method">Shifts and power method</h2>
+<ul>
+<li>Remember the power method for the computation of the eigenvalues.</li>
+</ul>
+<p><span class="math display">x_{k+1} := A x_k, \quad x_{k+1} := \frac{x_{k+1}}{\Vert x_{k+1} \Vert}.</span></p>
+<ul>
+<li><p>It converges to the eigenvector corresponding to the largest eigenvalue in modulus.</p></li>
+<li><p>The convergence can be very slow.</p></li>
+<li><p>Let us try to use shifting strategy. If we shift the matrix as</p></li>
+</ul>
+<p><span class="math display">  A := A - \lambda_k I</span></p>
+<p>and the corresponding eigenvalue becomes small (but we need large). - That is not what we wanted!</p>
+</section>
+<section id="inverse-iteration-and-rayleigh-quotient-iteration" class="level2">
+<h2 class="anchored" data-anchor-id="inverse-iteration-and-rayleigh-quotient-iteration">Inverse iteration and Rayleigh quotient iteration</h2>
+<ul>
+<li>To make a small eigenvalue large, we need to <strong>invert the matrix</strong>, and that gives us <strong>inverse iteration</strong></li>
+</ul>
+<p><span class="math display">x_{k+1} = (A - \lambda I)^{-1} x_k,</span></p>
+<p>where <span class="math inline">\lambda</span> is the shift which is approximation to the eigenvalue that we want.</p>
+<ul>
+<li><p>As it was for the power method, the convergence is linear.</p></li>
+<li><p>To accelerate convergence one can use the <strong>Rayleigh quotient iteration</strong> (inverse iteration with adaptive shifts) which is given by the selection of the <strong>adaptive shift</strong>:</p></li>
+</ul>
+<p><span class="math display">x_{k+1} = (A - \lambda_k I)^{-1} x_k,</span></p>
+<p><span class="math display">\lambda_k = \frac{(Ax_k, x_k)}{(x_k, x_k)}</span></p>
+<ul>
+<li>In the symmetric case <span class="math inline">A = A^*</span> the convergence is <strong>locally cubic</strong> and <strong>locally quadratic</strong> otherwise.</li>
+</ul>
+</section>
+<section id="singular-values-and-eigenvalues-1" class="level2">
+<h2 class="anchored" data-anchor-id="singular-values-and-eigenvalues-1">Singular values and eigenvalues (1)</h2>
+<ul>
+<li><p>Now let us talk about singular values and eigenvalues.</p></li>
+<li><p>SVD</p></li>
+</ul>
+<p><span class="math display">A = U \Sigma V^*</span></p>
+<p>exists for any matrix.</p>
+<ul>
+<li>It can be also viewed as a reduction of a given matrix to the diagonal form by means of two-sided unitary transformations:</li>
+</ul>
+<p><span class="math display">\Sigma = U^* A V.</span></p>
+<ul>
+<li>By two-sided Householder transformation we can reduce any matrix to the <strong>bidiagonal form</strong> <span class="math inline">B</span> (how?).</li>
+</ul>
+</section>
+<section id="singular-values-and-eigenvalues-2" class="level2">
+<h2 class="anchored" data-anchor-id="singular-values-and-eigenvalues-2">Singular values and eigenvalues (2)</h2>
+<ul>
+<li><p><strong>Implicit QR algorithm</strong> (with shifts) gives the way of computing the eigenvalues (and Schur form).</p></li>
+<li><p>But we cannot apply QR algorithm directly to the bidiagonal matrix, as it is not diagonalizable in general case.</p></li>
+<li><p>However, the problem of the computation of the SVD can be reduced to the <strong>symmetric eigenvalue problem</strong> in two ways:</p></li>
+</ul>
+<ol type="1">
+<li>Work with the tridiagonal matrix</li>
+</ol>
+<p><span class="math display">T = B^* B</span></p>
+<ol start="2" type="1">
+<li>Work with the extended matrix</li>
+</ol>
+<p><span class="math display">T = \begin{bmatrix} 0 &amp; B \\ B^* &amp; 0 \end{bmatrix}</span></p>
+<ul>
+<li><p>The case 1 is OK if you <strong>do not form T directly</strong>!</p></li>
+<li><p>Thus, the problem of computing singular values can be reduced to the problem of the computation of the eigenvalues of symmetric tridiagonal matrix.</p></li>
+</ul>
+</section>
+<section id="algorithms-for-the-sev-symmetric-eigenvalue-problem" class="level2">
+<h2 class="anchored" data-anchor-id="algorithms-for-the-sev-symmetric-eigenvalue-problem">Algorithms for the SEV (symmetric eigenvalue problem)</h2>
+<p>Done: - QR algorithm: the “gold standard” of the eigenvalue computations - RQI-iteration: Rayleigh quotient iteration is implicitly performed at each step of the QR algorithm</p>
+<p>Next slides: - Divide-and-conquer - Bisection method - Jacobi method</p>
+</section>
+<section id="divide-and-conquer" class="level2">
+<h2 class="anchored" data-anchor-id="divide-and-conquer">Divide-and-conquer</h2>
+<ul>
+<li>Suppose we have a tridiagonal matrix, and we split it into two blocks:</li>
+</ul>
+<p><span class="math display">T = \begin{bmatrix} T'_1 &amp; B \\ B^{\top} &amp; T'_2 \end{bmatrix}</span></p>
+<ul>
+<li>We can write the matrix <span class="math inline">T</span> as</li>
+</ul>
+<p><span class="math display">T = \begin{bmatrix} T_1 &amp; 0 \\ 0 &amp; T_2 \end{bmatrix} + b_m v v^*</span></p>
+<p>where <span class="math inline">vv^*</span> is rank 1 matrix, <span class="math inline">v = (0,\dots,0,1,1,0,\dots,0)^T</span>.</p>
+<ul>
+<li>Suppose we have decomposed <span class="math inline">T_1</span> and <span class="math inline">T_2</span> already:</li>
+</ul>
+<p><span class="math display">T_1 = Q_1 \Lambda_1 Q^*_1, \quad T_2 = Q_2 \Lambda_2 Q^*_2</span></p>
+<ul>
+<li>Then (check),</li>
+</ul>
+<p><span class="math display">\begin{bmatrix} Q^*_1 &amp; 0 \\ 0 &amp; Q^*_2 \end{bmatrix} T\begin{bmatrix} Q_1 &amp; 0 \\ 0 &amp; Q_2 \end{bmatrix} = D + \rho u u^{*}, \quad D = \begin{bmatrix} \Lambda_1 &amp; 0 \\ 0 &amp; \Lambda_2\end{bmatrix}</span></p>
+<ul>
+<li>I.e. we have reduced the problem to the problem of the computation of the eigenvalues of <font color="red"> diagonal plus low-rank matrix </font></li>
+</ul>
+</section>
+<section id="diagonal-plus-low-rank-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="diagonal-plus-low-rank-matrix">Diagonal-plus-low-rank matrix</h2>
+<p>It is tricky to compute the eigenvalues of the matrix</p>
+<p><span class="math display">D + \rho u u^* </span></p>
+<p>The characteristic polynomial has the form</p>
+<p><span class="math display">\det(D + \rho uu^* - \lambda I) = \det(D - \lambda I)\det(I + \rho (D - \lambda I)^{-1} uu^*) = 0.</span></p>
+<p>Then (prove!!)</p>
+<p><span class="math display">\det(I + \rho (D - \lambda I)^{-1} uu^*) = 1 + \rho \sum_{i=1}^n \frac{|u_i|^2}{d_i - \lambda} = 0</span></p>
+<p>Hint: find <span class="math inline">\det(I + w u^*)</span> using the fact that <span class="math inline">\text{det}(C) = \prod_{i=1}^n\lambda_i(C)</span> and <span class="math inline">\text{trace}(C) = \sum_{i=1}^n \lambda_i</span>.</p>
+</section>
+<section id="characteristic-equation" class="level2">
+<h2 class="anchored" data-anchor-id="characteristic-equation">Characteristic equation</h2>
+<p><span class="math display">1 + \rho \sum_{i=1}^n \frac{|u_i|^2}{d_i - \lambda} = 0</span></p>
+<p>How to find the roots?</p>
+<div id="cell-22" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>lm <span class="op">=</span> jnp.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>])</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> <span class="bu">len</span>(lm)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> jnp.array(lm)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> jnp.<span class="bu">min</span>(lm)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> jnp.<span class="bu">max</span>(lm)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> jnp.linspace(<span class="op">-</span><span class="dv">1</span>, <span class="dv">6</span>, <span class="dv">1000</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> jnp.ones(M)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fun(lam):</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="op">+</span> rho <span class="op">*</span> jnp.<span class="bu">sum</span>(u<span class="op">**</span><span class="dv">2</span><span class="op">/</span>(D <span class="op">-</span> lam))</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> [fun(lam) <span class="cf">for</span> lam <span class="kw">in</span> t]</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">8</span>))</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>plt.plot(t, res, <span class="st">'k'</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.plot(jnp.zeros_like(t))</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>plt.ylim([<span class="op">-</span><span class="dv">6</span>, <span class="dv">6</span>])</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>plt.yticks(fontsize<span class="op">=</span><span class="dv">24</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>plt.xticks(fontsize<span class="op">=</span><span class="dv">24</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-8_files/figure-html/cell-3-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>The function has only one root at <span class="math inline">[d_i, d_{i+1}]</span></p></li>
+<li><p>We have proved, by the way, the <strong>Cauchy interlacing theorem</strong> (what happens to the eigenvalues under rank-<span class="math inline">1</span> perturbation)</p></li>
+</ul>
+</section>
+<section id="how-to-find-the-root" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-find-the-root">How to find the root</h2>
+<ul>
+<li><p>A Newton method will fail (draw a picture with a tangent line).</p></li>
+<li><p>Note that Newton method is just approximation of a function <span class="math inline">f(\lambda)</span> by a linear function.</p></li>
+<li><p>Much better approximation is the <strong>hyperbola</strong>:</p></li>
+</ul>
+<p><span class="math display">f(\lambda) \approx c_0 + \frac{c_1}{d_i - \lambda} + \frac{c_2}{d_{i+1} - \lambda}.</span></p>
+<ul>
+<li><p>To fit the coefficients, we have to evaluate <span class="math inline">f(\lambda)</span> and <span class="math inline">f'(\lambda)</span> in the particular point.</p></li>
+<li><p>After that, the approximation can be recovered from solving <strong>quadratic equation</strong></p></li>
+</ul>
+</section>
+<section id="important-issues" class="level2">
+<h2 class="anchored" data-anchor-id="important-issues">Important issues</h2>
+<ul>
+<li><p>First, stability: this method was abandoned for a long time due to instability of the computation of the eigenvectors.</p></li>
+<li><p>In the recursion, we need to compute the eigenvectors of the <span class="math inline">D + \rho uu^*</span> matrix.</p></li>
+<li><p>The exact expression for the eigenvectors is just (let us check!)</p></li>
+</ul>
+<p><span class="math display">(D - \alpha_i I)^{-1}u,</span> where <span class="math inline">\alpha_i</span> is the computed root.</p>
+<ul>
+<li>The reason of instability:
+<ul>
+<li>if <span class="math inline">\alpha_i</span> and <span class="math inline">\alpha_{i+1}</span> are close, then the corresponding eigenvectors are collinear, but they have to be orthogonal</li>
+<li>if <span class="math inline">\alpha_i</span> and <span class="math inline">\alpha_{i+1}</span> are close, then they close to <span class="math inline">d_i</span>, therefore matrices <span class="math inline">D - \alpha_i I</span> and <span class="math inline">D - \alpha_{i+1} I</span> are close to singular</li>
+</ul></li>
+</ul>
+</section>
+<section id="loewner-theorem" class="level2">
+<h2 class="anchored" data-anchor-id="loewner-theorem">Loewner theorem</h2>
+<ul>
+<li>The solution came is to use a strange <strong>Loewner theorem:</strong></li>
+</ul>
+<p>If <span class="math inline">\alpha_i</span> and <span class="math inline">d_i</span> satisfy the <strong>interlacing theorem</strong></p>
+<p><span class="math display">d_n &lt; \alpha_n &lt; \ldots &lt; d_{i+1} &lt; \alpha_{i+1} \ldots</span></p>
+<p>Then there exists a vector <span class="math inline">\widehat{u}</span> such that <span class="math inline">\alpha_i</span> are exact eigenvalues of the matrix</p>
+<p><span class="math display">\widehat{D} = D + \widehat{u} \widehat{u}^*.</span></p>
+<ul>
+<li>So, you first compute the eigenvalues, then compute <span class="math inline">\widehat{u}</span> and only then the eigenvectors.</li>
+</ul>
+</section>
+<section id="divide-and-conquer-and-the-fast-multipole-method" class="level2">
+<h2 class="anchored" data-anchor-id="divide-and-conquer-and-the-fast-multipole-method">Divide and conquer and the Fast Multipole Method</h2>
+<p>In the computations of divide and conquer we have to evaluate the sums of the form</p>
+<p><span class="math display">f(\lambda) = 1 + \rho \sum_{i=1}^n \frac{|u_i|^2}{(d_i - \lambda)},</span></p>
+<p>and have to do it at least for <span class="math inline">n</span> points.</p>
+<ul>
+<li><p>The complexity is then <span class="math inline">\mathcal{O}(n^2)</span>, as for the QR algorithm.</p></li>
+<li><p>Can we make it <span class="math inline">\mathcal{O}(n \log n)</span>?</p></li>
+<li><p>The answer is yes, but we have to replace the computations by the approximate ones by the help of <strong>Fast Multipole Method</strong>.</p></li>
+</ul>
+<p>Lets explain a little bit…</p>
+</section>
+<section id="few-more-algorithms" class="level2">
+<h2 class="anchored" data-anchor-id="few-more-algorithms">Few more algorithms</h2>
+<ul>
+<li><p>Absolutely different approach is based on the <strong>bisection</strong>.</p></li>
+<li><p>Given a matrix <span class="math inline">A</span> its inertia is defined as a triple</p></li>
+</ul>
+<p><span class="math display">(\nu, \zeta, \pi),</span></p>
+<p>where <span class="math inline">\nu</span> is the number of negative, <span class="math inline">\zeta</span> - zero and <span class="math inline">\pi</span> - positive eigenvalues.</p>
+<ul>
+<li>If <span class="math inline">X</span> is non-singular, then</li>
+</ul>
+<p><span class="math display">Inertia(A) = Inertia(X^* A X)</span></p>
+</section>
+<section id="bisection-via-gaussian-elimination" class="level2">
+<h2 class="anchored" data-anchor-id="bisection-via-gaussian-elimination">Bisection via Gaussian elimination</h2>
+<ul>
+<li>Given <span class="math inline">z</span> we can do the Gaussian elimination:</li>
+</ul>
+<p><span class="math display">A - zI = L D L^*,</span></p>
+<p>and inertia of the diagonal matrix is trivial to compute.</p>
+<ul>
+<li><p>Thus, if we want to find all the eigenvalues in the interval <span class="math inline">a</span>, <span class="math inline">b</span></p></li>
+<li><p>Using inertia, we can easily count the number of eigenvalues in an interval.</p></li>
+<li><p>Illustration: if <span class="math inline">Inertia(A)=(5,0,2)</span> and after shift <span class="math inline">Inertia(A-zI)=(4,0,3)</span>, <span class="math inline">z\in[a,b]</span> then we know that <span class="math inline">\lambda(A)\in[a,z]</span>.</p></li>
+</ul>
+</section>
+<section id="jacobi-method" class="level2">
+<h2 class="anchored" data-anchor-id="jacobi-method">Jacobi method</h2>
+<ul>
+<li><p>Recall what a Jacobi (Givens rotations) are</p></li>
+<li><p>In a plane they correspong to a <span class="math inline">2 \times 2</span> orthogonal matrix of the form</p></li>
+</ul>
+<p><span class="math display">\begin{pmatrix} \cos \phi &amp; \sin \phi \\ -\sin \phi &amp; \cos \phi \end{pmatrix},</span></p>
+<p>and in the <span class="math inline">n</span>-dimensional case we select two variables <span class="math inline">i</span> and <span class="math inline">j</span> and rotate.</p>
+</section>
+<section id="jacobi-method-cont." class="level2">
+<h2 class="anchored" data-anchor-id="jacobi-method-cont.">Jacobi method (cont.)</h2>
+<ul>
+<li>The idea of the Jacobi method is to minimize sum of squares of off-diagonal elements:</li>
+</ul>
+<p><span class="math display">\Gamma(A) = \mathrm{off}( U^* A U), \quad \mathrm{off}^2(X) = \sum_{i \ne j} \left|X_{ij}\right|^2 = \|X \|^2_F - \sum\limits_{i=1}^n x^2_{ii}.</span></p>
+<p>by applying succesive Jacobi rotations <span class="math inline">U</span> to zero off-diagonal elements.</p>
+<ul>
+<li><p>When the “pivot” is chosen, it is easy to eliminate it.</p></li>
+<li><p>The main question is then what is the order of <strong>sweeps</strong> we have to make (i.e.&nbsp;in which order to eliminate).</p></li>
+<li><p>If we always eliminate the largest off-diagonal elements the method has quadratic convergence.</p></li>
+<li><p>In practice, a cyclic order (i.e., <span class="math inline">(1, 2), (1, 3), \ldots, (2, 3), \ldots</span>) is used.</p></li>
+</ul>
+</section>
+<section id="jacobi-method-convergence" class="level2">
+<h2 class="anchored" data-anchor-id="jacobi-method-convergence">Jacobi method: convergence</h2>
+<ul>
+<li>To show convergence, we firstly show that</li>
+</ul>
+<p><span class="math display"> \text{off}(B) &lt; \text{off}(A), </span></p>
+<p>where <span class="math inline">B = U^*AU</span>.</p>
+<ul>
+<li>In this case we use the unitary invariance of Frobenius norm and denote by <span class="math inline">p</span> and <span class="math inline">q</span> the indices that is changed after rotation:</li>
+</ul>
+<p>$ ^2(A) = ^2(B) = |B|^2_F - <em>{i=1}^n b^2</em>{ii} = | A |^2_F - <em>{i p, q} b^2</em>{ii} - (b^2_{pp} + b^2_{qq}) = | A |^2_F - <em>{i p, q} a^2</em>{ii} - (a^2_{pp} + 2a^2_{pq} + a^2_{qq}) = | A |^2_F - <em>{i =1}^n a^2</em>{ii} - 2a^2_{pq} = ^2(A) - 2a^2_{pq} &lt; ^2(A)$</p>
+<ul>
+<li><p>We show that the ‘’size’’ of off-diagonal elements decreases after Jacobi rotation.</p></li>
+<li><p>If we always select the largest off-diagonal element <span class="math inline">a_{pq} = \gamma</span> to eliminate (pivot), then we have</p></li>
+</ul>
+<p><span class="math display"> |a_{ij}| \leq \gamma, </span></p>
+<p>thus</p>
+<p><span class="math display"> \text{off}(A)^2 \leq 2 N \gamma^2, </span></p>
+<p>where <span class="math inline">2N = n(n-1)</span> is the number of off-diagonal elements.</p>
+<ul>
+<li>Or rewrite this inequality in the form</li>
+</ul>
+<p><span class="math display">2\gamma^2 \geq \frac{\text{off}^2(A)}{N}.</span></p>
+<p>Now we use relations <span class="math inline">\Gamma^2(A) = \text{off}^2(A) - 2\gamma^2 \leq \text{off}^2(A) - \dfrac{\text{off}^2(A)}{N}</span> and get</p>
+<p><span class="math display"> \Gamma(A) \leq \sqrt{\left(1 - \frac{1}{N}\right)} \text{off}(A). </span></p>
+<ul>
+<li>Aften <span class="math inline">N</span> steps we have the factor</li>
+</ul>
+<p><span class="math display">\left(1 - \frac{1}{N}\right)^{\frac{N}{2}} \approx e^{-\frac{1}{2}},</span></p>
+<p>i.e.&nbsp;linear convergence. However, the convergence is locally quadratic (given without proof here).</p>
+</section>
+<section id="jacobi-summary" class="level2">
+<h2 class="anchored" data-anchor-id="jacobi-summary">Jacobi: summary</h2>
+<p>Jacobi method was the first numerical method for the eigenvalues, proposed in 1846.</p>
+<ul>
+<li>Large constant</li>
+<li>Very accurate (high relative error for small eigenvalues)</li>
+<li>Good parallel capabilities</li>
+</ul>
+</section>
+<section id="summary-for-this-part" class="level2">
+<h2 class="anchored" data-anchor-id="summary-for-this-part">Summary for this part</h2>
+<ul>
+<li>Many algorithms for the computation of the SEV solution:
+<ul>
+<li>QR</li>
+<li>Divide-and-conquer</li>
+<li>Bisection</li>
+<li>Jacobi</li>
+</ul></li>
+</ul>
+</section>
+<section id="next-lecture" class="level2">
+<h2 class="anchored" data-anchor-id="next-lecture">Next lecture</h2>
+<ul>
+<li>We start <strong>sparse and/or structured</strong> NLA.</li>
+</ul>
+</section>
+<section id="questions" class="level1">
+<h1>Questions?</h1>
+<div id="cell-37" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"./styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> HTML(styles)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>css_styling()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">FileNotFoundError</span>                         Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [2], line 5</span>
+<span class="ansi-green-fg ansi-bold">      3</span>     styles <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)">open</span>(<span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">./styles/custom.css</span><span style="color:rgb(175,0,0)">"</span>, <span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">r</span><span style="color:rgb(175,0,0)">"</span>)<span style="color:rgb(98,98,98)">.</span>read()
+<span class="ansi-green-fg ansi-bold">      4</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> HTML(styles)
+<span class="ansi-green-fg">----&gt; 5</span> <span class="ansi-yellow-bg">css_styling</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+Cell <span class="ansi-green-fg">In [2], line 3</span>, in <span class="ansi-cyan-fg">css_styling</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg ansi-bold">      2</span> <span style="font-weight:bold;color:rgb(0,135,0)">def</span> <span style="color:rgb(0,0,255)">css_styling</span>():
+<span class="ansi-green-fg">----&gt; 3</span>     styles <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)" class="ansi-yellow-bg">open</span><span class="ansi-yellow-bg">(</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">"</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">./styles/custom.css</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">"</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">r</span><span style="color:rgb(175,0,0)" class="ansi-yellow-bg">"</span><span class="ansi-yellow-bg">)</span><span style="color:rgb(98,98,98)">.</span>read()
+<span class="ansi-green-fg ansi-bold">      4</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> HTML(styles)
+
+File <span class="ansi-green-fg">~/miniconda3/envs/tensorflow/lib/python3.9/site-packages/IPython/core/interactiveshell.py:282</span>, in <span class="ansi-cyan-fg">_modified_open</span><span class="ansi-blue-fg">(file, *args, **kwargs)</span>
+<span class="ansi-green-fg ansi-bold">    275</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> file <span style="font-weight:bold;color:rgb(175,0,255)">in</span> {<span style="color:rgb(98,98,98)">0</span>, <span style="color:rgb(98,98,98)">1</span>, <span style="color:rgb(98,98,98)">2</span>}:
+<span class="ansi-green-fg ansi-bold">    276</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">ValueError</span>(
+<span class="ansi-green-fg ansi-bold">    277</span>         <span style="color:rgb(175,0,0)">f</span><span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">IPython won</span><span style="color:rgb(175,0,0)">'</span><span style="color:rgb(175,0,0)">t let you open fd=</span><span style="font-weight:bold;color:rgb(175,95,135)">{</span>file<span style="font-weight:bold;color:rgb(175,95,135)">}</span><span style="color:rgb(175,0,0)"> by default </span><span style="color:rgb(175,0,0)">"</span>
+<span class="ansi-green-fg ansi-bold">    278</span>         <span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">as it is likely to crash IPython. If you know what you are doing, </span><span style="color:rgb(175,0,0)">"</span>
+<span class="ansi-green-fg ansi-bold">    279</span>         <span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">you can use builtins</span><span style="color:rgb(175,0,0)">'</span><span style="color:rgb(175,0,0)"> open.</span><span style="color:rgb(175,0,0)">"</span>
+<span class="ansi-green-fg ansi-bold">    280</span>     )
+<span class="ansi-green-fg">--&gt; 282</span> <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">io_open</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">file</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-red-fg">FileNotFoundError</span>: [Errno 2] No such file or directory: './styles/custom.css'</pre>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.dev/MerkulovDaniil/nla360/blob/main/lectures/lecture-8/lecture-8.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>
