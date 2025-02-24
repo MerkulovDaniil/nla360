@@ -17,7 +17,6 @@ filters:
 website:
   navbar:
     left: 
-        - program.md
         - projects.md 
     title: false
     logo: logo.svg
