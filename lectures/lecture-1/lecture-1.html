@@ -293,23 +293,23 @@ window.Quarto = {
 <section id="фиксированная-и-плавающая-точка" class="level2">
 <h2 class="anchored" data-anchor-id="фиксированная-и-плавающая-точка">Фиксированная и плавающая точка</h2>
 <p><strong>В</strong>: Каковы преимущества/недостатки чисел с фиксированной и плавающей точкой?</p>
-<p><strong>О</strong>: В большинстве случаев они работают нормально.</p>
+<p><strong>A</strong>: In most cases, they work just fine.</p>
 <ul>
-<li><p>Числа с фиксированной точкой представляют числа в заданном диапазоне и контролируют <strong>абсолютную</strong> точность.</p></li>
-<li><p>Числа с плавающей точкой представляют числа с <strong>относительной</strong> точностью и подходят для случаев, когда числа в вычислениях имеют разный масштаб (например, <span class="math inline">10^{-1}</span> и <span class="math inline">10^{5}</span>).</p></li>
-<li><p>На практике, если скорость не имеет значения, используйте float32 или float64 (на самом деле, нет!)</p></li>
+<li><p>However, fixed point represents numbers within specified range and controls <strong>absolute</strong> accuracy.</p></li>
+<li><p>Floating point represent numbers with <strong>relative</strong> accuracy, and is suitable for the case when numbers in the computations have varying scale (i.e., <span class="math inline">10^{-1}</span> and <span class="math inline">10^{5}</span>).</p></li>
+<li><p>In practice, if speed is of no concern, use float32 or float64 (на самом деле, нет!)</p></li>
 </ul>
 </section>
 <section id="числа-с-плавающей-точкой-на-логарифмической-шкале" class="level2">
 <h2 class="anchored" data-anchor-id="числа-с-плавающей-точкой-на-логарифмической-шкале">Числа с плавающей точкой на логарифмической шкале</h2>
 <p>Визуализируем, как числа с плавающей точкой распределены на вещественной прямой:</p>
-<div id="cell-12" class="cell" data-execution_count="1">
+<div id="cell-12" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define parameters for a small floating-point system</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="dv">2</span>  <span class="co"># base</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>e_max <span class="op">=</span> <span class="dv">3</span>  <span class="co"># maximum exponent</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>e_max <span class="op">=</span> <span class="dv">2</span>  <span class="co"># maximum exponent</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>mantissa_bits <span class="op">=</span> <span class="dv">2</span>  <span class="co"># number of bits for mantissa</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate all possible combinations of exponent and mantissa</span></span>
@@ -343,8 +343,8 @@ window.Quarto = {
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    wrap<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.tight_layout()</span></span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.show()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>Text(0.1, -0.05, 'Base (b) = $2$, Max exponent = $3$, Mantissa bits = $2$\nNumbers are of the form $(1 + x_m) \\cdot 2^e$, where $x_m$ is the fraction and $e$ is the exponent.')</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>Text(0.1, -0.05, 'Base (b) = $2$, Max exponent = $2$, Mantissa bits = $2$\nNumbers are of the form $(1 + x_m) \\cdot 2^e$, where $x_m$ is the fraction and $e$ is the exponent.')</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
@@ -361,42 +361,6 @@ window.Quarto = {
 <p>IEEE 754 имеет: - Представление чисел с плавающей точкой (как описано выше), <span class="math inline">(-1)^s \times c \times b^q</span>. - Две бесконечности, <span class="math inline">+\infty</span> и <span class="math inline">-\infty</span> - Два нуля: +0 и -0 - Два вида <strong>NaN</strong>: тихий NaN (<strong>qNaN</strong>) и сигнальный NaN (<strong>sNaN</strong>) - qNaN не вызывает исключение на уровне модуля операций с плавающей точкой (FPU), пока вы не проверите результат вычислений - значение sNaN вызывает исключение от FPU при использовании соответствующей переменной. Этот тип NaN может быть полезен для целей инициализации - C++11 предлагает <a href="https://en.cppreference.com/w/cpp/numeric/math/nan">стандартный интерфейс</a> для создания различных NaN - Правила <strong>округления</strong> - Правила для <span class="math inline">\frac{0}{0}, \frac{1}{-0}, \ldots</span></p>
 <p>Возможные значения определяются с помощью - основания <span class="math inline">b</span> - точности <span class="math inline">p</span> - количество цифр - максимально возможного значения <span class="math inline">e_{\max}</span></p>
 <p>и имеют следующие ограничения - $ 0 c b^p - 1$ - <span class="math inline">1 - e_{\max} \leq q + p - 1 \leq e_{\max}</span></p>
-<p><strong>Поведение при операциях:</strong> - <code>qNaN</code> (тихий NaN): - Не вызывает исключения при генерации - Распространяется через все последующие вычисления - Пример: <code>0/0 → qNaN</code>, <code>qNaN + 5 → qNaN</code></p>
-<ul>
-<li><code>sNaN</code> (сигнализирующий NaN):
-<ul>
-<li><strong>Вызывает исключение</strong> при использовании в любой арифметической операции</li>
-<li>Используется для отладки критических ошибок</li>
-<li>Пример: Попытка чтения неинициализированной памяти</li>
-</ul></li>
-</ul>
-<p><strong>2. Битовая репрезентация:</strong> Тип | Знак | Экспонента | Мантисса | |——–|——|——————|——————-| | qNaN | любой| все 1 | 1xxx… (MSB=1) | | sNaN | любой| все 1 | 0xxx… (MSB=0) |</p>
-<p><em>MSB - старший бит мантиссы</em></p>
-<p><strong>3. Практическое использование в ИИ:</strong> - <code>qNaN</code>: - Автоматическая обработка ошибок в градиентах - Подавление исключений в распределенных вычислениях - Пример: <code>NaN</code> в лоссе при batch-обучении</p>
-<ul>
-<li><code>sNaN</code>:
-<ul>
-<li>Отладка численной нестабильности в кастомных ядрах CUDA</li>
-<li>Обнаружение ошибок инициализации параметров</li>
-<li>Валидация входных данных в критических системах</li>
-</ul></li>
-</ul>
-<p><strong>4. Особенности реализации:</strong> - Большинство GPU (NVIDIA) не поддерживают sNaN - В Python <code>math.nan</code> всегда возвращает qNaN - Некоторые фреймворки (PyTorch) перехватывают NaN до генерации исключений</p>
-<p>Пример использования в отладке:</p>
-<div id="cell-15" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">## Создание sNaN (не поддерживается напрямую в NumPy)</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>snan <span class="op">=</span> np.array([np.nan], dtype<span class="op">=</span>np.float32)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>snan.view(np.uint32)[<span class="dv">0</span>] <span class="op">=</span> <span class="bn">0x7F800001</span>  <span class="co"># Правильный паттерн для sNaN</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>np.seterr(invalid<span class="op">=</span><span class="st">'raise'</span>)  <span class="co"># Включаем генерацию исключений</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> snan <span class="op">+</span> <span class="dv">2</span>  <span class="co"># Вызовет InvalidOperation</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">FloatingPointError</span>:</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Обнаружена критическая численная ошибка!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Обнаружена критическая численная ошибка!</code></pre>
-</div>
-</div>
 </section>
 <section id="одинарная-и-двойная-точность" class="level2">
 <h2 class="anchored" data-anchor-id="одинарная-и-двойная-точность">Одинарная и двойная точность</h2>
@@ -533,16 +497,16 @@ window.Quarto = {
 <p><img width="600" src="./posit_example.png"></p>
 <section id="демонстрация-точности-деления" class="level3">
 <h3 class="anchored" data-anchor-id="демонстрация-точности-деления">Демонстрация точности деления</h3>
-<div id="cell-24" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> np.float32(<span class="fl">0.925924589693</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(c)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.float32(<span class="fl">1.786875867457e-2</span>)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.float32(c <span class="op">/</span> a)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="sc">{0:10.16f}</span><span class="st">'</span>.<span class="bu">format</span>(b))</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">abs</span>(a <span class="op">*</span> b <span class="op">-</span> c)<span class="op">/</span><span class="bu">abs</span>(c))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-22" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> np.float32(<span class="fl">0.925924589693</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(c)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.float32(<span class="fl">1.786875867457e-2</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.float32(c <span class="op">/</span> a)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="sc">{0:10.16f}</span><span class="st">'</span>.<span class="bu">format</span>(b))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">abs</span>(a <span class="op">*</span> b <span class="op">-</span> c)<span class="op">/</span><span class="bu">abs</span>(c))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>0.9259246
 51.8180694580078125
@@ -552,78 +516,78 @@ window.Quarto = {
 </section>
 <section id="квадратный-корень" class="level3">
 <h3 class="anchored" data-anchor-id="квадратный-корень">Квадратный корень</h3>
-<div id="cell-26" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.float32(<span class="fl">1e-20</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.sqrt(a)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(b.dtype)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="sc">{0:10.64f}</span><span class="st">'</span>.<span class="bu">format</span>(<span class="bu">abs</span>(b <span class="op">*</span> b <span class="op">-</span> a)<span class="op">/</span><span class="bu">abs</span>(a)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-24" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.float64(<span class="fl">1e-100</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.sqrt(a)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(b.dtype)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="sc">{0:10.64f}</span><span class="st">'</span>.<span class="bu">format</span>(<span class="bu">abs</span>(b <span class="op">*</span> b <span class="op">-</span> a)<span class="op">/</span><span class="bu">abs</span>(a)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>float32
-0.0000000807793583135207882151007652282714843750000000000000000000</code></pre>
+<pre><code>float64
+0.0000000000000000000000000000000000000000000000000000000000000000</code></pre>
 </div>
 </div>
 </section>
 <section id="демонстрация-точности-экспоненты" class="level3">
 <h3 class="anchored" data-anchor-id="демонстрация-точности-экспоненты">Демонстрация точности экспоненты</h3>
-<div id="cell-28" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.float32(<span class="fl">0.0001</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.exp(a)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(b.dtype)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((np.log(b) <span class="op">-</span> a)<span class="op">/</span>a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-26" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.float32(<span class="fl">0.000001</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.exp(a)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(b.dtype)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((np.log(b) <span class="op">-</span> a)<span class="op">/</span>a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>float32
-0.000115978764</code></pre>
+-0.046326134</code></pre>
 </div>
 </div>
 </section>
 </section>
 <section id="еще-примерчики" class="level2">
 <h2 class="anchored" data-anchor-id="еще-примерчики">Еще примерчики</h2>
-<div id="cell-30" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create x points in the range [-2e-15, 2e-15]</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">2e-15</span>, <span class="fl">2e-15</span>, <span class="dv">100</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute log(1+x)/x - 1 using method (a) and (b), being careful about x=0</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>y_a <span class="op">=</span> np.zeros_like(x)</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>y_b <span class="op">=</span> np.zeros_like(x)</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>nonzero <span class="op">=</span> x <span class="op">!=</span> <span class="dv">0</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>y_a[nonzero] <span class="op">=</span> (np.log(x[nonzero]<span class="op">+</span><span class="dv">1</span>))<span class="op">/</span>x[nonzero] <span class="op">-</span> <span class="dv">1</span>  <span class="co"># (a)</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>y_b[nonzero] <span class="op">=</span> (np.log(x[nonzero]<span class="op">+</span><span class="dv">1</span>))<span class="op">/</span>((<span class="dv">1</span><span class="op">+</span>x[nonzero])<span class="op">-</span><span class="dv">1</span>) <span class="op">-</span> <span class="dv">1</span>  <span class="co"># (b</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the plots</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>fig, (ax1, ax2) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">6</span>))</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for method (a)</span></span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(x, y_a, <span class="st">'b-'</span>)</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>ax1.grid(<span class="va">True</span>)</span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'x'</span>)</span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'log(1+x)/x - 1'</span>)</span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Method (a): (log(1+x))/x - 1'</span>)</span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for method (b)</span></span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>ax2.plot(x, y_b, <span class="st">'r-'</span>)</span>
-<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>ax2.grid(<span class="va">True</span>)</span>
-<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">'x'</span>)</span>
-<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">'log(1+x)/x - 1'</span>)</span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>ax2.set_title(<span class="st">'Method (b): (log(1+x))/((1+x)-1) - 1'</span>)</span>
-<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjust layout and add a main title</span></span>
-<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">'Comparison of two methods for computing log(1+x)/x - 1 in double precision'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
-<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>plt.subplots_adjust(top<span class="op">=</span><span class="fl">0.88</span>)</span>
-<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-28" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create x points in the range [-2e-15, 2e-15]</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">2e-15</span>, <span class="fl">2e-15</span>, <span class="dv">100</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute log(1+x)/x - 1 using method (a) and (b), being careful about x=0</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>y_a <span class="op">=</span> np.zeros_like(x)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>y_b <span class="op">=</span> np.zeros_like(x)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>nonzero <span class="op">=</span> x <span class="op">!=</span> <span class="dv">0</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>y_a[nonzero] <span class="op">=</span> (np.log(x[nonzero]<span class="op">+</span><span class="dv">1</span>))<span class="op">/</span>x[nonzero] <span class="op">-</span> <span class="dv">1</span>  <span class="co"># (a)</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>y_b[nonzero] <span class="op">=</span> (np.log(x[nonzero]<span class="op">+</span><span class="dv">1</span>))<span class="op">/</span>((<span class="dv">1</span><span class="op">+</span>x[nonzero])<span class="op">-</span><span class="dv">1</span>) <span class="op">-</span> <span class="dv">1</span>  <span class="co"># (b</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the plots</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>fig, (ax1, ax2) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">6</span>))</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for method (a)</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(x, y_a, <span class="st">'b-'</span>)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>ax1.grid(<span class="va">True</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'x'</span>)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'log(1+x)/x - 1'</span>)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Method (a): (log(1+x))/x - 1'</span>)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for method (b)</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>ax2.plot(x, y_b, <span class="st">'r-'</span>)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>ax2.grid(<span class="va">True</span>)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">'x'</span>)</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">'log(1+x)/x - 1'</span>)</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>ax2.set_title(<span class="st">'Method (b): (log(1+x))/((1+x)-1) - 1'</span>)</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjust layout and add a main title</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">'Comparison of two methods for computing log(1+x)/x - 1 in double precision'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>plt.subplots_adjust(top<span class="op">=</span><span class="fl">0.88</span>)</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>/var/folders/x_/_k8z8m6s2qxc_j4gwz6fpvmm0000gp/T/ipykernel_7697/1439480773.py:12: RuntimeWarning: invalid value encountered in divide
+<pre><code>/var/folders/x_/_k8z8m6s2qxc_j4gwz6fpvmm0000gp/T/ipykernel_10237/1439480773.py:12: RuntimeWarning: invalid value encountered in divide
   y_b[nonzero] = (np.log(x[nonzero]+1))/((1+x[nonzero])-1) - 1  # (b</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-1_files/figure-html/cell-7-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-1_files/figure-html/cell-6-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -676,43 +640,43 @@ window.Quarto = {
 <li>Основная идея Kahan summation состоит в том, чтобы отслеживать маленькие ошибки и аккумулировать их в отдельной переменной</li>
 <li>Этот подход называется <em>compensated summation</em></li>
 </ul>
-<div id="cell-36" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numba <span class="im">import</span> jit <span class="im">as</span> numba_jit</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10</span> <span class="op">**</span> <span class="dv">6</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>sm <span class="op">=</span> <span class="fl">1e-10</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.ones(n, dtype<span class="op">=</span>np.float32) <span class="op">*</span> sm</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">0</span>] <span class="op">=</span> <span class="fl">1.0</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>true_sum <span class="op">=</span> <span class="fl">1.0</span> <span class="op">+</span> (n <span class="op">-</span> <span class="dv">1</span>)<span class="op">*</span>sm</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>approx_sum <span class="op">=</span> np.<span class="bu">sum</span>(x)</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>math_fsum <span class="op">=</span> math.fsum(x)</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="at">@numba_jit</span>(nopython<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> kahan_sum_numba(x):</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> np.float32(<span class="fl">0.0</span>)</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> np.float32(<span class="fl">0.0</span>)</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x)):</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> x[i] <span class="op">-</span> c</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>        t <span class="op">=</span> s <span class="op">+</span> y</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>        c <span class="op">=</span> (t <span class="op">-</span> s) <span class="op">-</span> y</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>        s <span class="op">=</span> t</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simple_sum(x):</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> <span class="fl">0.0</span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x)):</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>        s <span class="op">+=</span> x[i]</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>k_sum_numba <span class="op">=</span> kahan_sum_numba(x)</span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>simple_sum_result <span class="op">=</span> simple_sum(x)</span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in np sum: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(approx_sum <span class="op">-</span> true_sum))</span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in simple sum: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(simple_sum_result <span class="op">-</span> true_sum))</span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in Kahan sum Numba: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(k_sum_numba <span class="op">-</span> true_sum))</span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in math fsum: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(math_fsum <span class="op">-</span> true_sum))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-34" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numba <span class="im">import</span> jit <span class="im">as</span> numba_jit</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10</span> <span class="op">**</span> <span class="dv">6</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>sm <span class="op">=</span> <span class="fl">1e-10</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.ones(n, dtype<span class="op">=</span>np.float32) <span class="op">*</span> sm</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">0</span>] <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>true_sum <span class="op">=</span> <span class="fl">1.0</span> <span class="op">+</span> (n <span class="op">-</span> <span class="dv">1</span>)<span class="op">*</span>sm</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>approx_sum <span class="op">=</span> np.<span class="bu">sum</span>(x)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>math_fsum <span class="op">=</span> math.fsum(x)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="at">@numba_jit</span>(nopython<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> kahan_sum_numba(x):</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> np.float32(<span class="fl">0.0</span>)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> np.float32(<span class="fl">0.0</span>)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x)):</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> x[i] <span class="op">-</span> c</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>        t <span class="op">=</span> s <span class="op">+</span> y</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>        c <span class="op">=</span> (t <span class="op">-</span> s) <span class="op">-</span> y</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        s <span class="op">=</span> t</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simple_sum(x):</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x)):</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>        s <span class="op">+=</span> x[i]</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>k_sum_numba <span class="op">=</span> kahan_sum_numba(x)</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>simple_sum_result <span class="op">=</span> simple_sum(x)</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in np sum: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(approx_sum <span class="op">-</span> true_sum))</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in simple sum: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(simple_sum_result <span class="op">-</span> true_sum))</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in Kahan sum Numba: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(k_sum_numba <span class="op">-</span> true_sum))</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error in math fsum: </span><span class="sc">{0:3.1e}</span><span class="st">'</span>.<span class="bu">format</span>(math_fsum <span class="op">-</span> true_sum))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Error in np sum: 1.7e-06
 Error in simple sum: -1.0e-04
@@ -788,18 +752,18 @@ Error in math fsum: 1.3e-12</code></pre>
 <section id="вычисление-норм-в-python" class="level2">
 <h2 class="anchored" data-anchor-id="вычисление-норм-в-python">Вычисление норм в Python</h2>
 <p>Пакет NumPy содержит все необходимое для вычисления норм: функция <code>np.linalg.norm</code></p>
-<div id="cell-45" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.random.randn(n)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> a <span class="op">+</span> <span class="fl">1e-1</span> <span class="op">*</span> np.random.normal((n,))</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Relative error in L1 norm:'</span>, np.linalg.norm(a <span class="op">-</span> b, <span class="dv">1</span>) <span class="op">/</span> np.linalg.norm(b, <span class="dv">1</span>))</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Relative error in L2 norm:'</span>, np.linalg.norm(a <span class="op">-</span> b) <span class="op">/</span> np.linalg.norm(b))</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Relative error in Chebyshev norm:'</span>, np.linalg.norm(a <span class="op">-</span> b, np.inf) <span class="op">/</span> np.linalg.norm(b, np.inf))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-43" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.random.randn(n)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> a <span class="op">+</span> <span class="fl">1e-5</span> <span class="op">*</span> np.random.normal((n,))</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Relative error in L1 norm:'</span>, np.linalg.norm(a <span class="op">-</span> b, <span class="dv">1</span>) <span class="op">/</span> np.linalg.norm(b, <span class="dv">1</span>))</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Relative error in L2 norm:'</span>, np.linalg.norm(a <span class="op">-</span> b) <span class="op">/</span> np.linalg.norm(b))</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Relative error in Chebyshev norm:'</span>, np.linalg.norm(a <span class="op">-</span> b, np.inf) <span class="op">/</span> np.linalg.norm(b, np.inf))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Relative error in L1 norm: 1.007463406918509
-Relative error in L2 norm: 1.0030695138070433
-Relative error in Chebyshev norm: 0.7942525068309023</code></pre>
+<pre><code>Relative error in L1 norm: 0.0013743710119635821
+Relative error in L2 norm: 0.0010294800327283588
+Relative error in Chebyshev norm: 0.0004017056903068766</code></pre>
 </div>
 </div>
 </section>
@@ -810,27 +774,27 @@ Relative error in Chebyshev norm: 0.7942525068309023</code></pre>
 <li>Для евклидовой нормы единичный шар является обычным кругом</li>
 <li>Для других норм единичные шары выглядят совершенно по-разному</li>
 </ul>
-<div id="cell-47" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="dv">1</span> <span class="co"># Which norm do we use</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> <span class="dv">40000</span> <span class="co"># Number of sampling points</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> []</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(M):</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.random.randn(<span class="dv">2</span>, <span class="dv">1</span>)</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.linalg.norm(a[:, <span class="dv">0</span>], p) <span class="op">&lt;=</span> <span class="dv">1</span>:</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        b.append(a[:, <span class="dv">0</span>])</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.array(b)</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>plt.plot(b[:, <span class="dv">0</span>], b[:, <span class="dv">1</span>], <span class="st">'.'</span>)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">'equal'</span>)</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Unit disk in the p-th norm, $p=</span><span class="sc">{0:}</span><span class="st">$'</span>.<span class="bu">format</span>(p))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
-<pre><code>Text(0.5, 1.0, 'Unit disk in the p-th norm, $p=1$')</code></pre>
+<div id="cell-45" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="fl">0.5</span> <span class="co"># Which norm do we use</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> <span class="dv">10000</span> <span class="co"># Number of sampling points</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> []</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(M):</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.random.randn(<span class="dv">2</span>, <span class="dv">1</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.linalg.norm(a[:, <span class="dv">0</span>], p) <span class="op">&lt;=</span> <span class="dv">1</span>:</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        b.append(a[:, <span class="dv">0</span>])</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.array(b)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>plt.plot(b[:, <span class="dv">0</span>], b[:, <span class="dv">1</span>], <span class="st">'.'</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">'equal'</span>)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Unit disk in the p-th norm, $p=</span><span class="sc">{0:}</span><span class="st">$'</span>.<span class="bu">format</span>(p))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>Text(0.5, 1.0, 'Unit disk in the p-th norm, $p=0.5$')</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-1_files/figure-html/cell-10-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-1_files/figure-html/cell-9-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -857,32 +821,32 @@ Relative error in Chebyshev norm: 0.7942525068309023</code></pre>
 <p><span class="math display">A = \{a_{ij}\}, \quad a_{ij} = \frac{1}{i + j + 1}, \quad i,j = 0, \ldots, n-1.</span></p>
 <p>И рассмотрим линейную систему</p>
 <p><span class="math display">Ax = f.</span></p>
-<div id="cell-50" class="cell" data-scrolled="false" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span><span class="op">/</span>(i <span class="op">+</span> j <span class="op">+</span> <span class="dv">1</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="co"># Hilbert matrix</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array(a)</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span>  np.random.randn(n)</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.ones(n)</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> np.linalg.solve(A, rhs)</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.linalg.norm(A <span class="op">@</span> sol <span class="op">-</span> rhs)<span class="op">/</span>np.linalg.norm(rhs))</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>plt.plot(sol)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-48" class="cell" data-scrolled="false" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span><span class="op">/</span>(i <span class="op">+</span> j <span class="op">+</span> <span class="dv">1</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="co"># Hilbert matrix</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array(a)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">#rhs =  np.random.randn(n)</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.ones(n)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> np.linalg.solve(A, rhs)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.linalg.norm(A <span class="op">@</span> sol <span class="op">-</span> rhs)<span class="op">/</span>np.linalg.norm(rhs))</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>plt.plot(sol)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>8.945456835802865e-08</code></pre>
+<pre><code>1.3614802098870779e-07</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-1_files/figure-html/cell-11-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-1_files/figure-html/cell-10-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="cell-51" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="34">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.ones(n)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> np.linalg.solve(A, rhs)</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.linalg.norm(A <span class="op">@</span> sol <span class="op">-</span> rhs)<span class="op">/</span>np.linalg.norm(rhs))</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.plot(sol)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-49" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.ones(n)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> np.linalg.solve(A, rhs)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.linalg.norm(A <span class="op">@</span> sol <span class="op">-</span> rhs)<span class="op">/</span>np.linalg.norm(rhs))</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.plot(sol)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>0.0018351191</code></pre>
 </div>
@@ -895,29 +859,29 @@ Relative error in Chebyshev norm: 0.7942525068309023</code></pre>
 <li><span class="math inline">\log(1 - \tanh^2(x))</span></li>
 <li><span class="math inline">\text{SoftMax}(x)_j = \dfrac{e^{x_j}}{\sum\limits_{i=1}^n e^{x_i}}</span></li>
 </ul>
-<div id="cell-53" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> <span class="dv">30</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>eps <span class="op">=</span> <span class="fl">1e-6</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Исходная функция:"</span>, np.log(<span class="dv">1</span> <span class="op">-</span> np.tanh(u)<span class="op">**</span><span class="dv">2</span>))</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>eps_add <span class="op">=</span> np.log(<span class="dv">1</span> <span class="op">-</span> np.tanh(u)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> eps)</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Попытка улучшить стабильность добавлением малой константы:"</span>, eps_add)</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Использование более численно стабильной формы:"</span>, np.log(<span class="dv">4</span>) <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> np.log(np.exp(<span class="op">-</span>u) <span class="op">+</span> np.exp(u)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-51" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> <span class="dv">30</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>eps <span class="op">=</span> <span class="fl">1e-6</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Исходная функция:"</span>, np.log(<span class="dv">1</span> <span class="op">-</span> np.tanh(u)<span class="op">**</span><span class="dv">2</span>))</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>eps_add <span class="op">=</span> np.log(<span class="dv">1</span> <span class="op">-</span> np.tanh(u)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> eps)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Попытка улучшить стабильность добавлением малой константы:"</span>, eps_add)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Использование более численно стабильной формы:"</span>, np.log(<span class="dv">4</span>) <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> np.log(np.exp(<span class="op">-</span>u) <span class="op">+</span> np.exp(u)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Исходная функция: -inf
 Попытка улучшить стабильность добавлением малой константы: -13.815510557964274
 Использование более численно стабильной формы: -58.61370563888011</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>/var/folders/x_/_k8z8m6s2qxc_j4gwz6fpvmm0000gp/T/ipykernel_7697/1002619719.py:3: RuntimeWarning: divide by zero encountered in log
+<pre><code>/var/folders/x_/_k8z8m6s2qxc_j4gwz6fpvmm0000gp/T/ipykernel_10237/1002619719.py:3: RuntimeWarning: divide by zero encountered in log
   print("Исходная функция:", np.log(1 - np.tanh(u)**2))</code></pre>
 </div>
 </div>
-<div id="cell-54" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.normal(size<span class="op">=</span>(n,))</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.exp(x) <span class="op">/</span> np.<span class="bu">sum</span>(np.exp(x)))</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.exp(x <span class="op">-</span> np.<span class="bu">max</span>(x)) <span class="op">/</span> np.<span class="bu">sum</span>(np.exp(x <span class="op">-</span> np.<span class="bu">max</span>(x))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-52" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.normal(size<span class="op">=</span>(n,))</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.exp(x) <span class="op">/</span> np.<span class="bu">sum</span>(np.exp(x)))</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.exp(x <span class="op">-</span> np.<span class="bu">max</span>(x)) <span class="op">/</span> np.<span class="bu">sum</span>(np.exp(x <span class="op">-</span> np.<span class="bu">max</span>(x))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[nan  0.  0.  0.  0.]
 [1. 0. 0. 0. 0.]</code></pre>

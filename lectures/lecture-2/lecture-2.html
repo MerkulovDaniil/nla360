@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lecture 2. Matrix norms and unitary matrices</title>
+<title>Лекция 2: Умножение матрицы на вектор и матричные умножения, иерархия памяти, алгоритм Штрассена</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -57,7 +57,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -100,6 +100,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/copy-tex.min.js" integrity="sha384-ww/583aHhxWkz5DEVn6OKtNiIaLi2iBRNZXfJRiY1Ai7tnJ9UXpEsyvOITVpTl4A" crossorigin="anonymous"></script>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
@@ -146,12 +149,16 @@ window.Quarto = {
 };
 </script>
 
-<meta property="og:title" content="Lecture 2. Matrix norms and unitary matrices">
+<meta property="og:title" content="Лекция 2: Умножение матрицы на вектор и матричные умножения, иерархия памяти, алгоритм Штрассена">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-2/householder.jpeg">
-<meta name="twitter:title" content="Lecture 2. Matrix norms and unitary matrices">
+<meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-2/lecture-2_files/figure-html/cell-7-output-1.png">
+<meta property="og:image:height" content="442">
+<meta property="og:image:width" content="588">
+<meta name="twitter:title" content="Лекция 2: Умножение матрицы на вектор и матричные умножения, иерархия памяти, алгоритм Штрассена">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-2/householder.jpeg">
+<meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-2/lecture-2_files/figure-html/cell-7-output-1.png">
+<meta name="twitter:image-height" content="442">
+<meta name="twitter:image-width" content="588">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -201,343 +208,573 @@ window.Quarto = {
 </header>
 
 
-<section id="recap-of-the-previous-lecture" class="level2">
-<h2 class="anchored" data-anchor-id="recap-of-the-previous-lecture">Recap of the previous lecture</h2>
+<section id="краткое-содержание-предыдущих-лекцийсеминаров" class="level2">
+<h2 class="anchored" data-anchor-id="краткое-содержание-предыдущих-лекцийсеминаров">Краткое содержание предыдущих лекций/семинаров</h2>
 <ul>
-<li>Floating point (double, single, half precisions, number of bytes), rounding error</li>
-<li>Vector norms are measures of smallness, used to compute the distance and accuracy</li>
-<li>Forward/backward error (and stability of algorithms)</li>
+<li>Арифметика с плавающей точкой и связанные с ней проблемы</li>
+<li>Устойчивые алгоритмы: обратная и прямая устойчивость</li>
+<li>Важнейшие матричные нормы: спектральная и норма Фробениуса</li>
+<li>Унитарные матрицы сохраняют эти нормы</li>
+<li>Существуют два “базовых” класса унитарных матриц: матрицы Хаусхолдера и Гивенса</li>
 </ul>
 </section>
-<section id="notations" class="level2">
-<h2 class="anchored" data-anchor-id="notations">Notations</h2>
-<p>We use notation</p>
-<p><span class="math display">A= \begin{bmatrix} a_{11} &amp; \dots &amp; a_{1m} \\ \vdots &amp; \ddots &amp; \vdots \\ a_{n1} &amp; \dots &amp; a_{nm}  \end{bmatrix} \equiv \{a_{ij}\}_{i,j=1}^{n,m}\in \mathbb{C}^{n\times m}.</span></p>
-<p><span class="math inline">A^*\stackrel{\mathrm{def}}{=}\overline{A^\top}</span>.</p>
-</section>
-<section id="matrices-and-norms" class="level2">
-<h2 class="anchored" data-anchor-id="matrices-and-norms">Matrices and norms</h2>
-<ul>
-<li><p>Recall vector norms that allow to evaluate distance between two vectors or how large are elements of a vector.</p></li>
-<li><p>How to generalize this concept to matrices?</p></li>
-<li><p>A trivial answer is that there is no big difference between matrices and vectors, and here comes the simplest matrix norm –– <strong>Frobenius</strong> norm:</p></li>
-</ul>
-<p><span class="math display"> \Vert A \Vert_F \stackrel{\mathrm{def}}{=} \Big(\sum_{i=1}^n \sum_{j=1}^m |a_{ij}|^2\Big)^{1/2} </span></p>
-</section>
-<section id="matrix-norms" class="level2">
-<h2 class="anchored" data-anchor-id="matrix-norms">Matrix norms</h2>
-<p><span class="math inline">\Vert \cdot \Vert</span> is called a <strong>matrix norm</strong> if it is a vector norm on the vector space of <span class="math inline">n \times m</span> matrices: 1. <span class="math inline">\|A\| \geq 0</span> and if <span class="math inline">\|A\| = 0</span> then <span class="math inline">A = O</span> 3. <span class="math inline">\|\alpha A\| = |\alpha| \|A\|</span> 4. <span class="math inline">\|A+B\| \leq \|A\| + \|B\|</span> (triangle inequality)</p>
-<p>Additionally some norms can satisfy the <em>submultiplicative property</em></p>
-<ul>
-<li><p><span style="color:red"> <span class="math inline">\Vert A B \Vert \leq \Vert A \Vert \Vert B \Vert</span> </span></p></li>
-<li><p>These norms are called <strong>submultiplicative norms</strong>.</p></li>
-<li><p>The submultiplicative property is needed in many places, for example in the estimates for the error of solution of linear systems (we will cover this topic later).</p></li>
-<li><p>Example of a non-submultiplicative norm is Chebyshev norm</p></li>
-</ul>
-<p><span class="math display"> \|A\|_C = \displaystyle{\max_{i,j}}\, |a_{ij}| </span></p>
-</section>
-<section id="operator-norms" class="level2">
-<h2 class="anchored" data-anchor-id="operator-norms">Operator norms</h2>
-<ul>
-<li>The most important class of the matrix norms is the class of <strong>operator norms</strong>. They are defined as</li>
-</ul>
-<p><span class="math display"> \Vert A \Vert_{*,**} = \sup_{x \ne 0} \frac{\Vert A x \Vert_*}{\Vert x \Vert_{**}}, </span></p>
-<p>where <span class="math inline">\Vert \cdot \Vert_*</span> and <span class="math inline">\| \cdot \|_{**}</span> are <strong>vector norms</strong>.</p>
-<ul>
-<li><p>It is easy to check that operator norms are submultiplicative if <span class="math inline">\|\cdot\|_* = \|\cdot\|_{**}</span>. Otherwise, it can be non-submultiplicative, think about example.</p></li>
-<li><p><strong>Frobenius norm</strong> is a matrix norm, but not an operator norm, i.e.&nbsp;you can not find <span class="math inline">\Vert \cdot \Vert_*</span> and <span class="math inline">\| \cdot \|_{**}</span> that induce it.</p></li>
-<li><p>This is a nontrivial fact and the general criterion for matrix norm to be an operator norm can be found in <a href="http://www.sciencedirect.com/science/article/pii/S0024379515004346">Theorem 6 and Corollary 4</a>. For <span class="math inline">\Vert \cdot \Vert_* = \| \cdot \|_{**}</span> let us check on the blackboard!</p></li>
-</ul>
-</section>
-<section id="matrix-p-norms" class="level2">
-<h2 class="anchored" data-anchor-id="matrix-p-norms">Matrix <span class="math inline">p</span>-norms</h2>
-<p>Important case of operator norms are matrix <span class="math inline">p</span>-norms, which are defined for <span class="math inline">\|\cdot\|_* = \|\cdot\|_{**} = \|\cdot\|_p</span>. <br></p>
-<p>Among all <span class="math inline">p</span>-norms three norms are the most common ones:</p>
-<ul>
-<li><p><span class="math inline">p = 1, \quad \Vert A \Vert_{1} = \displaystyle{\max_j \sum_{i=1}^n} |a_{ij}|</span>.</p></li>
-<li><p><span class="math inline">p = 2, \quad</span> spectral norm, denoted by <span class="math inline">\Vert A \Vert_2</span>.</p></li>
-<li><p><span class="math inline">p = \infty, \quad \Vert A \Vert_{\infty} = \displaystyle{\max_i \sum_{j=1}^m} |a_{ij}|</span>.</p></li>
-</ul>
-<p>Let us check it for <span class="math inline">p=\infty</span> on a blackboard.</p>
-</section>
-<section id="spectral-norm" class="level2">
-<h2 class="anchored" data-anchor-id="spectral-norm">Spectral norm</h2>
-<ul>
-<li>Spectral norm, <span class="math inline">\Vert A \Vert_2</span> is one of the most used matrix norms (along with the Frobenius norm).</li>
-<li>It can not be computed directly from the entries using a simple formula, like the Frobenius norm, however, there are efficient algorithms to compute it.<br>
-</li>
-<li>It is directly related to the <strong>singular value decomposition</strong> (SVD) of the matrix. It holds</li>
-</ul>
-<p><span class="math display"> \Vert A \Vert_2 = \sigma_1(A) = \sqrt{\lambda_{\max}(A^*A)} </span></p>
-<p>where <span class="math inline">\sigma_1(A)</span> is the largest singular value of the matrix <span class="math inline">A</span> and <span class="math inline">^*</span> is a <em>conjugate transpose</em> of the matrix.</p>
-<ul>
-<li>We will soon learn all about the SVD. Meanwhile, we can already compute the norm in Python.</li>
-</ul>
-<div id="d1cc98ad" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">2000</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.random.randn(n, m) <span class="co">#Random n x m matrix</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>s1 <span class="op">=</span> np.linalg.norm(a, <span class="dv">2</span>) <span class="co">#Spectral</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>s2 <span class="op">=</span> np.linalg.norm(a, <span class="st">'fro'</span>) <span class="co">#Frobenius</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>s3 <span class="op">=</span> np.linalg.norm(a, <span class="dv">1</span>) <span class="co">#1-norm</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>s4 <span class="op">=</span> np.linalg.norm(a, jnp.inf) </span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Spectral: </span><span class="sc">{0:}</span><span class="st"> </span><span class="ch">\n</span><span class="st">Frobenius: </span><span class="sc">{1:}</span><span class="st"> </span><span class="ch">\n</span><span class="st">1-norm: </span><span class="sc">{2:}</span><span class="st"> </span><span class="ch">\n</span><span class="st">infinity: </span><span class="sc">{3:}</span><span class="st">'</span>.<span class="bu">format</span>(s1, s2, s3, s4))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Spectral: 54.23724766209146 
-Frobenius: 447.08449637895757 
-1-norm: 102.09472515184673 
-infinity: 1690.7456169067727</code></pre>
-</div>
-</div>
-</section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
-<p>Several examples of optimization problems where matrix norms arise: * <span style="color:red"> <span class="math inline">\displaystyle{\min_{\mathrm{rank}(A_r)=r}}\| A - A_r\|</span> </span> –– finding best rank-r approximation. SVD helps to solve this problem for <span class="math inline">\|\cdot\|_2</span> and <span class="math inline">\|\cdot\|_F</span>.</p>
-<ul>
-<li><span class="math inline">\displaystyle{\min_B}\| P_\Omega \odot(A - B)\| + \mathrm{rank}(B)</span> –– matrix completion.</li>
-</ul>
-<p><span class="math display"> (P_\Omega)_{ij} = \begin{cases} 1 &amp; i,j\in\Omega \\ 0 &amp; \text{otherwise}, \end{cases} </span></p>
-<p>where <span class="math inline">\odot</span> denotes Hadamard product (elementwise)</p>
-<ul>
-<li><span class="math inline">\displaystyle{\min_{B,C\geq 0}} \|A - BC\|_F</span> –– nonnegative matrix factorization. Symbol <span class="math inline">B\geq0</span> here means that all elements of <span class="math inline">B</span> are nonnegative.</li>
-</ul>
-</section>
-<section id="scalar-product" class="level2">
-<h2 class="anchored" data-anchor-id="scalar-product">Scalar product</h2>
-<p>While norm is a measure of distance, the <strong>scalar product</strong> takes angle into account.</p>
-<p>It is defined as</p>
-<ul>
-<li><strong>For vectors:</strong> <span class="math display"> (x, y) =  x^* y = \sum_{i=1}^n \overline{x}_i y_i, </span> where <span class="math inline">\overline{x}</span> denotes the <em>complex conjugate</em> of <span class="math inline">x</span>. The Euclidean norm is then</li>
-</ul>
-<p><span class="math display"> \Vert x \Vert_2 = \sqrt{(x, x)}, </span></p>
-<p>or it is said the norm is <strong>induced</strong> by the scalar product.</p>
-<ul>
-<li><strong>For matrices</strong> (Frobenius scalar product):</li>
-</ul>
-<p><span class="math display"> (A, B)_F = \displaystyle{\sum_{i=1}^{n}\sum_{j=1}^{m}} \overline{a}_{ij} b_{ij} \equiv \mathrm{trace}(A^* B), </span></p>
-<p>where <span class="math inline">\mathrm{trace}(A)</span> denotes the sum of diagonal elements of <span class="math inline">A</span>. One can check that <span class="math inline">\|A\|_F = \sqrt{(A, A)_F}</span>.</p>
-<p><strong>Remark</strong>. The angle between two vectors is defined as</p>
-<p><span class="math display"> \cos \phi = \frac{(x, y)}{\Vert x \Vert_2 \Vert y \Vert_2}. </span></p>
-<p>Similar expression holds for matrices.</p>
-<ul>
-<li>An important property of the scalar product is the <strong>Cauchy-Schwarz-Bunyakovski inequality</strong>:</li>
-</ul>
-<p><span class="math display">|(x, y)| \leq \Vert x \Vert_2 \Vert y \Vert_2,</span></p>
-<p>and thus the angle between two vectors is defined properly.</p>
-</section>
-<section id="matrices-preserving-the-norm" class="level2">
-<h2 class="anchored" data-anchor-id="matrices-preserving-the-norm">Matrices preserving the norm</h2>
-<ul>
-<li><p>For stability it is really important that the error does not grow after we apply some transformations.</p></li>
-<li><p>Suppose you are given <span class="math inline">\widehat{x}</span> –– the approximation of <span class="math inline">x</span> such that,</p></li>
-</ul>
-<p><span class="math display"> \frac{\Vert x - \widehat{x} \Vert}{\Vert x \Vert} \leq \varepsilon. </span></p>
-<ul>
-<li>Let us calculate a linear transformation of <span class="math inline">x</span> and <span class="math inline">\widehat{x}</span>:</li>
-</ul>
-<p><span class="math display"> y = U x, \quad \widehat{y} = U \widehat{x}. </span></p>
-<ul>
-<li>When building new algorithms, we want to use transformations that do not increase (or even preserve) the error:</li>
-</ul>
-<p><span class="math display"> \frac{\Vert y - \widehat{y} \Vert}{\Vert y \Vert } = \frac{\Vert U ( x - \widehat{x}) \Vert}{\Vert U  x\Vert}  \leq \varepsilon. </span></p>
-<ul>
-<li>The question is for which kind of matrices the norm of the vector <strong>will not change</strong>, so that</li>
-</ul>
-<p><span class="math display"> \frac{\Vert U ( x - \widehat{x}) \Vert}{\Vert U  x\Vert} = \frac{ \|x - \widehat{x}\|}{\|x\|}. </span></p>
-<ul>
-<li>For the euclidean norm <span class="math inline">\|\cdot\|_2</span> the answer is <strong>unitary</strong> (or orthogonal in the real case) matrices.</li>
-</ul>
-</section>
-<section id="unitary-orthogonal-matrices" class="level2">
-<h2 class="anchored" data-anchor-id="unitary-orthogonal-matrices">Unitary (orthogonal) matrices</h2>
-<ul>
-<li><p>Let <span class="math inline">U</span> be complex <span class="math inline">n \times n</span> matrix, and <span class="math inline">\Vert U z \Vert_2 = \Vert z \Vert_2</span> for all <span class="math inline">z</span>.</p></li>
-<li><p>This can happen <strong>if and only if</strong> (can be abbreviated as <strong>iff</strong>)</p></li>
-</ul>
-<p><span class="math display"> U^* U = I_n, </span></p>
-<p>where <span class="math inline">I_n</span> is an identity matrix <span class="math inline">n\times n</span>.</p>
-<ul>
-<li>Complex <span class="math inline">n\times n</span> square matrix is called <strong>unitary</strong> if</li>
-</ul>
-<p><span class="math display"> U^*U = UU^* = I_n, </span></p>
-<p>which means that columns and rows of unitary matrices both form orthonormal basis in <span class="math inline">\mathbb{C}^{n}</span>.</p>
-<ul>
-<li><p>For rectangular matrices of size <span class="math inline">m\times n</span> (<span class="math inline">n\not= m</span>) only one of the equalities can hold</p>
-<ul>
-<li>$ U^*U = I_n$ –– left unitary for <span class="math inline">m&gt;n</span></li>
-<li>$ UU^* = I_m$ –– right unitary for <span class="math inline">m&lt;n</span></li>
-</ul></li>
-<li><p>In the case of real matrices <span class="math inline">U^* = U^T</span> and matrices such that</p></li>
-</ul>
-<p><span class="math display"> U^TU = UU^T = I </span></p>
-<p>are called <strong>orthogonal</strong>.</p>
-</section>
-<section id="unitary-matrices" class="level2">
-<h2 class="anchored" data-anchor-id="unitary-matrices">Unitary matrices</h2>
-<p>Important property: <strong>a product of two unitary matrices is a unitary matrix:</strong></p>
-<p><span class="math display">(UV)^* UV = V^* (U^* U) V = V^* V = I,</span></p>
-<ul>
-<li>Later we will show that there are types of matrices (<strong>Householder reflections</strong> and <strong>Givens rotations</strong>) composition of which is able to produce arbitrary unitary matrix</li>
-<li>This idea is a core of some algorithms, e.g.&nbsp;QR decomposition</li>
-</ul>
-</section>
-<section id="unitary-invariance-of-cdot_2-and-cdot_f-norms" class="level2">
-<h2 class="anchored" data-anchor-id="unitary-invariance-of-cdot_2-and-cdot_f-norms">Unitary invariance of <span class="math inline">\|\cdot\|_2</span> and <span class="math inline">\|\cdot\|_F</span> norms</h2>
-<ul>
-<li><p>For vector 2-norm we have already seen that <span class="math inline">\Vert U z \Vert_2 = \Vert z \Vert_2</span> for any unitary <span class="math inline">U</span>.</p></li>
-<li><p>One can show that unitary matrices also do not change matrix norms <span class="math inline">\|\cdot\|_2</span> and <span class="math inline">\|\cdot\|_F</span>, i.e.&nbsp;for any square <span class="math inline">A</span> and unitary <span class="math inline">U</span>,<span class="math inline">V</span>:</p></li>
-</ul>
-<p><span class="math display"> \| UAV\|_2 = \| A \|_2 \qquad \| UAV\|_F = \| A \|_F.</span></p>
-<ul>
-<li><p>For <span class="math inline">\|\cdot\|_2</span> it follows from the definition of an operator norm and the fact that vector 2-norm is unitary invariant.</p></li>
-<li><p>For <span class="math inline">\|\cdot\|_F</span> it follows from <span class="math inline">\|A\|_F^2 = \mathrm{trace}(A^*A)</span> and the fact that <span class="math inline">\mathrm{trace}(BC) = \mathrm{trace}(CB)</span>.</p></li>
-</ul>
-</section>
-<section id="examples-of-unitary-matrices" class="level2">
-<h2 class="anchored" data-anchor-id="examples-of-unitary-matrices">Examples of unitary matrices</h2>
-<ul>
-<li><p>There are two important classes of unitary matrices, using composition of which we can construct any unitary matrix:</p>
+<section id="примеры-пиковой-производительности" class="level2">
+<h2 class="anchored" data-anchor-id="примеры-пиковой-производительности">Примеры пиковой производительности</h2>
+<p><strong>Flops</strong> –– операции с плавающей точкой в секунду.</p>
+<p>Giga = <span class="math inline">2^{30} \approx 10^9</span>,<br>
+Tera = <span class="math inline">2^{40} \approx 10^{12}</span>,<br>
+Peta = <span class="math inline">2^{50} \approx 10^{15}</span>,<br>
+Exa = <span class="math inline">2^{60} \approx 10^{18}</span></p>
+<p>Какова <strong>пиковая производительность</strong>:</p>
 <ol type="1">
-<li>Householder matrices</li>
-<li>Givens (Jacobi) matrices</li>
-</ol></li>
-<li><p>Other important examples are</p>
+<li>Современного CPU</li>
+<li>Современного GPU</li>
+<li>Самого мощного суперкомпьютера в мире?</li>
+</ol>
+<section id="тактовая-частота-процессора-и-производительность-в-флопс" class="level3">
+<h3 class="anchored" data-anchor-id="тактовая-частота-процессора-и-производительность-в-флопс">Тактовая частота процессора и производительность в флопс</h3>
+<p>FLOPS = сокеты * (ядра на сокет) * (количество тактов в секунду) * (количество операций с плавающей точкой за такт).</p>
 <ul>
-<li><strong>Permutation matrix</strong> <span class="math inline">P</span> whose rows (columns) are permutation of rows (columns) of the identity matrix.</li>
-<li><strong>Fourier matrix</strong> <span class="math inline">F_n = \frac{1}{\sqrt{n}} \left\{ e^{-i\frac{2\pi kl}{n}}\right\}_{k,l=0}^{n-1}</span></li>
+<li>Обычно количество сокетов = 1</li>
+<li>Количество ядер обычно 2 или 4<br>
+</li>
+<li>Количество тактов в секунду - это знакомая тактовая частота</li>
+<li>Количество операций с плавающей точкой за такт зависит от конкретного процессора</li>
+</ul>
+<ol type="1">
+<li>Современный CPU (Intel Core i7) –– 400 Гфлопс</li>
+<li>Современный GPU <a href="https://www.nvidia.com/en-us/data-center/h100/">Nvidia DGX H100</a> – зависит от точности!</li>
+<li>Самый мощный суперкомпьютер в мире –– 1.102 Экзафлопс/с –– пиковая производительность</li>
+</ol>
+</section>
+</section>
+<section id="умножение-матрицы-на-вектор-matvec" class="level2">
+<h2 class="anchored" data-anchor-id="умножение-матрицы-на-вектор-matvec">Умножение матрицы на вектор (matvec)</h2>
+<p>Умножение матрицы <span class="math inline">A</span> размера <span class="math inline">n\times n</span> на вектор <span class="math inline">x</span> размера <span class="math inline">n\times 1</span> (<span class="math inline">y=Ax</span>):</p>
+<p><span class="math display">
+y_{i} = \sum_{j=1}^n a_{ij} x_j
+</span></p>
+<p>требует <span class="math inline">n^2</span> умножений и <span class="math inline">n(n-1)</span> сложений. Таким образом, общая сложность составляет <span class="math inline">2n^2 - n =</span> <font color="red"> <span class="math inline">\mathcal{O}(n^2)</span> </font></p>
+</section>
+<section id="насколько-плохо-mathcalon2" class="level2">
+<h2 class="anchored" data-anchor-id="насколько-плохо-mathcalon2">Насколько плохо <span class="math inline">\mathcal{O}(n^2)</span>?</h2>
+<ul>
+<li><p>Пусть <span class="math inline">A</span> - матрица попарного гравитационного взаимодействия между планетами в галактике.</p></li>
+<li><p>Число планет в средней галактике составляет <span class="math inline">10^{11}</span>, поэтому размер этой матрицы <span class="math inline">10^{11} \times 10^{11}</span>.</p></li>
+<li><p>Чтобы моделировать эволюцию во времени, мы должны умножать эту матрицу на вектор на каждом временном шаге.</p></li>
+<li><p>Самые мощные суперкомпьютеры выполняют около <span class="math inline">10^{16}</span> операций с плавающей точкой в секунду (флопс), поэтому время, необходимое для умножения матрицы <span class="math inline">A</span> на вектор, составляет примерно</p></li>
+</ul>
+<p><span class="math display">\begin{align*}
+\frac{(10^{11})^2 \text{ операций}}{10^{16} \text{ флопс}} = 10^6 \text{ сек} \approx 11.5 \text{ дней}
+\end{align*}</span></p>
+<p>для одного временного шага. Если бы мы могли умножать со сложностью <span class="math inline">\mathcal{O}(n)</span>, мы бы получили</p>
+<p><span class="math display">\begin{align*}
+\frac{10^{11} \text{ операций}}{10^{16} \text{ флопс}} = 10^{-5} \text{ сек}.
+\end{align*}</span></p>
+<p>Вот видео на YouTube, которое иллюстрирует столкновение двух галактик, смоделированное алгоритмом со сложностью <span class="math inline">\mathcal{O}(n \log n)</span>:</p>
+<div id="cell-8" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> YouTubeVideo</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>YouTubeVideo(<span class="st">"7HF5Oy8IMoM"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+
+        <iframe width="400" height="300" src="https://www.youtube.com/embed/7HF5Oy8IMoM" frameborder="0" allowfullscreen=""></iframe>
+        
+</div>
+</div>
+</section>
+<section id="можем-ли-мы-побить-mathcalon2" class="level2">
+<h2 class="anchored" data-anchor-id="можем-ли-мы-побить-mathcalon2">Можем ли мы побить <span class="math inline">\mathcal{O}(n^2)</span>?</h2>
+<ul>
+<li>В общем случае <strong>НЕТ</strong>.</li>
+<li>Дело в том, что у нас есть входные данные размера <span class="math inline">\mathcal{O}(n^2)</span>, поэтому нет способа быть быстрее для произвольной матрицы.</li>
+<li>К счастью, мы можем быть быстрее <font color="red">для определенных типов матриц</font>. Вот несколько примеров:
+<ul>
+<li>Простейший пример - матрица, состоящая из всех единиц, которую можно легко умножить, используя только <span class="math inline">n-1</span> сложений. Эта матрица имеет ранг один. В более общем случае мы можем быстро умножать <font color="red">матрицы малого ранга</font> (или матрицы, имеющие блоки малого ранга)</li>
+<li><font color="red">Разреженные</font> матрицы (содержат <span class="math inline">\mathcal{O}(n)</span> ненулевых элементов)</li>
+<li><font color="red">Структурированные</font> матрицы:
+<ul>
+<li>Фурье</li>
+<li>Циркулянтные</li>
+<li>Теплицевы</li>
+<li>Ганкелевы</li>
+</ul></li>
 </ul></li>
 </ul>
 </section>
-<section id="householder-matrices" class="level2">
-<h2 class="anchored" data-anchor-id="householder-matrices">Householder matrices</h2>
-<ul>
-<li>Householder matrix is the matrix of the form</li>
-</ul>
-<p><span class="math display">H \equiv H(v) = I - 2 vv^*,</span></p>
-<p>where <span class="math inline">v</span> is an <span class="math inline">n \times 1</span> column and <span class="math inline">v^* v = 1</span>. - Can you show that <span class="math inline">H</span> is unitary and Hermitian (<span class="math inline">H^* = H</span>)?<br>
-- It is also a reflection:</p>
-<p><span class="math display"> Hx = x - 2(v^* x) v</span></p>
-<p><img src="householder.jpeg" width="500"></p>
+<section id="произведение-матриц" class="level2">
+<h2 class="anchored" data-anchor-id="произведение-матриц">Произведение матриц</h2>
+<p>Рассмотрим композицию двух линейных операторов:</p>
+<ol type="1">
+<li><span class="math inline">y = Bx</span></li>
+<li><span class="math inline">z = Ay</span></li>
+</ol>
+<p>Тогда <span class="math inline">z = Ay = A B x = C x</span>, где <span class="math inline">C</span> - это <strong>произведение матриц</strong>.</p>
 </section>
-<section id="important-property-of-householder-reflection" class="level2">
-<h2 class="anchored" data-anchor-id="important-property-of-householder-reflection">Important property of Householder reflection</h2>
-<ul>
-<li>A nice property of Householder transformation is that it can zero all elements of a vector except for the first one:</li>
-</ul>
-<p><span class="math display"> H \begin{bmatrix} \times \\ \times \\ \times \\ \times  \end{bmatrix} =  \begin{bmatrix} \times \\ 0 \\ 0 \\ 0  \end{bmatrix}. </span></p>
-<p><em>Proof (for real case).</em> Let <span class="math inline">e_1 = (1,0,\dots, 0)^T</span>, then we want to find <span class="math inline">v</span> such that</p>
-<p><span class="math display"> H x = x - 2(v^* x) v = \alpha e_1, </span></p>
-<p>where <span class="math inline">\alpha</span> is an unknown constant. Since <span class="math inline">\|\cdot\|_2</span> is unitary invariant we get</p>
-<p><span class="math display">\|x\|_2 = \|Hx\|_2 = \|\alpha e_1\|_2 = |\alpha|.</span></p>
-<p>and <span class="math display">\alpha = \pm \|x\|_2</span></p>
-<p>Also, we can express <span class="math inline">v</span> from <span class="math inline">x - 2(v^* x) v = \alpha e_1</span>:</p>
-<p><span class="math display">v = \dfrac{x-\alpha e_1}{2 v^* x}</span></p>
-<p>Multiplying the latter expression by <span class="math inline">x^*</span> we get</p>
-<p><span class="math display">x^* x - 2 (v^* x) x^* v = \alpha x_1; </span></p>
-<p>or</p>
-<p><span class="math display"> \|x\|_2^2 - 2 (v^* x)^2 = \alpha x_1. </span></p>
-<p>Therefore,</p>
-<p><span class="math display"> (v^* x)^2 = \frac{\|x\|_2^2 - \alpha x_1}{2}. </span></p>
-<p>So, <span class="math inline">v</span> exists and equals</p>
-<p><span class="math display"> v = \dfrac{x \mp \|x\|_2 e_1}{2v^* x} = \dfrac{x \mp \|x\|_2 e_1}{\pm\sqrt{2(\|x\|_2^2 \mp \|x\|_2 x_1)}}. </span></p>
+<section id="произведение-матрицы-на-матрицу-мм-классика" class="level2">
+<h2 class="anchored" data-anchor-id="произведение-матрицы-на-матрицу-мм-классика">Произведение матрицы на матрицу (ММ): классика</h2>
+<p><strong>Определение</strong>. Произведение матрицы <span class="math inline">A</span> размера <span class="math inline">n \times k</span> и матрицы <span class="math inline">B</span> размера <span class="math inline">k \times m</span> - это матрица <span class="math inline">C</span> размера <span class="math inline">n \times m</span> с элементами <span class="math display">
+   c_{ij} = \sum_{s=1}^k a_{is} b_{sj}, \quad i = 1, \ldots, n, \quad j = 1, \ldots, m
+</span></p>
+<p>Для <span class="math inline">m=k=n</span> сложность наивного алгоритма составляет <span class="math inline">2n^3 - n^2 =</span> <font color="red"><span class="math inline">\mathcal{O}(n^3)</span></font>.</p>
 </section>
-<section id="householder-algorithm-for-qr-decomposition" class="level2">
-<h2 class="anchored" data-anchor-id="householder-algorithm-for-qr-decomposition">Householder algorithm for QR decomposition</h2>
-<p>Using the obtained property we can make arbitrary matrix <span class="math inline">A</span> lower triangular:</p>
-<p><span class="math display">
-H_2 H_1 A = \begin{bmatrix} \times &amp; \times &amp; \times &amp; \times \\ 0 &amp; \times &amp; \times &amp; \times  \\  0 &amp; 0 &amp; \boldsymbol{\times} &amp; \times\\ 0 &amp;0 &amp; \boldsymbol{\times} &amp; \times  \\ 0 &amp;0 &amp; \boldsymbol{\times} &amp; \times \end{bmatrix} </span></p>
-<p>then finding <span class="math inline">H_3=\begin{bmatrix}I_2 &amp; \\ &amp; {\widetilde H}_3 \end{bmatrix}</span> such that</p>
-<p><span class="math display"> {\widetilde H}_3 \begin{bmatrix} \boldsymbol{\times}\\ \boldsymbol{\times} \\ \boldsymbol{\times}  \end{bmatrix} = \begin{bmatrix} \times \\ 0 \\ 0  \end{bmatrix}. </span></p>
-<p>we get</p>
-<p><span class="math display"> H_3 H_2 H_1 A =  \begin{bmatrix} \times &amp; \times &amp; \times &amp; \times \\  0 &amp; \times &amp; \times &amp; \times  \\  0 &amp; 0 &amp; {\times} &amp; \times\\  0 &amp;0 &amp; 0 &amp; \times  \\  0 &amp;0 &amp; 0 &amp; \times  \end{bmatrix} </span></p>
-<p>Finding <span class="math inline">H_4</span> by analogy we arrive at upper-triangular matrix.</p>
-<p>Since product and inverse of unitary matrices is a unitary matrix we get:</p>
-<p><strong>Corollary:</strong> (QR decomposition) Every <span class="math inline">A\in \mathbb{C}^{n\times m}</span> can be represented as</p>
-<p><span class="math display"> A = QR, </span></p>
-<p>where <span class="math inline">Q</span> is unitary and <span class="math inline">R</span> is upper triangular.</p>
-<p>See <a href="../decompositions.pdf">poster</a>, what are the sizes of <span class="math inline">Q</span> and <span class="math inline">R</span> for <span class="math inline">n&gt;m</span> and <span class="math inline">n&lt;m</span>.</p>
+<section id="обсуждение-матричного-умножения" class="level2">
+<h2 class="anchored" data-anchor-id="обсуждение-матричного-умножения">Обсуждение матричного умножения</h2>
+<ul>
+<li><p>Произведение матриц является <strong>основой</strong> почти всех эффективных алгоритмов в численной линейной алгебре.</p></li>
+<li><p>По сути, все алгоритмы плотной численной линейной алгебры сводятся к последовательности матричных произведений.</p></li>
+<li><p>Эффективная реализация матричного умножения снижает сложность численных алгоритмов на тот же коэффициент.</p></li>
+<li><p>Однако реализация матричного умножения совсем не проста!</p></li>
+</ul>
 </section>
-<section id="givens-jacobi-matrix" class="level2">
-<h2 class="anchored" data-anchor-id="givens-jacobi-matrix">Givens (Jacobi) matrix</h2>
-<ul>
-<li>A Givens matrix is a matrix</li>
-</ul>
-<p><span class="math display"> G = \begin{bmatrix} \cos \alpha &amp; -\sin \alpha \\ \sin \alpha &amp; \cos \alpha \end{bmatrix},</span></p>
-<p>which is a rotation.</p>
-<ul>
-<li>For a general case, we select two <span class="math inline">(i, j)</span> planes and rotate vector <span class="math inline">x</span></li>
-</ul>
-<p><span class="math display"> x' = G x, </span></p>
-<p>only in the <span class="math inline">i</span>-th and <span class="math inline">j</span>-th positions:</p>
-<p><span class="math display"> x'_i =  x_i\cos \alpha - x_j\sin \alpha , \quad x'_j = x_i \sin \alpha  +  x_j\cos\alpha, </span></p>
-<p>with all other <span class="math inline">x_i</span> remain unchanged. - Therefore, we can make elements in the <span class="math inline">j</span>-th position zero by choosing <span class="math inline">\alpha</span> such that</p>
-<p><span class="math display"> \cos \alpha = \frac{x_i}{\sqrt{x_i^2 + x_j^2}}, \quad \sin \alpha = -\frac{x_j}{\sqrt{x_i^2 + x_j^2}} </span></p>
-<div id="dd3bdda8" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>alpha <span class="op">=</span> <span class="op">-</span><span class="dv">3</span><span class="op">*</span>jnp.pi <span class="op">/</span> <span class="dv">4</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>G <span class="op">=</span> jnp.array([</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    [jnp.cos(alpha), <span class="op">-</span>jnp.sin(alpha)],</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    [jnp.sin(alpha), jnp.cos(alpha)]</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>])</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> jnp.array([<span class="op">-</span><span class="fl">1.</span><span class="op">/</span>jnp.sqrt(<span class="dv">2</span>), <span class="fl">1.</span><span class="op">/</span>jnp.sqrt(<span class="dv">2</span>)])</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> G <span class="op">@</span> x</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>plt.quiver([<span class="dv">0</span>, <span class="dv">0</span>], [<span class="dv">0</span>, <span class="dv">0</span>], [x[<span class="dv">0</span>], y[<span class="dv">0</span>]], [x[<span class="dv">1</span>], y[<span class="dv">1</span>]], angles<span class="op">=</span><span class="st">'xy'</span>, scale_units<span class="op">=</span><span class="st">'xy'</span>, scale<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>plt.xlim(<span class="op">-</span><span class="fl">1.</span>, <span class="fl">1.</span>)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="op">-</span><span class="fl">1.</span>, <span class="fl">1.</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="эффективная-реализация-матричного-умножения" class="level2">
+<h2 class="anchored" data-anchor-id="эффективная-реализация-матричного-умножения">Эффективная реализация матричного умножения</h2>
+<p><strong>В1</strong>: Легко ли умножать матрицу на матрицу наиболее эффективным способом?</p>
+</section>
+<section id="ответ-нет-это-непросто" class="level2">
+<h2 class="anchored" data-anchor-id="ответ-нет-это-непросто">Ответ: нет, это непросто</h2>
+<p>Если вы хотите сделать это максимально быстро, используя имеющиеся компьютеры.</p>
+</section>
+<section id="демонстрация" class="level2">
+<h2 class="anchored" data-anchor-id="демонстрация">Демонстрация</h2>
+<p>Давайте сделаем короткую демонстрацию и сравним процедуру <code>np.dot()</code>, которая в моем случае использует MKL, с написанной вручную подпрограммой умножения матриц на Python, а также с ее версией на numba.</p>
+<div id="cell-16" class="cell" data-code_folding="[]" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matmul(a, b):</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> a.shape[<span class="dv">0</span>] <span class="co"># размер первой размерности матрицы a</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    k <span class="op">=</span> a.shape[<span class="dv">1</span>] <span class="co"># размер второй размерности матрицы a</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> b.shape[<span class="dv">1</span>] <span class="co"># размер второй размерности матрицы b</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> np.zeros((n, m)) <span class="co"># создаем матрицу нулей размера n x m</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n): <span class="co"># проходим по строкам результирующей матрицы</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(m): <span class="co"># проходим по столбцам результирующей матрицы</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> s <span class="kw">in</span> <span class="bu">range</span>(k): <span class="co"># суммируем произведения элементов</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                c[i, j] <span class="op">+=</span> a[i, s] <span class="op">*</span> b[s, j]</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> c <span class="co"># возвращаем результат умножения матриц</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-17" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numba <span class="im">import</span> jit <span class="co"># Компилятор "на лету" для Python, см. http://numba.pydata.org</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">@jit</span>(nopython<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> numba_matmul(a, b):</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> a.shape[<span class="dv">0</span>]</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    k <span class="op">=</span> a.shape[<span class="dv">1</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> b.shape[<span class="dv">1</span>]</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> np.zeros((n, m))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(m):</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> s <span class="kw">in</span> <span class="bu">range</span>(k):</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>                c[i, j] <span class="op">+=</span> a[i, s] <span class="op">*</span> b[s, j]</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> c</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Теперь мы просто сравним время вычислений.</p>
+<p>Попробуйте угадать ответ.</p>
+<div id="cell-19" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.random.randn(n, n)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.random.randn(n, n)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit matmul(a, b)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit numba_matmul(a, b)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit a <span class="op">@</span> b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>265 ms ± 854 μs per loop (mean ± std. dev. of 7 runs, 1 loop each)
+572 μs ± 997 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+10.5 μs ± 69.7 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)</code></pre>
+</div>
+</div>
+<p>Is this answer correct for any dimensions of matrices?</p>
+<div id="cell-21" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>dim_range <span class="op">=</span> [<span class="dv">10</span><span class="op">*</span>i <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">11</span>)]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>time_range_matmul <span class="op">=</span> []</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>time_range_numba_matmul <span class="op">=</span> []</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>time_range_np <span class="op">=</span> []</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n <span class="kw">in</span> dim_range:</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Dimension = </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(n))</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.random.randn(n, n)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> np.random.randn(n, n)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> <span class="op">%</span>timeit <span class="op">-</span>o <span class="op">-</span>q matmul(a, b)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    time_range_matmul.append(t.best)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> <span class="op">%</span>timeit <span class="op">-</span>o <span class="op">-</span>q numba_matmul(a, b)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    time_range_numba_matmul.append(t.best)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> <span class="op">%</span>timeit <span class="op">-</span>o <span class="op">-</span>q np.dot(a, b)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    time_range_np.append(t.best)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Dimension = 10
+Dimension = 20
+Dimension = 30
+Dimension = 40
+Dimension = 50
+Dimension = 60
+Dimension = 70
+Dimension = 80
+Dimension = 90
+Dimension = 100</code></pre>
+</div>
+</div>
+<div id="cell-22" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plt.plot(dim_range, time_range_matmul, label<span class="op">=</span><span class="st">"Matmul"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>plt.plot(dim_range, time_range_numba_matmul, label<span class="op">=</span><span class="st">"Matmul Numba"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>plt.plot(dim_range, time_range_np, label<span class="op">=</span><span class="st">"Numpy"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">18</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Dimension"</span>, fontsize<span class="op">=</span><span class="dv">18</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Time"</span>, fontsize<span class="op">=</span><span class="dv">18</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>plt.yscale(<span class="st">"log"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-2_files/figure-html/cell-3-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-2_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="qr-via-givens-rotations" class="level2">
-<h2 class="anchored" data-anchor-id="qr-via-givens-rotations">QR via Givens rotations</h2>
-<p>Similarly we can make matrix upper-triangular using Givens rotations:</p>
-<p><span class="math display">\begin{bmatrix} \times &amp; \times &amp; \times \\ \bf{*} &amp; \times &amp; \times \\ \bf{*} &amp; \times &amp; \times \end{bmatrix} \to \begin{bmatrix} * &amp; \times &amp; \times \\ * &amp; \times &amp; \times \\ 0 &amp; \times &amp; \times \end{bmatrix} \to \begin{bmatrix} \times &amp; \times &amp; \times \\ 0 &amp; * &amp; \times \\ 0 &amp; * &amp; \times \end{bmatrix} \to \begin{bmatrix} \times &amp; \times &amp; \times \\ 0 &amp; \times &amp; \times \\ 0 &amp; 0 &amp; \times \end{bmatrix} </span></p>
-</section>
-<section id="givens-vs.-householder-transformations" class="level2">
-<h2 class="anchored" data-anchor-id="givens-vs.-householder-transformations">Givens vs.&nbsp;Householder transformations</h2>
+<section id="почему-наивная-реализация-медленная" class="level2">
+<h2 class="anchored" data-anchor-id="почему-наивная-реализация-медленная">Почему наивная реализация медленная?</h2>
+<p>Она медленная из-за двух проблем:</p>
 <ul>
-<li>Householder reflections are useful for dense matrices (complexity is <span class="math inline">\approx</span> twice smaller than for Jacobi) and we need to zero large number of elements.</li>
-<li>Givens rotations are more suitable for sparse matrice or parallel machines as they act locally on elements.</li>
+<li>Она не использует преимущества быстрой памяти (кэша) и архитектуры памяти в целом</li>
+<li>Она не использует доступные возможности параллелизации (особенно важно для GPU)</li>
 </ul>
 </section>
-<section id="singular-value-decomposition" class="level2">
-<h2 class="anchored" data-anchor-id="singular-value-decomposition">Singular Value Decomposition</h2>
-<p>SVD will be considered later in more details.</p>
-<p><strong>Theorem.</strong> Any matrix <span class="math inline">A\in \mathbb{C}^{n\times m}</span> can be written as a product of three matrices:</p>
-<p><span class="math display"> A = U \Sigma V^*, </span></p>
-<p>where - <span class="math inline">U</span> is an <span class="math inline">n \times n</span> unitary matrix - <span class="math inline">V</span> is an <span class="math inline">m \times m</span> unitary matrix - <span class="math inline">\Sigma</span> is a diagonal matrix with non-negative elements <span class="math inline">\sigma_1 \geq  \ldots, \geq \sigma_{\min (m,n)}</span> on the diagonal.</p>
-<p>Moreover, if <span class="math inline">\text{rank}(A) = r</span>, then <span class="math inline">\sigma_{r+1} = \dots = \sigma_{\min (m,n)} = 0</span>.</p>
-<p>See <a href="../decompositions.pdf">poster</a> for the visualization.</p>
-<p><img src="./svd_picture.png"></p>
+<section id="архитектура-памяти" class="level2">
+<h2 class="anchored" data-anchor-id="архитектура-памяти">Архитектура памяти</h2>
+<p><img width="80%" src="Memory-Hierarchy.jpg"></p>
 <ul>
-<li><strong>Important note:</strong> if one truncates (replace by <span class="math inline">0</span>) all singular values except for <span class="math inline">r</span> first, then the resulting matrix yields best rank-<span class="math inline">r</span> approximation both in <span class="math inline">\|\cdot\|_2</span> and <span class="math inline">\|\cdot\|_F</span>.</li>
-<li>This is called Eckart-Young theorem and will be proved later in our course.</li>
+<li>Быстрая память маленькая</li>
+<li>Большая память медленная</li>
 </ul>
 </section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<section id="типичные-характеристики-иерархии-памяти" class="level2">
+<h2 class="anchored" data-anchor-id="типичные-характеристики-иерархии-памяти">Типичные характеристики иерархии памяти</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 17%">
+<col style="width: 31%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Тип памяти</th>
+<th>Размер</th>
+<th>Время доступа</th>
+<th>Примечания</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Регистры CPU</td>
+<td>Несколько КБ</td>
+<td>&lt;1 нс</td>
+<td>Самые быстрые, прямой доступ CPU</td>
+</tr>
+<tr class="even">
+<td>Кэш L1</td>
+<td>32-64 КБ</td>
+<td>1-4 нс</td>
+<td>Разделен на кэш инструкций и данных</td>
+</tr>
+<tr class="odd">
+<td>Кэш L2</td>
+<td>256 КБ - 1 МБ</td>
+<td>4-10 нс</td>
+<td>Единый кэш</td>
+</tr>
+<tr class="even">
+<td>Кэш L3</td>
+<td>2-32 МБ</td>
+<td>10-20 нс</td>
+<td>Общий между ядрами CPU</td>
+</tr>
+<tr class="odd">
+<td>Оперативная память (RAM)</td>
+<td>8-32 ГБ</td>
+<td>100 нс</td>
+<td>Основная системная память</td>
+</tr>
+<tr class="even">
+<td>SSD</td>
+<td>256 ГБ - 2 ТБ</td>
+<td>10-100 мкс</td>
+<td>Быстрое вторичное хранилище</td>
+</tr>
+<tr class="odd">
+<td>Жесткий диск</td>
+<td>1-10 ТБ</td>
+<td>5-10 мс</td>
+<td>Самый медленный, но самый большой</td>
+</tr>
+</tbody>
+</table>
+<p>Ключевые наблюдения: - Время доступа увеличивается примерно в 10 раз на каждом уровне - Размер увеличивается в 10-100 раз на каждом уровне - Эффективное использование более быстрых уровней памяти критично для производительности</p>
+</section>
+<section id="кэш-линии-и-когерентность-кэша" class="level2">
+<h2 class="anchored" data-anchor-id="кэш-линии-и-когерентность-кэша">Кэш-линии и когерентность кэша</h2>
 <ul>
-<li><p>Most important matrix norms: Frobenius and spectral</p></li>
-<li><p>Unitary matrices preserve these norms</p></li>
-<li><p>There are two “basic” classes of unitary matrices: Householder and Givens matrices</p></li>
+<li>Кэш-память организована в <strong>кэш-линии</strong> - блоки фиксированного размера (обычно 64 байта)</li>
+<li>Когда CPU нужны данные, он загружает всю кэш-линию, содержащую эти данные</li>
+<li>Это эффективно при последовательном доступе к памяти (пространственная локальность)</li>
+</ul>
+<p><strong>Когерентность кэша</strong> обеспечивает: - Все ядра CPU видят согласованное представление памяти - Когда одно ядро изменяет данные, другие ядра получают уведомление - Предотвращает состояния гонки и несогласованность данных</p>
+<p>Почему это важно для матричных операций: - Последовательный доступ к строкам/столбцам матрицы влияет на использование кэш-линий - Плохое использование кэш-линий = больше кэш-промахов = более низкая производительность<br>
+- Многопоточный код требует когерентных кэшей для корректности</p>
+</section>
+<section id="архитектура-памяти-gpu" class="level2">
+<h2 class="anchored" data-anchor-id="архитектура-памяти-gpu">Архитектура памяти GPU</h2>
+<p>Современные GPU имеют иную иерархию памяти по сравнению с CPU:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 17%">
+<col style="width: 31%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Тип памяти</th>
+<th>Размер</th>
+<th>Время доступа</th>
+<th>Примечания</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Регистры</td>
+<td>~4 МБ на SM</td>
+<td>~1 такт</td>
+<td>Самые быстрые, на поток/блок</td>
+</tr>
+<tr class="even">
+<td>Разделяемая память/Кэш L1</td>
+<td>64-256 КБ на SM</td>
+<td>~20-30 тактов</td>
+<td>Общая в пределах блока потоков</td>
+</tr>
+<tr class="odd">
+<td>Кэш L2</td>
+<td>512КБ - 60МБ</td>
+<td>~200 тактов</td>
+<td>Общий для всего GPU</td>
+</tr>
+<tr class="even">
+<td>Глобальная память (VRAM)</td>
+<td>16-80 ГБ</td>
+<td>~400-600 тактов</td>
+<td>Основная память GPU</td>
+</tr>
+<tr class="odd">
+<td>Системная память (RAM)</td>
+<td>8-128 ГБ</td>
+<td>&gt;1000 тактов</td>
+<td>Память CPU, доступ через PCIe</td>
+</tr>
+</tbody>
+</table>
+<p>Ключевые отличия от CPU: - Гораздо более параллельный доступ (тысячи потоков) - Больший файл регистров, но меньшие кэши - Более высокая пропускная способность памяти, но выше латентность - Критически важен объединенный доступ к памяти</p>
+<p>Шаблоны доступа к памяти: - Объединенный: потоки в варпе обращаются к последовательной памяти = быстро - С шагом/случайный: потоки обращаются к разрозненной памяти = медленно - Конфликты банков разделяемой памяти могут ограничивать пропускную способность</p>
+<p>Лучшие практики: - Использовать разделяемую память для часто используемых данных - Обеспечивать объединенный доступ к глобальной памяти - Минимизировать передачу данных между CPU и GPU</p>
+<p>Примечание: Последний GPU NVIDIA H100 может иметь до 80ГБ памяти HBM3 VRAM</p>
+</section>
+<section id="как-сделать-алгоритмы-более-вычислительно-интенсивными" class="level2">
+<h2 class="anchored" data-anchor-id="как-сделать-алгоритмы-более-вычислительно-интенсивными">Как сделать алгоритмы более вычислительно интенсивными</h2>
+<p><font color="red"><strong>Реализация в NLA</strong></font>: использовать блочные версии алгоритмов. <br></p>
+<p>Этот подход является основой <strong><a href="http://www.netlib.org/blas/">BLAS (Basic Linear Algebra Subroutines)</a></strong>, написанной много лет назад на Фортране и до сих пор управляющей вычислительным миром.</p>
+</section>
+<section id="разделим-матрицу-на-блоки-для-иллюстрации-рассмотрим-разделение-на-блочную-матрицу-2-times-2" class="level2">
+<h2 class="anchored" data-anchor-id="разделим-матрицу-на-блоки-для-иллюстрации-рассмотрим-разделение-на-блочную-матрицу-2-times-2">Разделим матрицу на блоки! Для иллюстрации рассмотрим разделение на блочную матрицу <span class="math inline">2 \times 2</span>:</h2>
+<p><span class="math display">
+   A = \begin{bmatrix}
+         A_{11} &amp; A_{12} \\
+         A_{21} &amp; A_{22}
+        \end{bmatrix}, \quad B = \begin{bmatrix}
+         B_{11} &amp; B_{12} \\
+         B_{21} &amp; B_{22}
+        \end{bmatrix}</span></p>
+<p>Тогда,</p>
+<p><span class="math display">AB = \begin{bmatrix}A_{11} B_{11} + A_{12} B_{21} &amp; A_{11} B_{12} + A_{12} B_{22} \\
+            A_{21} B_{11} + A_{22} B_{21} &amp; A_{21} B_{12} + A_{22} B_{22}\end{bmatrix}.</span></p>
+<p>Если <span class="math inline">A_{11}, B_{11}</span> и их произведение помещаются в кэш-память (которая составляет 20 Мб (L3) для <a href="https://en.wikipedia.org/wiki/List_of_Intel_processors#Desktop_(codenamed_%22Comet_Lake%22)">современного процессора Intel</a>), тогда мы загружаем их в память только один раз.</p>
+</section>
+<section id="blas" class="level2">
+<h2 class="anchored" data-anchor-id="blas">BLAS</h2>
+<p>BLAS имеет три уровня: 1. BLAS-1, операции типа <span class="math inline">c = a + b</span> 2. BLAS-2, операции типа умножения матрицы на вектор 3. BLAS-3, умножение матрицы на матрицу</p>
+<p>В чем принципиальные различия между ними?</p>
+<p>Основное различие заключается в соотношении количества операций и входных данных!</p>
+<ol type="1">
+<li>BLAS-1: <span class="math inline">\mathcal{O}(n)</span> данных, <span class="math inline">\mathcal{O}(n)</span> операций</li>
+<li>BLAS-2: <span class="math inline">\mathcal{O}(n^2)</span> данных, <span class="math inline">\mathcal{O}(n^2)</span> операций<br>
+</li>
+<li>BLAS-3: <span class="math inline">\mathcal{O}(n^2)</span> данных, <span class="math inline">\mathcal{O}(n^3)</span> операций</li>
+</ol>
+</section>
+<section id="почему-blas-так-важна-и-актуальна" class="level2">
+<h2 class="anchored" data-anchor-id="почему-blas-так-важна-и-актуальна">Почему BLAS так важна и актуальна?</h2>
+<ol type="1">
+<li>Современная реализация базовых операций линейной алгебры</li>
+<li>Предоставляет стандартные имена для операций в любых новых реализациях (например, <a href="https://www.netlib.org/atlas/">ATLAS</a>, <a href="https://www.openblas.net/">OpenBLAS</a>, <a href="https://software.intel.com/en-us/mkl">MKL</a>). Вы можете вызвать функцию умножения матрицы на матрицу (GEMM), связать свой код с любой реализацией BLAS, и он будет работать корректно</li>
+<li>Формулировка новых алгоритмов в терминах операций BLAS</li>
+<li>Существуют обертки для большинства популярных языков</li>
+</ol>
+</section>
+<section id="пакеты-связанные-с-blas" class="level2">
+<h2 class="anchored" data-anchor-id="пакеты-связанные-с-blas">Пакеты, связанные с BLAS</h2>
+<ol type="1">
+<li><a href="http://math-atlas.sourceforge.net">ATLAS</a> - Автоматически настраиваемое программное обеспечение для линейной алгебры. Оно автоматически адаптируется под конкретную архитектуру системы.</li>
+<li><a href="http://www.netlib.org/lapack/">LAPACK</a> - Пакет линейной алгебры. Предоставляет операции линейной алгебры высокого уровня (например, факторизации матриц), основанные на вызовах подпрограмм BLAS.</li>
+<li><a href="https://software.intel.com/en-us/intel-mkl">Intel MKL</a> - Математическая библиотека ядра. Предоставляет реализацию BLAS и LAPACK, оптимизированную для процессоров Intel. Доступна в дистрибутиве Anaconda Python:</li>
+</ol>
+</section>
+<section id="более-быстрые-алгоритмы-умножения-матриц" class="level2">
+<h2 class="anchored" data-anchor-id="более-быстрые-алгоритмы-умножения-матриц">Более быстрые алгоритмы умножения матриц</h2>
+<p>Напомним, что умножение матрицы на матрицу требует <span class="math inline">\mathcal{O}(n^3)</span> операций. Однако хранение требует <span class="math inline">\mathcal{O}(n^2)</span>.</p>
+<p><strong>Вопрос:</strong> возможно ли уменьшить количество операций до <span class="math inline">\mathcal{O}(n^2)</span>?</p>
+<p><strong>Ответ</strong>: поиск алгоритма умножения матриц со сложностью <span class="math inline">\mathcal{O}(n^2)</span> все еще не завершен.</p>
+<ul>
+<li><p>Алгоритм Штрассена дает <span class="math inline">\mathcal{O}(n^{2.807\dots})</span> –– иногда используется на практике</p></li>
+<li><p><a href="http://arxiv.org/pdf/1401.7714v1.pdf">Текущий мировой рекорд</a> <span class="math inline">\mathcal{O}(n^{2.37\dots})</span> –– большая константа, непрактичен, основан на <a href="https://en.wikipedia.org/wiki/Coppersmith%E2%80%93Winograd_algorithm">алгоритме Копперсмита-Винограда</a>.</p></li>
+<li><p>Он улучшил предыдущий рекорд (Уильямс 2012) на <span class="math inline">3\cdot 10^{-7}</span></p></li>
+<li><p>В статьях до сих пор изучается умножение матриц <span class="math inline">3 \times 3</span> и интерпретируется с разных сторон (<a href="https://arxiv.org/pdf/1905.10192.pdf">Heule, et. al.&nbsp;2019</a>)</p></li>
+</ul>
+<p>Рассмотрим алгоритм Штрассена подробнее.</p>
+</section>
+<section id="наивное-умножение" class="level2">
+<h2 class="anchored" data-anchor-id="наивное-умножение">Наивное умножение</h2>
+<p>Пусть <span class="math inline">A</span> и <span class="math inline">B</span> - две матрицы размера <span class="math inline">2\times 2</span>. Наивное умножение <span class="math inline">C = AB</span></p>
+<p><span class="math display">
+\begin{bmatrix} c_{11} &amp; c_{12} \\ c_{21} &amp; c_{22}  \end{bmatrix}  =
+\begin{bmatrix} a_{11} &amp; a_{12} \\ a_{21} &amp; a_{22}  \end{bmatrix}
+\begin{bmatrix} b_{11} &amp; b_{12} \\ b_{21} &amp; b_{22}  \end{bmatrix} =
+\begin{bmatrix}
+a_{11}b_{11} + a_{12}b_{21} &amp; a_{11}b_{21} + a_{12}b_{22} \\
+a_{21}b_{11} + a_{22}b_{21} &amp; a_{21}b_{21} + a_{22}b_{22}
+\end{bmatrix}
+</span></p>
+<p>содержит <span class="math inline">8</span> умножений и <span class="math inline">4</span> сложения.</p>
+</section>
+<section id="алгоритм-штрассена" class="level2">
+<h2 class="anchored" data-anchor-id="алгоритм-штрассена">Алгоритм Штрассена</h2>
+<p>В работе <a href="http://link.springer.com/article/10.1007%2FBF02165411?LI=true">Gaussian elimination is not optimal</a> (1969) Штрассен обнаружил, что можно вычислить <span class="math inline">C</span> используя 18 сложений и только 7 умножений: <span class="math display">
+\begin{split}
+c_{11} &amp;= f_1 + f_4 - f_5 + f_7, \\
+c_{12} &amp;= f_3 + f_5, \\
+c_{21} &amp;= f_2 + f_4, \\
+c_{22} &amp;= f_1 - f_2 + f_3 + f_6,
+\end{split}
+</span> где <span class="math display">
+\begin{split}
+f_1 &amp;= (a_{11} + a_{22}) (b_{11} + b_{22}), \\
+f_2 &amp;= (a_{21} + a_{22}) b_{11}, \\
+f_3 &amp;= a_{11} (b_{12} - b_{22}), \\
+f_4 &amp;= a_{22} (b_{21} - b_{11}), \\
+f_5 &amp;= (a_{11} + a_{12}) b_{22}, \\
+f_6 &amp;= (a_{21} - a_{11}) (b_{11} + b_{12}), \\
+f_7 &amp;= (a_{12} - a_{22}) (b_{21} + b_{22}).
+\end{split}
+</span></p>
+<p>К счастью, эти формулы работают даже если <span class="math inline">a_{ij}</span> и <span class="math inline">b_{ij}</span>, <span class="math inline">i,j=1,2</span> являются блочными матрицами.</p>
+<p>Таким образом, алгоритм Штрассена выглядит следующим образом. - Сначала мы <font color="red">разделяем</font> матрицы <span class="math inline">A</span> и <span class="math inline">B</span> размера <span class="math inline">n\times n</span>, <span class="math inline">n=2^d</span> <font color="red">на 4 блока</font> размера <span class="math inline">\frac{n}{2}\times \frac{n}{2}</span> - Затем мы <font color="red">вычисляем умножения</font> в описанных формулах <font color="red">рекурсивно</font></p>
+<p>Это снова приводит нас к идее <strong>разделяй и властвуй</strong>.</p>
+</section>
+<section id="пример-алгоритма-штрассена" class="level2">
+<h2 class="anchored" data-anchor-id="пример-алгоритма-штрассена">Пример алгоритма Штрассена</h2>
+<p>Давайте перемножим две матрицы 2x2, используя метод Штрассена:</p>
+<p><span class="math display">A = \begin{bmatrix} 2 &amp; 3 \\ 4 &amp; 1 \end{bmatrix}, \quad B = \begin{bmatrix} 5 &amp; 7 \\ 6 &amp; 8 \end{bmatrix}</span></p>
+<p>Вычислим 7 произведений от <span class="math inline">f_1</span> до <span class="math inline">f_7</span>:</p>
+<p><span class="math display">\begin{align*}
+f_1 &amp;= (2 + 1)(5 + 8) = 3 \cdot 13 = 39 \\
+f_2 &amp;= (4 + 1)(5) = 5 \cdot 5 = 25 \\
+f_3 &amp;= (2)(7 - 8) = 2 \cdot (-1) = -2 \\
+f_4 &amp;= (1)(6 - 5) = 1 \cdot 1 = 1 \\
+f_5 &amp;= (2 + 3)(8) = 5 \cdot 8 = 40 \\
+f_6 &amp;= (4 - 2)(5 + 7) = 2 \cdot 12 = 24 \\
+f_7 &amp;= (3 - 1)(6 + 8) = 2 \cdot 14 = 28
+\end{align*}</span></p>
+<p>Теперь вычислим элементы результирующей матрицы <span class="math inline">C</span>:</p>
+<p><span class="math display">\begin{align*}
+c_{11} &amp;= f_1 + f_4 - f_5 + f_7 = 39 + 1 - 40 + 28 = 28 \\
+c_{12} &amp;= f_3 + f_5 = -2 + 40 = 38 \\
+c_{21} &amp;= f_2 + f_4 = 25 + 1 = 26 \\
+c_{22} &amp;= f_1 - f_2 + f_3 + f_6 = 39 - 25 - 2 + 24 = 36
+\end{align*}</span></p>
+<p>Таким образом:</p>
+<p><span class="math display">C = \begin{bmatrix} 28 &amp; 38 \\ 26 &amp; 36 \end{bmatrix}</span></p>
+<p>Вы можете проверить, что это равно результату стандартного матричного умножения!</p>
+</section>
+<section id="сложность-алгоритма-штрассена" class="level2">
+<h2 class="anchored" data-anchor-id="сложность-алгоритма-штрассена">Сложность алгоритма Штрассена</h2>
+<section id="количество-умножений" class="level4">
+<h4 class="anchored" data-anchor-id="количество-умножений">Количество умножений</h4>
+<p>Подсчет количества умножений - тривиальная задача. Обозначим через <span class="math inline">M(n)</span> количество умножений, используемых для перемножения 2 матриц размера <span class="math inline">n\times n</span> с использованием концепции “разделяй и властвуй”. Тогда для наивного алгоритма количество умножений равно</p>
+<p><span class="math display"> M_\text{naive}(n) = 8 M_\text{naive}\left(\frac{n}{2} \right) = 8^2 M_\text{naive}\left(\frac{n}{4} \right)
+= \dots = 8^{d-1} M(2) = 8^{d} M(1) = 8^{d} = 8^{\log_2 n} = n^{\log_2 8} = n^3 </span></p>
+<p>Таким образом, даже при использовании идеи “разделяй и властвуй” мы не можем быть лучше чем <span class="math inline">n^3</span>.</p>
+<p>Давайте посчитаем количество умножений для алгоритма Штрассена:</p>
+<p><span class="math display"> M_\text{strassen}(n) = 7 M_\text{strassen}\left(\frac{n}{2} \right) = 7^2 M_\text{strassen}\left(\frac{n}{4} \right)
+= \dots = 7^{d-1} M(1) = 7^{d} = 7^{\log_2 n} = n^{\log_2 7} </span></p>
+</section>
+<section id="количество-сложений" class="level4">
+<h4 class="anchored" data-anchor-id="количество-сложений">Количество сложений</h4>
+<p>Нет смысла оценивать количество сложений <span class="math inline">A(n)</span> для наивного алгоритма, так как мы уже получили <span class="math inline">n^3</span> умножений. Для алгоритма Штрассена имеем:</p>
+<p><span class="math display"> A_\text{strassen}(n) = 7 A_\text{strassen}\left( \frac{n}{2} \right) + 18 \left( \frac{n}{2} \right)^2 </span></p>
+<p>поскольку на первом уровне нам нужно сложить матрицы размера <span class="math inline">\frac{n}{2}\times \frac{n}{2}</span> 18 раз, а затем углубиться для каждого из 7 умножений. Таким образом,</p>
+<p><font size="2.0"></font></p><font size="2.0">
+</font><p><font size="2.0"><span class="math display"> \begin{split}
+A_\text{strassen}(n) =&amp; 7 A_\text{strassen}\left( \frac{n}{2} \right) + 18 \left( \frac{n}{2} \right)^2 = 7 \left(7 A_\text{strassen}\left( \frac{n}{4} \right) + 18 \left( \frac{n}{4} \right)^2 \right) + 18 \left( \frac{n}{2} \right)^2 =
+7^2 A_\text{strassen}\left( \frac{n}{4} \right) + 7\cdot 18 \left( \frac{n}{4} \right)^2 +  18 \left( \frac{n}{2} \right)^2 = \\
+=&amp; \dots = 18 \sum_{k=1}^d 7^{k-1} \left( \frac{n}{2^k} \right)^2 = \frac{18}{4} n^2 \sum_{k=1}^d \left(\frac{7}{4} \right)^{k-1} = \frac{18}{4} n^2 \frac{\left(\frac{7}{4} \right)^d - 1}{\frac{7}{4} - 1} = 6 n^2 \left( \left(\frac{7}{4} \right)^d - 1\right) \leqslant 6 n^2 \left(\frac{7}{4} \right)^d = 6 n^{\log_2 7}
+\end{split}
+</span> </font></p>
+<p>(поскольку <span class="math inline">4^d = n^2</span> и <span class="math inline">7^d = n^{\log_2 7}</span>).</p>
+<p>Асимптотическое поведение <span class="math inline">A(n)</span> также может быть найдено из <a href="https://en.wikipedia.org/wiki/Master_theorem">основной теоремы</a>.</p>
+</section>
+<section id="total-complexity" class="level4">
+<h4 class="anchored" data-anchor-id="total-complexity">Total complexity</h4>
+<p>Total complexity is <span class="math inline">M_\text{strassen}(n) + A_\text{strassen}(n)=</span> <font color="red"><span class="math inline">7 n^{\log_2 7}</span></font>. Strassen algorithm becomes faster when</p>
+<p><span class="math display">\begin{align*}
+2n^3 &amp;&gt; 7 n^{\log_2 7}, \\
+n &amp;&gt; 667,
+\end{align*}</span></p>
+<p>so it is not a good idea to get to the bottom level of recursion.</p>
+</section>
+</section>
+<section id="alphatensor" class="level2">
+<h2 class="anchored" data-anchor-id="alphatensor">AlphaTensor</h2>
+<p>Недавняя статья <a href="https://www.deepmind.com/blog/discovering-novel-algorithms-with-alphatensor">AlphaTensor</a> показала, как современное глубокое обучение с подкреплением может быть использовано для получения новых разложений тензоров.</p>
+</section>
+<section id="visualization" class="level1">
+<h1>Visualization</h1>
+<p><img width="100%" src="sasha-slide-1.png"></p>
+<section id="интерпретация-с-точки-зрения-обучения-с-подкреплением" class="level2">
+<h2 class="anchored" data-anchor-id="интерпретация-с-точки-зрения-обучения-с-подкреплением">Интерпретация с точки зрения обучения с подкреплением</h2>
+<p>В обучении с подкреплением агент учится выполнять <strong>действия</strong> на основе состояния и вознаграждения.</p>
+<p>В данном случае состоянием является тензор.</p>
+<p>Действие - это вычитание тензора ранга один.</p>
+<p>Если в конце получается ненулевой результат, вы получаете вознаграждение.</p>
+<p>Затем вы выполняете миллионы различных действий и закрепляете хорошие результаты.</p>
+</section>
+<section id="избранные-результаты" class="level2">
+<h2 class="anchored" data-anchor-id="избранные-результаты">Избранные результаты</h2>
+<ul>
+<li><p>Лучшие ранги для определенных размеров матриц</p></li>
+<li><p>Новые варианты алгоритма Штрассена 4x4, которые работают быстрее на реальном оборудовании (но только для этого конкретного оборудования!)</p></li>
+<li><p>Улучшенное произведение антисимметричной матрицы на вектор</p></li>
 </ul>
 </section>
-<section id="questions" class="level2">
-<h2 class="anchored" data-anchor-id="questions">Questions?</h2>
+<section id="итоги-части-про-матричное-умножение" class="level2">
+<h2 class="anchored" data-anchor-id="итоги-части-про-матричное-умножение">Итоги части про матричное умножение</h2>
+<ul>
+<li>Матричное умножение - это основа численной линейной алгебры. Для достижения высокой эффективности необходимо мыслить блоками</li>
+<li>Все это связано с иерархией компьютерной памяти</li>
+<li>Концепция блочных алгоритмов</li>
+</ul>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
