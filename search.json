@@ -53,7 +53,7 @@
     "href": "lectures/lecture-1/lecture-1.html#одинарная-и-двойная-точность",
     "title": "Представление чисел",
     "section": "Одинарная и двойная точность",
-    "text": "Одинарная и двойная точность\nДва стандартных формата, называемые binary32 и binary64 (также называемые форматами одинарной и двойной точности). В последнее время формат binary16 играет важную роль в обучении глубоких нейронных сетей.\n\n\n\nНазвание\nОбщее название\nОснование\nРазряды\nEmin\nEmax\n\n\n\n\nbinary16\nполовинная точность\n2\n11\n-14\n+ 15\n\n\nbinary32\nодинарная точность\n2\n24\n-126\n+ 127\n\n\nbinary64\nдвойная точность\n2\n53\n-1022\n+1023\n\n\n\n\n\n\ndouble64.png"
+    "text": "Одинарная и двойная точность\nДва стандартных формата, называемые binary32 и binary64 (также называемые форматами одинарной и двойной точности). В последнее время формат binary16 играет важную роль в обучении глубоких нейронных сетей.\n\n\n\nНазвание\nОбщее название\nОснование\nРазряды\nEmin\nEmax\n\n\n\n\nbinary16\nполовинная точность\n2\n11\n-14\n+ 15\n\n\nbinary32\nодинарная точность\n2\n24\n-126\n+ 127\n\n\nbinary64\nдвойная точность\n2\n53\n-1022\n+1023"
   },
   {
     "objectID": "lectures/lecture-1/lecture-1.html#примеры",
@@ -81,7 +81,7 @@
     "href": "lectures/lecture-1/lecture-1.html#bfloat16-brain-floating-point",
     "title": "Представление чисел",
     "section": "bfloat16 (Brain Floating Point)",
-    "text": "bfloat16 (Brain Floating Point)\n\nЭтот формат занимает 16 бит\n\n1 бит для sign\n8 бит для exponent\n7 бит для fraction\n\n\n\n\nbfloat16.png\n\n\nУсеченный формат одинарной точности из стандарта IEEE\nВ чем разница между float32 и float16?\nЭтот формат используется в Intel FPGA, Google TPU, Xeon CPUs и других платформах"
+    "text": "bfloat16 (Brain Floating Point)\n\nЭтот формат занимает 16 бит\n\n1 бит для sign\n8 бит для exponent\n7 бит для fraction\n\n\nУсеченный формат одинарной точности из стандарта IEEE\nВ чем разница между float32 и float16?\nЭтот формат используется в Intel FPGA, Google TPU, Xeon CPUs и других платформах"
   },
   {
     "objectID": "lectures/lecture-1/lecture-1.html#tensor-float-от-nvidia-блог-пост-об-этом-формате",
