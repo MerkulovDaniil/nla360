@@ -482,10 +482,10 @@ L_{21} &amp; L_{22}
 <li>Если <span class="math inline">\varepsilon</span> достаточно мал, мы <strong>можем</strong> потерпеть неудачу. В отличие от этого, разложение Холецкого <strong>всегда стабильно</strong>.</li>
 </ul>
 <p>Давайте рассмотрим демонстрацию.</p>
-<div id="cell-30" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="1">
+<div id="cell-30" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>eps <span class="op">=</span> <span class="fl">1.8e-8</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>eps <span class="op">=</span> <span class="fl">9.9e-15</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[eps, <span class="dv">1</span>],[<span class="fl">1.0</span>,  <span class="dv">1</span>]]</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.array(a)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>a0 <span class="op">=</span> a.copy()</span>
@@ -507,9 +507,9 @@ L_{21} &amp; L_{22}
  [[0. 0.]
  [0. 0.]]</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="1">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <pre><code>array([[1.00000000e+00, 0.00000000e+00],
-       [5.55555556e+07, 1.00000000e+00]])</code></pre>
+       [1.01010101e+14, 1.00000000e+00]])</code></pre>
 </div>
 </div>
 </section>
@@ -659,8 +659,8 @@ L_{21} &amp; L_{22}
 \frac{\Vert \widehat{x} - x \Vert}{\Vert x \Vert} \leq
 &amp;\frac{\Vert A \Vert \Vert A^{-1} \Vert}{1 - \|A^{-1}\Delta A\|} \Big(\frac{\Vert\Delta A\Vert}{\Vert A \Vert} + \frac{\Vert \Delta f \Vert}{ \Vert f \Vert}\Big) \leq \\
 \leq
-&amp;\frac{\Vert A \Vert \Vert A^{-1} \Vert}{1 - \|A\|\|A^{-1}\|\frac{\|\Delta A\|}{\|A\|}} \Big(\frac{\Vert\Delta A\Vert}{\Vert A \Vert} + \frac{\Vert \Delta f \Vert}{ \Vert f \Vert}\Big) \equiv \\
-\equiv &amp;\frac{\mathrm{cond}(A)}{1 - \mathrm{cond}(A)\frac{\|\Delta A\|}{\|A\|}} \Big(\frac{\Vert\Delta A\Vert}{\Vert A \Vert} + \frac{\Vert \Delta f \Vert}{ \Vert f \Vert}\Big)
+&amp;\frac{\Vert A \Vert \Vert A^{-1} \Vert}{1 - \|A\|\|A^{-1}\|\frac{\|\Delta A\|}{\|A\|}} \Big(\frac{\Vert\Delta A\Vert}{\Vert A \Vert} + \frac{\Vert \Delta f \Vert}{ \Vert f \Vert}\Big) = \\
+= &amp;\frac{\mathrm{cond}(A)}{1 - \mathrm{cond}(A)\frac{\|\Delta A\|}{\|A\|}} \Big(\frac{\Vert\Delta A\Vert}{\Vert A \Vert} + \frac{\Vert \Delta f \Vert}{ \Vert f \Vert}\Big)
 \end{split}
 </span></p>
 <p>Ключевую роль играет <strong>число обусловленности</strong> <span class="math inline">\mathrm{cond}(A) = \Vert A \Vert \Vert A^{-1} \Vert</span>.</p>
@@ -684,7 +684,7 @@ L_{21} &amp; L_{22}
 <li>Мы также можем попробовать проверить, насколько точна оценка как с единицами в правой части, так и со случайным вектором в правой части.</li>
 <li>Результаты разительно отличаются</li>
 </ul>
-<div id="cell-46" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="3">
+<div id="cell-46" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -693,7 +693,7 @@ L_{21} &amp; L_{22}
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.array(a)</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#rhs = np.random.normal(size=n)</span></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.ones(n) <span class="co">#Right-hand side</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>rhs <span class="op">=</span> np.random.randn(n)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#rhs = np.random.randn(n)</span></span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#rhs = np.arange(n)</span></span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#rhs = (-1)**rhs</span></span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> np.linalg.solve(a, rhs)</span>
@@ -703,12 +703,20 @@ L_{21} &amp; L_{22}
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>cn <span class="op">=</span> np.linalg.cond(a, <span class="dv">2</span>)</span>
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Error:'</span>, er, <span class="st">'Log Condition number:'</span>, np.log10(cn))</span>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#u1, s1, v1 = np.linalg.svd(a)</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#cf = u1.T@rhs</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.plot(u1[:, 12])</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#cf/s1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>u1, s1, v1 <span class="op">=</span> np.linalg.svd(a)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>cf <span class="op">=</span> u1.T<span class="op">@</span>rhs</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>plt.plot(u1[:, <span class="dv">20</span>])</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#cf</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#cf/s1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Error: 5.92240142495051 Log Condition number: 19.020186116767867</code></pre>
+<pre><code>Error: 2.2843047554427222e-08 Log Condition number: 19.020186116767867</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture-4_files/figure-html/cell-4-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>А теперь со случайной правой частью…</p>
