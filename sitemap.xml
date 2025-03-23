@@ -2,102 +2,106 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-1/lecture-1.html</loc>
-    <lastmod>2025-03-18T06:37:06.644Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.208Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-10/lecture-10.html</loc>
-    <lastmod>2025-03-18T06:37:06.649Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.214Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/general_info.html</loc>
-    <lastmod>2025-03-18T06:37:06.639Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.203Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-11/lecture-11.html</loc>
-    <lastmod>2025-03-18T06:37:06.652Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.216Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-2/lecture-2.html</loc>
-    <lastmod>2025-03-18T06:37:06.662Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.227Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-13/lecture-13.html</loc>
-    <lastmod>2025-03-18T06:37:06.655Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.220Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-15/lecture-15.html</loc>
-    <lastmod>2025-03-18T06:37:06.659Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.224Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-14/lecture-14.html</loc>
-    <lastmod>2025-03-18T06:37:06.658Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/projects.html</loc>
-    <lastmod>2025-03-18T06:37:06.848Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-7/seminar-7 (unsolved).html</loc>
-    <lastmod>2025-03-18T06:37:06.958Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-2/seminar-2.html</loc>
-    <lastmod>2025-03-18T06:37:06.957Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-5/Seminar-5.html</loc>
-    <lastmod>2025-03-18T06:37:06.958Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/index.html</loc>
-    <lastmod>2025-03-18T06:37:06.638Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-11/seminar-11.html</loc>
-    <lastmod>2025-03-18T06:37:06.952Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-4/seminar-4.html</loc>
-    <lastmod>2025-03-18T06:37:06.957Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-1/seminar-1.html</loc>
-    <lastmod>2025-03-18T06:37:06.952Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-7/seminar-7.html</loc>
-    <lastmod>2025-03-18T06:37:06.958Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.223Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/files/Eigenfaces_exercise.html</loc>
-    <lastmod>2025-03-18T06:37:06.562Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.125Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-7/seminar-7.html</loc>
+    <lastmod>2025-03-23T14:57:44.574Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-1/seminar-1.html</loc>
+    <lastmod>2025-03-23T14:57:44.568Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-4/seminar-4.html</loc>
+    <lastmod>2025-03-23T14:57:44.573Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-11/seminar-11.html</loc>
+    <lastmod>2025-03-23T14:57:44.568Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-5/Seminar-5.html</loc>
+    <lastmod>2025-03-23T14:57:44.573Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/index.html</loc>
+    <lastmod>2025-03-23T14:57:44.203Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-2/seminar-2.html</loc>
+    <lastmod>2025-03-23T14:57:44.573Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-7/seminar-7 (unsolved).html</loc>
+    <lastmod>2025-03-23T14:57:44.574Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/projects.html</loc>
+    <lastmod>2025-03-23T14:57:44.463Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/files/qr_exercise.html</loc>
+    <lastmod>2025-03-23T14:57:44.203Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-3/lecture-3.html</loc>
-    <lastmod>2025-03-18T06:37:06.668Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.232Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-9/lecture-9.html</loc>
-    <lastmod>2025-03-18T06:37:06.678Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.242Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-8/lecture-8.html</loc>
-    <lastmod>2025-03-18T06:37:06.675Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.240Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-12/lecture-12.html</loc>
-    <lastmod>2025-03-18T06:37:06.654Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.219Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-4/lecture-4.html</loc>
-    <lastmod>2025-03-18T06:37:06.669Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.234Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-5/lecture-5.html</loc>
-    <lastmod>2025-03-18T06:37:06.670Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.235Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-7/lecture-7.html</loc>
-    <lastmod>2025-03-18T06:37:06.675Z</lastmod>
+    <lastmod>2025-03-23T14:57:44.240Z</lastmod>
   </url>
 </urlset>
