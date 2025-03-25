@@ -655,7 +655,7 @@
     "href": "lectures/lecture-5/lecture-5.html#разложение-по-собственным-значениям",
     "title": "Матричное разложение: форма Шура",
     "section": "Разложение по собственным значениям",
-    "text": "Разложение по собственным значениям\nЕсли матрица A размера n\\times n имеет n собственных векторов s_i, i=1,\\dots,n:\n As_i = \\lambda_i s_i, \nто это можно записать как\n A S = S \\Lambda, \\quad\\text{где}\\quad S=(s_1,\\dots,s_n), \\quad \\Lambda = \\text{diag}(\\lambda_1, \\dots, \\lambda_n), \nили эквивалентно\n A = S\\Lambda S^{-1}. \n\nЭто называется разложением по собственным значениям матрицы. Матрицы, которые могут быть представлены через разложение по собственным значениям, называются диагонализируемыми.\n\n\nСуществование\n\nКакие классы матриц диагонализируемы?\nПростой пример - это матрицы с различными собственными значениями.\nВ более общем случае, матрица диагонализируема тогда и только тогда, когда алгебраическая кратность каждого собственного значения (кратность собственного значения в характеристическом многочлене) равна его геометрической кратности (размерности собственного подпространства).\nДля наших целей наиболее важным классом диагонализируемых матриц является класс нормальных матриц:\n\nAA^* = A^* A.\n\nВы узнаете, как доказать, что нормальные матрицы диагонализируемы, через несколько слайдов (тема разложения Шура).\n\n\nПример\n\nВы можете просто проверить, что, например, матрица\n\nA = \\begin{pmatrix} 1 & 1 \\\\ 0 & 1 \\end{pmatrix}\nимеет одно собственное значение 1 кратности 2 (так как её характеристический многочлен равен p(\\lambda)=(1-\\lambda)^2), но только один собственный вектор \\begin{pmatrix} c \\\\ 0  \\end{pmatrix}, и, следовательно, матрица не диагонализируема."
+    "text": "Разложение по собственным значениям\nЕсли матрица A размера n\\times n имеет n собственных векторов s_i, i=1,\\dots,n:\n As_i = \\lambda_i s_i, \nто это можно записать как\n A S = S \\Lambda, \\quad\\text{где}\\quad S=(s_1,\\dots,s_n), \\quad \\Lambda = \\text{diag}(\\lambda_1, \\dots, \\lambda_n), \nили эквивалентно\n A = S\\Lambda S^{-1}.  Это называется собственное разложение (eigendecomposition) матрицы. Матрицы, которые могут быть представлены через разложение по собственным значениям, называются диагонализируемыми.\n\nСуществование\n\nКакие классы матриц диагонализируемы?\nПростой пример - это матрицы с различными собственными значениями.\nВ более общем случае, матрица диагонализируема тогда и только тогда, когда алгебраическая кратность каждого собственного значения (кратность собственного значения в характеристическом многочлене) равна его геометрической кратности (размерности собственного подпространства).\nДля наших целей наиболее важным классом диагонализируемых матриц является класс нормальных матриц:\n\nAA^* = A^* A.\n\nВы узнаете, как доказать, что нормальные матрицы диагонализируемы, через несколько слайдов (тема разложения Шура).\n\n\nПример\n\nВы можете просто проверить, что, например, матрица\n\nA = \\begin{pmatrix} 1 & 1 \\\\ 0 & 1 \\end{pmatrix}\nимеет одно собственное значение 1 кратности 2 (так как её характеристический многочлен равен p(\\lambda)=(1-\\lambda)^2), но только один собственный вектор \\begin{pmatrix} c \\\\ 0  \\end{pmatrix}, и, следовательно, матрица не диагонализируема."
   },
   {
     "objectID": "lectures/lecture-5/lecture-5.html#почему-собственные-векторы-и-собственные-значения-важны",
@@ -725,7 +725,7 @@
     "href": "lectures/lecture-5/lecture-5.html#собственные-значения-и-характеристическое-уравнение",
     "title": "Матричное разложение: форма Шура",
     "section": "Собственные значения и характеристическое уравнение",
-    "text": "Собственные значения и характеристическое уравнение\n\nТеперь вернемся к собственным значениям.\nХарактеристическое уравнение может быть использовано для вычисления собственных значений, что приводит к наивному алгоритму:\n\np(\\lambda) = \\det(A - \\lambda I)\n\nВычислить коэффициенты многочлена\nВычислить корни\n\nЭто хорошая идея?\nПоделитесь своим мнением\nМы можем сделать короткую демонстрацию этого\n\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nn = 3\na = [[1.0 / (i - j + 0.5) for i in range(n)] for j in range(n)]\na = np.array(a)\nev = np.linalg.eigvals(a)\n# There is a special numpy function for characteristic polynomial\ncf = np.poly(a)\nev_roots = np.roots(cf)\n# print('Coefficients of the polynomial:', cf)\n# print('Polynomial roots:', ev_roots)\nplt.scatter(ev_roots.real, ev_roots.imag, marker='x', label='roots')\nb = a + 1e-3 * np.random.randn(n, n)\nev_b = np.linalg.eigvals(b)\nplt.scatter(ev_b.real, ev_b.imag, marker='o', label='Lapack')\n# plt.scatter(ev_roots.real, ev_roots.imag, marker='o', label='Brute force')\nplt.legend(loc='best')\nplt.xlabel('Real part')\nplt.ylabel('Imaginary part')\n\nText(0, 0.5, 'Imaginary part')\n\n\n\n\n\n\n\n\n\n\nМораль\n\nНе делайте этого, если у вас нет веской причины.\nПоиск корней многочлена очень плохо обусловлен (может быть намного лучше, но не с мономами \\{1,x,x^2,\\dots\\}!). Обратите внимание, что матрица Грама мономов\n\nh_{ij} = \\int_0^1 x^i x^j\\, dx = \\frac{1}{i+j+1},\nявляется матрицей Гильберта, которая имеет экспоненциальное убывание сингулярных значений. - Таким образом, мономы “почти” линейно зависимы."
+    "text": "Собственные значения и характеристическое уравнение\n\nТеперь вернемся к собственным значениям.\nХарактеристическое уравнение может быть использовано для вычисления собственных значений, что приводит к наивному алгоритму:\n\np(\\lambda) = \\det(A - \\lambda I)\n\nВычислить коэффициенты многочлена\nВычислить корни\n\nЭто хорошая идея?\nПоделитесь своим мнением\nМы можем сделать короткую демонстрацию этого\n\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nn = 40\na = [[1.0 / (i - j + 0.5) for i in range(n)] for j in range(n)]\na = np.array(a)\nev = np.linalg.eigvals(a)\n# There is a special numpy function for characteristic polynomial\ncf = np.poly(a)\nev_roots = np.roots(cf)\n# print('Coefficients of the polynomial:', cf)\n# print('Polynomial roots:', ev_roots)\nplt.scatter(ev_roots.real, ev_roots.imag, marker='x', label='roots')\nb = a + 1e-3 * np.random.randn(n, n)\nev_b = np.linalg.eigvals(b)\nplt.scatter(ev_b.real, ev_b.imag, marker='o', label='Lapack')\n# plt.scatter(ev_roots.real, ev_roots.imag, marker='o', label='Brute force')\nplt.legend(loc='best')\nplt.xlabel('Real part')\nplt.ylabel('Imaginary part')\n\nText(0, 0.5, 'Imaginary part')\n\n\n\n\n\n\n\n\n\n\nМораль\n\nНе делайте этого, если у вас нет веской причины.\nПоиск корней многочлена очень плохо обусловлен (может быть намного лучше, но не с мономами \\{1,x,x^2,\\dots\\}!). Обратите внимание, что матрица Грама мономов\n\nh_{ij} = \\int_0^1 x^i x^j\\, dx = \\frac{1}{i+j+1},\nявляется матрицей Гильберта, которая имеет экспоненциальное убывание сингулярных значений. - Таким образом, мономы “почти” линейно зависимы."
   },
   {
     "objectID": "lectures/lecture-5/lecture-5.html#степенной-метод",
@@ -802,7 +802,7 @@
     "href": "lectures/lecture-5/lecture-5.html#summary-of-todays-lecture",
     "title": "Матричное разложение: форма Шура",
     "section": "Summary of todays lecture",
-    "text": "Summary of todays lecture\n\nEigenvalues, eigenvectors\nGershgorin theorem\nPower method\nSchur theorem\nNormal matrices\nSome advanced topics"
+    "text": "Summary of todays lecture\n\nEigenvalues, eigenvectors\nPower method\nSchur theorem\nNormal matrices\nSome advanced topics"
   },
   {
     "objectID": "lectures/lecture-5/lecture-5.html#next-lecture",
@@ -1015,235 +1015,221 @@
     "text": "Plan for the next lecture\n\nBasic iterative methods for solving large linear systems\nConvergence\nAcceleration"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#recap-of-the-previous-lecture",
-    "href": "lectures/lecture-7/lecture-7.html#recap-of-the-previous-lecture",
+    "objectID": "lectures/lecture-6/lecture-6.html#краткий-обзор-предыдущей-лекции",
+    "href": "lectures/lecture-6/lecture-6.html#краткий-обзор-предыдущей-лекции",
     "title": "",
-    "section": "Recap of the previous lecture",
-    "text": "Recap of the previous lecture\n\nEigenvectors and eigenvalues\nCharacteristic polynomial and why it is a bad idea\nPower method to find leading (maximum absolute value) eigenvalue and eigenvector\nGershgorin theorem\nSchur theorem: A = U T U^*\nNormal matrices: A^* A = A A^*\nAdvanced topic: pseudospectrum"
+    "section": "Краткий обзор предыдущей лекции",
+    "text": "Краткий обзор предыдущей лекции\n\nСобственные векторы и собственные значения\nХарактеристический многочлен и почему это плохая идея\nСтепенной метод для нахождения ведущего (максимального по модулю) собственного значения и собственного вектора\nТеорема Шура: A = U T U^*\nНормальные матрицы: A^* A = A A^*\nПродвинутая тема: псевдоспектр"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#today-lecture",
-    "href": "lectures/lecture-7/lecture-7.html#today-lecture",
+    "objectID": "lectures/lecture-6/lecture-6.html#сегодняшняя-лекция",
+    "href": "lectures/lecture-6/lecture-6.html#сегодняшняя-лекция",
     "title": "",
-    "section": "Today lecture",
-    "text": "Today lecture\n\nToday we will talk about matrix factorizations as general tool\nBasic matrix factorizations in numerical linear algebra:\n\nLU decomposition and Gaussian elimination — already covered\nQR decomposition and Gram-Schmidt algorithm\nSchur decomposition and QR-algorithm\nMethods for computing SVD decomposition in the second part\n\nWe already introduced QR decomposition some time ago, but now we are going to discuss it in more details."
+    "section": "Сегодняшняя лекция",
+    "text": "Сегодняшняя лекция\n\nСегодня мы поговорим о матричных разложениях как общем инструменте\nОсновные матричные разложения в вычислительной линейной алгебре:\n\nLU-разложение и метод Гаусса — уже рассмотрены\nQR-разложение и алгоритм Грама-Шмидта\nРазложение Шура и QR-алгоритм\nМетоды вычисления SVD-разложения во второй части\n\nМы уже вводили QR-разложение некоторое время назад, но теперь мы обсудим его более подробно."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#general-concept-of-matrix-factorization",
-    "href": "lectures/lecture-7/lecture-7.html#general-concept-of-matrix-factorization",
+    "objectID": "lectures/lecture-6/lecture-6.html#общая-концепция-матричных-разложений",
+    "href": "lectures/lecture-6/lecture-6.html#общая-концепция-матричных-разложений",
     "title": "",
-    "section": "General concept of matrix factorization",
-    "text": "General concept of matrix factorization\n\nIn numerical linear algebra we need to solve different tasks, for example:\n\nSolve linear systems Ax = f\nCompute eigenvalues / eigenvectors\nCompute singular values / singular vectors\nCompute inverses, even sometimes determinants\nCompute matrix functions like \\exp(A), \\cos(A) (these are not elementwise functions)\n\nIn order to do this, we represent the matrix as a sum and/or product of matrices with simpler structure, such that we can solve mentioned tasks faster / in a more stable form.\nWhat is a simpler structure?"
+    "section": "Общая концепция матричных разложений",
+    "text": "Общая концепция матричных разложений\n\nВ вычислительной линейной алгебре нам нужно решать различные задачи, например:\n\nРешать линейные системы Ax = f\nВычислять собственные значения / собственные векторы\nВычислять сингулярные значения / сингулярные векторы\nВычислять обратные матрицы, иногда даже определители\nВычислять матричные функции такие как \\exp(A), \\cos(A) (это не поэлементные функции)\n\nДля этого мы представляем матрицу как сумму и/или произведение матриц с более простой структурой, чтобы решать упомянутые задачи быстрее / в более стабильной форме.\nЧто такое более простая структура?"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#what-is-a-simpler-structure",
-    "href": "lectures/lecture-7/lecture-7.html#what-is-a-simpler-structure",
+    "objectID": "lectures/lecture-6/lecture-6.html#что-такое-более-простая-структура",
+    "href": "lectures/lecture-6/lecture-6.html#что-такое-более-простая-структура",
     "title": "",
-    "section": "What is a simpler structure",
-    "text": "What is a simpler structure\n\nWe already encountered several classes of matrices with structure.\nFor dense matrices the most important classes are\n\nunitary matrices\nupper/lower triangular matrices\ndiagonal matrices"
+    "section": "Что такое более простая структура",
+    "text": "Что такое более простая структура\n\nМы уже встречали несколько классов матриц со структурой.\nДля плотных матриц наиболее важными классами являются\n\nунитарные матрицы\nверхние/нижние треугольные матрицы\nдиагональные матрицы"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#other-classes-of-structured-matrices",
-    "href": "lectures/lecture-7/lecture-7.html#other-classes-of-structured-matrices",
+    "objectID": "lectures/lecture-6/lecture-6.html#план",
+    "href": "lectures/lecture-6/lecture-6.html#план",
     "title": "",
-    "section": "Other classes of structured matrices",
-    "text": "Other classes of structured matrices\n\nFor sparse matrices the sparse constraints are often included in the factorizations.\nFor Toeplitz matrices an important class of matrices is the class of matrices with low displacement rank, which is based on the low-rank matrices.\nThe class of low-rank matrices and block low-rank matrices appears in many applications."
+    "section": "План",
+    "text": "План\nПлан сегодняшней лекции - обсудить разложения одно за другим и указать: - Как вычислить конкретное разложение - Когда разложение существует - Что делается в реальной жизни (LAPACK)."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#plan",
-    "href": "lectures/lecture-7/lecture-7.html#plan",
+    "objectID": "lectures/lecture-6/lecture-6.html#разложения-которые-мы-хотим-обсудить-сегодня",
+    "href": "lectures/lecture-6/lecture-6.html#разложения-которые-мы-хотим-обсудить-сегодня",
     "title": "",
-    "section": "Plan",
-    "text": "Plan\nThe plan for today’s lecture is to discuss the decompositions one-by-one and point out: - How to compute a particular decomposition - When the decomposition exists - What is done in real life (LAPACK)."
+    "section": "Разложения, которые мы хотим обсудить сегодня",
+    "text": "Разложения, которые мы хотим обсудить сегодня\n\nLU-разложение и разложение Холецкого — краткое напоминание, уже рассмотрены.\nQR-разложение и алгоритм Грама-Шмидта"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#decompositions-we-want-to-discuss-today",
-    "href": "lectures/lecture-7/lecture-7.html#decompositions-we-want-to-discuss-today",
+    "objectID": "lectures/lecture-6/lecture-6.html#plu-разложение",
+    "href": "lectures/lecture-6/lecture-6.html#plu-разложение",
     "title": "",
-    "section": "Decompositions we want to discuss today",
-    "text": "Decompositions we want to discuss today\n\nLU factorization & Cholesky factorization — quick reminder, already done.\nQR decomposition and Gram-Schmidt algorithm\nOne slide about the SVD (more details in the second part of today lecture)"
+    "section": "PLU разложение",
+    "text": "PLU разложение\n\nЛюбая невырожденная матрица может быть представлена в виде\n\n A = P L U, \nгде P - матрица перестановки, L - нижняя треугольная матрица, U - верхняя треугольная.\n\nОсновная цель LU разложения - решение линейных систем, потому что\n\n A^{-1} f = (L U)^{-1} f = U^{-1} L^{-1} f, \nи это сводится к решению двух линейных систем\n L y = f,  \\quad U x = y \nс нижней и верхней треугольными матрицами соответственно.\nВопрос: какова сложность решения этих линейных систем?"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#plu-decomposition",
-    "href": "lectures/lecture-7/lecture-7.html#plu-decomposition",
+    "objectID": "lectures/lecture-6/lecture-6.html#положительно-определенные-матрицы-и-разложение-холецкого-напоминание",
+    "href": "lectures/lecture-6/lecture-6.html#положительно-определенные-матрицы-и-разложение-холецкого-напоминание",
     "title": "",
-    "section": "PLU decomposition",
-    "text": "PLU decomposition\n\nAny nonsingular matrix can be factored as\n\n A = P L U, \nwhere P is a permutation matrix, L is a lower triangular matrix, U is an upper triangular.\n\nMain goal of the LU decomposition is to solve linear systems, because\n\n A^{-1} f = (L U)^{-1} f = U^{-1} L^{-1} f, \nand this reduces to the solution of two linear systems\n L y = f,  \\quad U x = y \nwith lower and upper triangular matrices respectively.\nQ: what is the complexity of solving these linear systems?"
+    "section": "Положительно определенные матрицы и разложение Холецкого, напоминание",
+    "text": "Положительно определенные матрицы и разложение Холецкого, напоминание\nЕсли матрица эрмитова положительно определенная, т.е.\n A = A^*, \\quad (Ax, x) &gt; 0, \\quad x \\ne 0, \nто она может быть представлена в виде\n A = RR^*, \nгде R - нижняя треугольная матрица.\nЭто нам понадобится для QR разложения."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#positive-definite-matrices-and-cholesky-decomposition-reminder",
-    "href": "lectures/lecture-7/lecture-7.html#positive-definite-matrices-and-cholesky-decomposition-reminder",
+    "objectID": "lectures/lecture-6/lecture-6.html#qr-разложение",
+    "href": "lectures/lecture-6/lecture-6.html#qr-разложение",
     "title": "",
-    "section": "Positive definite matrices and Cholesky decomposition, reminder",
-    "text": "Positive definite matrices and Cholesky decomposition, reminder\nIf the matrix is Hermitian positive definite, i.e. \n A = A^*, \\quad (Ax, x) &gt; 0, \\quad x \\ne 0, \nthen it can be factored as\n A = RR^*, \nwhere R is lower triangular.\nWe will need this for the QR decomposition."
+    "section": "QR разложение",
+    "text": "QR разложение\n\nСледующее разложение: QR разложение.\nОпять же из названия понятно, что матрица представляется в виде произведения\n\n\n    A = Q R,\n\nгде Q - ортогональная (унитарная) по столбцам матрица, а R - верхняя треугольная матрица.\n\nРазмеры матриц: Q имеет размер n \\times m, R имеет размер m \\times m если n\\geq m. Смотрите наш постер для визуализации QR разложения\nQR разложение определено для любой прямоугольной матрицы."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#qr-decomposition",
-    "href": "lectures/lecture-7/lecture-7.html#qr-decomposition",
+    "objectID": "lectures/lecture-6/lecture-6.html#qr-разложение-применения",
+    "href": "lectures/lecture-6/lecture-6.html#qr-разложение-применения",
     "title": "",
-    "section": "QR decomposition",
-    "text": "QR decomposition\n\nThe next decomposition: QR decomposition.\nAgain from the name it is clear that a matrix is represented as a product\n\n\n    A = Q R,\n\nwhere Q is an column orthogonal (unitary) matrix and R is upper triangular.\n\nThe matrix sizes: Q is n \\times m, R is m \\times m if n\\geq m. See our poster for visualization of QR decomposition\nQR decomposition is defined for any rectangular matrix."
+    "section": "QR разложение: применения",
+    "text": "QR разложение: применения\nЭто разложение играет ключевую роль во многих задачах: - Вычисление ортогональных базисов в линейном пространстве - Используется в предварительной обработке для SVD - QR-алгоритм для вычисления собственных векторов и собственных значений (один из 10 самых важных алгоритмов 20-го века) основан на QR разложении - Решение переопределенных систем линейных уравнений (задача линейных наименьших квадратов)"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#qr-decomposition-applications",
-    "href": "lectures/lecture-7/lecture-7.html#qr-decomposition-applications",
+    "objectID": "lectures/lecture-6/lecture-6.html#qr-разложение-и-метод-наименьших-квадратов",
+    "href": "lectures/lecture-6/lecture-6.html#qr-разложение-и-метод-наименьших-квадратов",
     "title": "",
-    "section": "QR decomposition: applications",
-    "text": "QR decomposition: applications\nThis decomposition plays a crucial role in many problems: - Computing orthogonal bases in a linear space - Used in the preprocessing step for the SVD - QR-algorithm for the computation of eigenvectors and eigenvalues (one of the 10 most important algorithms of the 20th century) is based on the QR decomposition - Solving overdetermined systems of linear equations (linear least-squares problem)"
+    "section": "QR разложение и метод наименьших квадратов",
+    "text": "QR разложение и метод наименьших квадратов\n\nПредположим, нам нужно решить\n\n \\Vert A x - b \\Vert_2 \\rightarrow \\min_x, \nгде A имеет размер n \\times m, n \\geq m.\n\nТогда мы факторизуем\n\n A = Q R, \nи используем уравнение для псевдообратной матрицы в случае матрицы A полного ранга:\n x = A^{\\dagger}b = (A^*A)^{-1}A^*b = ((QR)^*(QR))^{-1}(QR)^*b = (R^*Q^*QR)^{-1}R^*Q^*b = R^{-1}Q^*b. \nтаким образом, x можно найти из\nR x = Q^*b\n\nЗаметим, что это квадратная система линейных уравнений с нижней треугольной матрицей. Какова сложность решения этой системы?"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#qr-decomposition-and-least-squares-reminder",
-    "href": "lectures/lecture-7/lecture-7.html#qr-decomposition-and-least-squares-reminder",
+    "objectID": "lectures/lecture-6/lecture-6.html#существование-qr-разложения",
+    "href": "lectures/lecture-6/lecture-6.html#существование-qr-разложения",
     "title": "",
-    "section": "QR decomposition and least squares, reminder",
-    "text": "QR decomposition and least squares, reminder\n\nSuppose we need to solve\n\n \\Vert A x - b \\Vert_2 \\rightarrow \\min_x, \nwhere A is n \\times m, n \\geq m.\n\nThen we factorize\n\n A = Q R, \nand use equation for pseudo-inverse matrix in the case of the full rank matrix A:\n x = A^{\\dagger}b = (A^*A)^{-1}A^*b = ((QR)^*(QR))^{-1}(QR)^*b = (R^*Q^*QR)^{-1}R^*Q^*b = R^{-1}Q^*b. \nthus x can be recovered from\nR x = Q^*b\n\nNote that this is a square system of linear equations with lower triangular matrix. What is the complexity of solving this system?"
+    "section": "Существование QR разложения",
+    "text": "Существование QR разложения\nТеорема. Каждая прямоугольная матрица размера n \\times m имеет QR разложение.\nСуществует несколько способов доказать это и вычислить его:\n\nТеоретический: с использованием матриц Грама и разложения Холецкого\nГеометрический: с использованием ортогонализации Грама-Шмидта\nПрактический: с использованием преобразований Хаусхолдера/Гивенса\n\n\nДоказательство с использованием разложения Холецкого\nЕсли у нас есть представление вида\nA = QR,\nтогда A^* A = ( Q R)^* (QR)  = R^* (Q^* Q) R = R^* R, матрица A^* A называется матрицей Грама, и её элементы являются скалярными произведениями столбцов матрицы A.\n\n\nДоказательство с использованием разложения Холецкого (полный ранг по столбцам)\n\nПредположим, что A имеет полный ранг по столбцам. Тогда легко показать, что A^* A положительно определена:\n\n (A^* A y, y) = (Ay, Ay) = \\Vert Ay \\Vert^2  &gt; 0, \\quad y\\not = 0. \n\nСледовательно, A^* A = R^* R всегда существует.\nТогда матрица Q = A R^{-1} является унитарной:\n\n (A R^{-1})^* (AR^{-1})= R^{-*} A^* A R^{-1} = R^{-*} R^* R R^{-1} = I. \n\n\nДоказательство с использованием разложения Холецкого (случай неполного ранга)\n\nКогда матрица n \\times m не имеет полного ранга по столбцам, она называется матрицей неполного ранга.\nQR разложение, однако, также существует.\nДля любой матрицы неполного ранга существует последовательность матриц полного ранга по столбцам A_k такая, что A_k \\rightarrow A (почему?).\nКаждая A_k может быть разложена как A_k = Q_k R_k.\nМножество всех унитарных матриц компактно, поэтому существует сходящаяся подпоследовательность Q_{n_k} \\rightarrow Q (почему?), и Q^* A_k \\rightarrow Q^* A = R, которая является треугольной."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#existence-of-qr-decomposition",
-    "href": "lectures/lecture-7/lecture-7.html#existence-of-qr-decomposition",
+    "objectID": "lectures/lecture-6/lecture-6.html#устойчивость-qr-разложения-через-разложение-холецкого",
+    "href": "lectures/lecture-6/lecture-6.html#устойчивость-qr-разложения-через-разложение-холецкого",
     "title": "",
-    "section": "Existence of QR decomposition",
-    "text": "Existence of QR decomposition\nTheorem. Every rectangular n \\times m matrix has a QR decomposition.\nThere are several ways to prove it and compute it:\n\nTheoretical: using the Gram matrices and Cholesky factorization\nGeometrical: using the Gram-Schmidt orthogonalization\nPractical: using Householder/Givens transformations\n\n\nProof using Cholesky decomposition\nIf we have the representation of the form\nA = QR,\nthen A^* A = ( Q R)^* (QR)  = R^* (Q^* Q) R = R^* R, the matrix A^* A is called Gram matrix, and its elements are scalar products of the columns of A.\n\n\nProof using Cholesky decomposition (full column rank)\n\nAssume that A has full column rank. Then, it is simple to show that A^* A is positive definite:\n\n (A^* A y, y) = (Ay, Ay) = \\Vert Ay \\Vert^2  &gt; 0, \\quad y\\not = 0. \n\nTherefore, A^* A = R^* R always exists.\nThen the matrix Q = A R^{-1} is unitary:\n\n (A R^{-1})^* (AR^{-1})= R^{-*} A^* A R^{-1} = R^{-*} R^* R R^{-1} = I. \n\n\nProof using Cholesky decomposition (rank-deficient case)\n\nWhen an n \\times m matrix does not have full column rank, it is said to be rank-deficient.\nThe QR decomposition, however, also exists.\nFor any rank-deficient matrix there is a sequence of full-column rank matrices A_k such that A_k \\rightarrow A (why?).\nEach A_k can be decomposed as A_k = Q_k R_k.\nThe set of all unitary matrices is compact, thus there exists a converging subsequence Q_{n_k} \\rightarrow Q (why?), and Q^* A_k \\rightarrow Q^* A = R, which is triangular."
+    "section": "Устойчивость QR разложения через разложение Холецкого",
+    "text": "Устойчивость QR разложения через разложение Холецкого\n\nИтак, простейший способ вычислить QR разложение:\n\nA^* A = R^* R,\nи\nQ = A R^{-1}.\n\nЭто плохая идея с точки зрения численной устойчивости. Давайте рассмотрим пример (для подматрицы матрицы Гильберта).\n\n\nimport numpy as np\nn = 10\nr = 5\na = [[1.0 / (i + j + 0.5) for i in range(r)] for j in range(n)]\na = np.array(a)\nq, Rmat = np.linalg.qr(a)\ne = np.eye(r)\nprint('Built-in QR orth', np.linalg.norm(np.dot(q.T, q) - e))\ngram_matrix = a.T.dot(a)\nRmat1 = np.linalg.cholesky(gram_matrix)\n#q1 = np.dot(a, np.linalg.inv(Rmat1.T))\nq1 = np.linalg.solve(Rmat1, a.T).T\nprint('Via Cholesky:', np.linalg.norm(np.dot(q1.T, q1) - e))\n\nBuilt-in QR orth 7.665422590335931e-16\nVia Cholesky: 8.098126917366574e-09"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#stability-of-qr-decomposition-via-cholesky-decomposition",
-    "href": "lectures/lecture-7/lecture-7.html#stability-of-qr-decomposition-via-cholesky-decomposition",
+    "objectID": "lectures/lecture-6/lecture-6.html#второй-способ-ортогонализация-грама-шмидта",
+    "href": "lectures/lecture-6/lecture-6.html#второй-способ-ортогонализация-грама-шмидта",
     "title": "",
-    "section": "Stability of QR decomposition via Cholesky decomposition",
-    "text": "Stability of QR decomposition via Cholesky decomposition\n\nSo, the simplest way to compute QR decomposition is then\n\nA^* A = R^* R,\nand\nQ = A R^{-1}.\n\nIt is a bad idea for numerical stability. Let us do some demo (for a submatrix of the Hilbert matrix).\n\n\nimport numpy as np\nn = 10\nr = 5\na = [[1.0 / (i + j + 0.5) for i in range(r)] for j in range(n)]\na = np.array(a)\nq, Rmat = np.linalg.qr(a)\ne = np.eye(r)\nprint('Built-in QR orth', np.linalg.norm(np.dot(q.T, q) - e))\ngram_matrix = a.T.dot(a)\nRmat1 = np.linalg.cholesky(gram_matrix)\n#q1 = np.dot(a, np.linalg.inv(Rmat1.T))\nq1 = np.linalg.solve(Rmat1, a.T).T\nprint('Via Cholesky:', np.linalg.norm(np.dot(q1.T, q1) - e))\n\nBuilt-in QR orth 6.764143318685874e-16\nVia Cholesky: 1.528398708004441e-09"
+    "section": "Второй способ: ортогонализация Грама-Шмидта",
+    "text": "Второй способ: ортогонализация Грама-Шмидта\n\nQR разложение - это математический способ записи процесса ортогонализации Грама-Шмидта.\nИмея последовательность векторов a_1, \\ldots, a_m, мы хотим найти ортогональный базис q_1, \\ldots, q_m такой, что каждый a_i является линейной комбинацией этих векторов.\n\nГрам-Шмидт: 1. q_1 := a_1/\\Vert a_1 \\Vert 2. q_2 := a_2 - (a_2, q_1) q_1, \\quad q_2 := q_2/\\Vert q_2 \\Vert 3. q_3 := a_3 - (a_3, q_1) q_1 - (a_3, q_2) q_2, \\quad q_3 := q_3/\\Vert q_3 \\Vert 4. И так далее\nЗаметим, что преобразование от Q к A имеет треугольную структуру, так как из k-го вектора мы вычитаем только предыдущие. Это следует из того факта, что произведение треугольных матриц является треугольной матрицей."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#second-way-gram-schmidt-orthogonalization",
-    "href": "lectures/lecture-7/lecture-7.html#second-way-gram-schmidt-orthogonalization",
+    "objectID": "lectures/lecture-6/lecture-6.html#модифицированный-метод-грама-шмидта",
+    "href": "lectures/lecture-6/lecture-6.html#модифицированный-метод-грама-шмидта",
     "title": "",
-    "section": "Second way: Gram-Schmidt orthogonalization",
-    "text": "Second way: Gram-Schmidt orthogonalization\n\nQR decomposition is a mathematical way of writing down the Gram-Schmidt orthogonalization process.\n\nGiven a sequence of vectors a_1, \\ldots, a_m we want to find orthogonal basis q_1, \\ldots, q_m such that every a_i is a linear combination of such vectors.\n\nGram-Schmidt: 1. q_1 := a_1/\\Vert a_1 \\Vert 2. q_2 := a_2 - (a_2, q_1) q_1, \\quad q_2 := q_2/\\Vert q_2 \\Vert 3. q_3 := a_3 - (a_3, q_1) q_1 - (a_3, q_2) q_2, \\quad q_3 := q_3/\\Vert q_3 \\Vert 4. And so on\nNote that the transformation from Q to A has triangular structure, since from the k-th vector we subtract only the previous ones. It follows from the fact that the product of triangular matrices is a triangular matrix."
+    "section": "Модифицированный метод Грама-Шмидта",
+    "text": "Модифицированный метод Грама-Шмидта\n\nМетод Грама-Шмидта может быть очень неустойчивым (т.е. полученные векторы не будут ортогональными, особенно если q_k имеет малую норму).\nЭто называется потерей ортогональности.\nСуществует решение, называемое модифицированным методом Грама-Шмидта. Вместо того, чтобы делать\n\nq_k := a_k - (a_k, q_1) q_1 - \\ldots - (a_k, q_{k-1}) q_{k-1}\nмы делаем это пошагово. Сначала устанавливаем q_k := a_k и ортогонализуем последовательно:\n\n   q_k := q_k - (q_k, q_1)q_1, \\quad q_k := q_{k} - (q_k,q_2)q_2, \\ldots\n\n\nВ точной арифметике это одно и то же. В арифметике с плавающей точкой это абсолютно разные вещи!\nОбратите внимание, что сложность составляет \\mathcal{O}(nm^2) операций\n\n\nn = 100 \na = np.random.rand(n)\nb = a + 1e-9*np.random.randn(n)\na = a/np.linalg.norm(a)\nc = b - np.dot(b, a)*a\nc = c/np.linalg.norm(c)\nprint(np.dot(c, a))\nc = c - np.dot(c, a)*a\nc = c/np.linalg.norm(c)\nprint(np.dot(c, a))\n\n1.576475053416404e-07\n-2.42861286636753e-17"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#modified-gram-schmidt",
-    "href": "lectures/lecture-7/lecture-7.html#modified-gram-schmidt",
+    "objectID": "lectures/lecture-6/lecture-6.html#qr-разложение-почти-практический-способ",
+    "href": "lectures/lecture-6/lecture-6.html#qr-разложение-почти-практический-способ",
     "title": "",
-    "section": "Modified Gram-Schmidt",
-    "text": "Modified Gram-Schmidt\n\nGram-Schmidt can be very unstable (i.e., the produced vectors will be not orthogonal, especially if q_k has small norm).\nThis is called loss of orthogonality.\nThere is a remedy, called modified Gram-Schmidt method. Instead of doing\n\nq_k := a_k - (a_k, q_1) q_1 - \\ldots - (a_k, q_{k-1}) q_{k-1}\nwe do it step-by-step. First we set q_k := a_k and orthogonalize sequentially:\n\n   q_k := q_k - (q_k, q_1)q_1, \\quad q_k := q_{k} - (q_k,q_2)q_2, \\ldots\n\n\nIn exact arithmetic, it is the same. In floating point it is absolutely different!\nNote that the complexity is \\mathcal{O}(nm^2) operations\n\n\nn = 100 \na = np.random.rand(n)\nb = a + 1e-9*np.random.randn(n)\na = a/np.linalg.norm(a)\nc = b - np.dot(b, a)*a\nc = c/np.linalg.norm(c)\nprint(np.dot(c, a))\nc = c - np.dot(c, a)*a\nc = c/np.linalg.norm(c)\nprint(np.dot(c, a))\n\n1.576475053416404e-07\n-2.42861286636753e-17"
+    "section": "QR разложение: (почти) практический способ",
+    "text": "QR разложение: (почти) практический способ\n\nЕсли A = QR, то\n\n R = Q^* A, \nи нам нужно найти определенную ортогональную матрицу Q, которая приводит матрицу к верхнетреугольной форме.\n- Для простоты мы будем искать матрицу n \\times n такую, что\n Q^* A = \\begin{bmatrix} * & * & *  \\\\ 0 & * & * \\\\ 0 & 0 & * \\\\ & 0_{(n-m) \\times m} \\end{bmatrix} \n\nМы будем делать это по столбцам.\n\nСначала мы находим матрицу Хаусхолдера H_1 = (I - 2 uu^{\\top}) такую, что (проиллюстрируем на матрице 4 \\times 3)\n\n H_1 A = \\begin{bmatrix} * & * & * \\\\ 0 & * & * \\\\ 0 & * & * \\\\ 0 & * & * \\end{bmatrix} \nЗатем,\n H_2 H_1 A = \\begin{bmatrix} * & * & * \\\\ 0 & * & * \\\\ 0 & 0 & * \\\\ 0 & 0 & * \\end{bmatrix}, \nгде\n H_2 = \\begin{bmatrix} 1 & 0 \\\\ 0 & H'_2, \\end{bmatrix} \nи H'_2 - это матрица Хаусхолдера размера 3 \\times 3.\nНаконец,\n H_3 H_2 H_1 A = \\begin{bmatrix} * & * & * \\\\ 0 & * & * \\\\ 0 & 0 & * \\\\ 0 & 0 & 0 \\end{bmatrix}, \nВы можете попробовать реализовать это самостоятельно, это просто."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#qr-decomposition-the-almost-practical-way",
-    "href": "lectures/lecture-7/lecture-7.html#qr-decomposition-the-almost-practical-way",
+    "objectID": "lectures/lecture-6/lecture-6.html#qr-разложение-реальная-жизнь",
+    "href": "lectures/lecture-6/lecture-6.html#qr-разложение-реальная-жизнь",
     "title": "",
-    "section": "QR decomposition: the (almost) practical way",
-    "text": "QR decomposition: the (almost) practical way\n\nIf A = QR, then\n\n R = Q^* A, \nand we need to find a certain orthogonal matrix Q that brings a matrix into upper triangular form.\n- For simplicity, we will look for an n \\times n matrix such that\n Q^* A = \\begin{bmatrix} * & * & *  \\\\ 0 & * & * \\\\ 0 & 0 & * \\\\ & 0_{(n-m) \\times m} \\end{bmatrix} \n\nWe will do it column-by-column.\n\nFirst, we find a Householder matrix H_1 = (I - 2 uu^{\\top}) such that (we illustrate on a 4 \\times 3 matrix)\n\n H_1 A = \\begin{bmatrix} * & * & * \\\\ 0 & * & * \\\\ 0 & * & * \\\\ 0 & * & * \\end{bmatrix} \nThen,\n H_2 H_1 A = \\begin{bmatrix} * & * & * \\\\ 0 & * & * \\\\ 0 & 0 & * \\\\ 0 & 0 & * \\end{bmatrix}, \nwhere\n H_2 = \\begin{bmatrix} 1 & 0 \\\\ 0 & H'_2, \\end{bmatrix} \nand H'_2 is a 3 \\times 3 Householder matrix.\nFinally,\n H_3 H_2 H_1 A = \\begin{bmatrix} * & * & * \\\\ 0 & * & * \\\\ 0 & 0 & * \\\\ 0 & 0 & 0 \\end{bmatrix}, \nYou can try to implement it yourself, it is simple."
+    "section": "QR разложение: реальная жизнь",
+    "text": "QR разложение: реальная жизнь\n\nВ реальности, поскольку это разложение плотной матрицы, алгоритм следует реализовывать в терминах блоков (почему?).\nВместо использования преобразования Хаусхолдера, мы используем блочное преобразование Хаусхолдера вида\n\nH = I - 2UU^*, \nгде U^* U = I.\n\nЭто позволяет нам использовать операции BLAS-3."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#qr-decomposition-real-life",
-    "href": "lectures/lecture-7/lecture-7.html#qr-decomposition-real-life",
+    "objectID": "lectures/lecture-6/lecture-6.html#qr-разложение-выявляющее-ранг",
+    "href": "lectures/lecture-6/lecture-6.html#qr-разложение-выявляющее-ранг",
     "title": "",
-    "section": "QR decomposition: real life",
-    "text": "QR decomposition: real life\n\nIn reality, since this is a dense matrix factorization, you should implement the algorithm in terms of blocks (why?).\nInstead of using Householder transformation, we use block Householder transformation of the form\n\nH = I - 2UU^*, \nwhere U^* U = I.\n\nThis allows us to use BLAS-3 operations."
+    "section": "QR-разложение, выявляющее ранг",
+    "text": "QR-разложение, выявляющее ранг\n\nQR-разложение также может быть использовано для вычисления (численного) ранга матрицы, см. Rank-Revealing QR Factorizations and the Singular Value Decomposition, Y. P. Hong; C.-T. Pan\nЭто делается с помощью так называемого разложения, выявляющего ранг.\nОно основано на представлении\n\nP A = Q R,\nгде P - матрица перестановки (она переставляет столбцы), а R имеет блочную форму\nR = \\begin{bmatrix} R_{11} & R_{12} \\\\ 0 & R_{22}\\end{bmatrix}.\n\nЦель состоит в том, чтобы найти P такую, что норма R_{22} мала, тогда вы можете определить численный ранг, взглянув на неё.\nОценка: \\sigma_{r+1} \\leq \\Vert R_{22} \\Vert_2 (проверьте, почему)."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#rank-revealing-qr-decomposition",
-    "href": "lectures/lecture-7/lecture-7.html#rank-revealing-qr-decomposition",
+    "objectID": "lectures/lecture-6/lecture-6.html#резюме",
+    "href": "lectures/lecture-6/lecture-6.html#резюме",
     "title": "",
-    "section": "Rank-revealing QR-decomposition",
-    "text": "Rank-revealing QR-decomposition\n\nThe QR-decomposition can be also used to compute the (numerical) rank of the matrix, see Rank-Revealing QR Factorizations and the Singular Value Decomposition, Y. P. Hong; C.-T. Pan\nIt is done via so-called rank-revealing factorization.\nIt is based on the representation\n\nP A = Q R,\nwhere P is the permutation matrix (it permutes columns), and R has the block form\nR = \\begin{bmatrix} R_{11} & R_{12} \\\\ 0 & R_{22}\\end{bmatrix}.\n\nThe goal is to find P such that the norm of R_{22} is small, so you can find the numerical rank by looking at it.\nAn estimate is \\sigma_{r+1} \\leq \\Vert R_{22} \\Vert_2 (check why)."
+    "section": "Резюме",
+    "text": "Резюме\n\nLU и QR разложения могут быть вычислены с помощью прямых методов за конечное количество операций.\nА как насчет формы Шура и SVD?\nОни не могут быть вычислены с помощью прямых методов (почему?) и могут быть вычислены только с помощью итерационных методов.\nХотя итерационные методы все равно имеют ту же сложность \\mathcal{O}(n^3) в арифметике с плавающей точкой благодаря быстрой сходимости."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#summary",
-    "href": "lectures/lecture-7/lecture-7.html#summary",
+    "objectID": "lectures/lecture-6/lecture-6.html#форма-шура",
+    "href": "lectures/lecture-6/lecture-6.html#форма-шура",
     "title": "",
-    "section": "Summary",
-    "text": "Summary\n\nLU and QR decompositions can be computed using direct methods in finite amount of operations.\nWhat about Schur form and SVD?\nThey can not be computed by direct methods (why?) they can only be computed by iterative methods.\nAlthough iterative methods still have the same \\mathcal{O}(n^3) complexity in floating point arithmetic thanks to fast convergence."
+    "section": "Форма Шура",
+    "text": "Форма Шура\n\nНапомним, что каждая матрица может быть записана в форме Шура\n\nA = Q T Q^*,\nгде T - верхнетреугольная матрица, а Q - унитарная матрица, и это разложение дает собственные значения матрицы (они находятся на диагонали T).\n\nПервым и основным алгоритмом для вычисления формы Шура является QR алгоритм."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#schur-form",
-    "href": "lectures/lecture-7/lecture-7.html#schur-form",
+    "objectID": "lectures/lecture-6/lecture-6.html#qr-алгоритм",
+    "href": "lectures/lecture-6/lecture-6.html#qr-алгоритм",
     "title": "",
-    "section": "Schur form",
-    "text": "Schur form\n\nRecall that every matrix can be written in the Schur form\n\nA = Q T Q^*,\nwith upper triangular T and unitary Q and this decomposition gives eigenvalues of the matrix (they are on the diagonal of T).\n\nThe first and the main algorithm for computing the Schur form is the QR algorithm."
+    "section": "QR алгоритм",
+    "text": "QR алгоритм\n\nQR алгоритм был независимо предложен в 1961 году Кублановской и Фрэнсисом.\n Не путайте QR алгоритм и QR разложение! \nQR разложение - это представление матрицы, тогда как QR алгоритм использует QR разложение для вычисления собственных значений!"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#qr-algorithm",
-    "href": "lectures/lecture-7/lecture-7.html#qr-algorithm",
+    "objectID": "lectures/lecture-6/lecture-6.html#путь-к-qr-алгоритму",
+    "href": "lectures/lecture-6/lecture-6.html#путь-к-qr-алгоритму",
     "title": "",
-    "section": "QR algorithm",
-    "text": "QR algorithm\n\nThe QR algorithm was independently proposed in 1961 by Kublanovskaya and Francis.\n Do not mix QR algorithm and QR decomposition! \nQR decomposition is the representation of a matrix, whereas QR algorithm uses QR decomposition to compute the eigenvalues!"
+    "section": "Путь к QR алгоритму",
+    "text": "Путь к QR алгоритму\n\nРассмотрим уравнение\n\nA = Q T Q^*,\nи перепишем его в форме\n Q T = A Q. \n\nСлева мы можем видеть QR разложение матрицы AQ.\nМы можем использовать это для вывода итерации с фиксированной точкой для формы Шура, также известной как QR алгоритм."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#way-to-qr-algorithm",
-    "href": "lectures/lecture-7/lecture-7.html#way-to-qr-algorithm",
+    "objectID": "lectures/lecture-6/lecture-6.html#вывод-qr-алгоритма-как-итерации-с-фиксированной-точкой",
+    "href": "lectures/lecture-6/lecture-6.html#вывод-qr-алгоритма-как-итерации-с-фиксированной-точкой",
     "title": "",
-    "section": "Way to QR algorithm",
-    "text": "Way to QR algorithm\n\nConsider the equation\n\nA = Q T Q^*,\nand rewrite it in the form\n Q T = A Q. \n\nOn the left we can see QR factorization of the matrix AQ.\nWe can use this to derive fixed-point iteration for the Schur form, also known as QR algorithm."
+    "section": "Вывод QR алгоритма как итерации с фиксированной точкой",
+    "text": "Вывод QR алгоритма как итерации с фиксированной точкой\nМы можем записать итерационный процесс\n\n    Q_{k+1} R_{k+1} = A Q_k, \\quad Q_{k+1}^* A = R_{k+1} Q^*_k\n\nВведем\nA_k = Q^* _k A Q_k = Q^*_k Q_{k+1} R_{k+1} = \\widehat{Q}_k R_{k+1}\nи новое приближение имеет вид\nA_{k+1} = Q^*_{k+1} A Q_{k+1} = ( Q_{k+1}^* A = R_{k+1} Q^*_k)  = R_{k+1} \\widehat{Q}_k.\nТаким образом, мы приходим к стандартной форме QR алгоритма.\nИтоговые формулы записываются в классической форме QRRQ:\n\nНачинаем с A_0 = A.\nВычисляем QR разложение матрицы A_k = Q_k R_k.\nПолагаем A_{k+1} = R_k Q_k.\n\nПовторяем итерации, пока A_k не станет достаточно треугольной (например, норма поддиагональной части достаточно мала)."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#derivation-of-the-qr-algorithm-as-fixed-point-iteration",
-    "href": "lectures/lecture-7/lecture-7.html#derivation-of-the-qr-algorithm-as-fixed-point-iteration",
+    "objectID": "lectures/lecture-6/lecture-6.html#что-насчет-сходимости-и-сложности",
+    "href": "lectures/lecture-6/lecture-6.html#что-насчет-сходимости-и-сложности",
     "title": "",
-    "section": "Derivation of the QR algorithm as fixed-point iteration",
-    "text": "Derivation of the QR algorithm as fixed-point iteration\nWe can write down the iterative process\n\n    Q_{k+1} R_{k+1} = A Q_k, \\quad Q_{k+1}^* A = R_{k+1} Q^*_k\n\nIntroduce\nA_k = Q^* _k A Q_k = Q^*_k Q_{k+1} R_{k+1} = \\widehat{Q}_k R_{k+1}\nand the new approximation reads\nA_{k+1} = Q^*_{k+1} A Q_{k+1} = ( Q_{k+1}^* A = R_{k+1} Q^*_k)  = R_{k+1} \\widehat{Q}_k.\nSo we arrive at the standard form of the QR algorithm.\nThe final formulas are then written in the classical QRRQ-form:\n\nStart from A_0 = A.\nCompute QR factorization of A_k = Q_k R_k.\nSet A_{k+1} = R_k Q_k.\n\nIterate until A_k is triangular enough (e.g. norm of subdiagonal part is small enough)."
+    "section": "Что насчет сходимости и сложности",
+    "text": "Что насчет сходимости и сложности\nУтверждение\nМатрицы A_k унитарно подобны A\nA_k = Q^*_{k-1} A_{k-1} Q_{k-1} = (Q_{k-1} \\ldots Q_1)^* A (Q_{k-1} \\ldots Q_1)\nи произведение унитарных матриц является унитарной матрицей.\n\nСложность каждого шага составляет \\mathcal{O}(n^3), если выполняется общее QR разложение.\nМы надеемся, что A_k будет очень близка к треугольной матрице для достаточно большого k.\n\n\nimport numpy as np\nn = 40\na = [[1.0/(i - j + 0.5) for i in range(n)] for j in range(n)]\na = np.array(a)\nniters = 10000\nfor k in range(niters):\n    q, rmat = np.linalg.qr(a)\n    a = rmat.dot(q)\nprint('Leading 3x3 block of a:')\nprint(a[:4, :4])\n\nLeading 3x3 block of a:\n[[ 3.08733278e-01  3.08447671e+00  1.39093778e-02 -9.15979869e-02]\n [-3.05714157e+00  2.90031089e-01  1.49436447e-01 -4.41658919e-02]\n [-2.25478613e-21 -1.27296314e-20  5.50815465e-01  3.04169557e+00]\n [-1.45411659e-20 -7.68894785e-21 -3.00877077e+00  5.09624202e-01]]"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#what-about-the-convergence-and-complexity",
-    "href": "lectures/lecture-7/lecture-7.html#what-about-the-convergence-and-complexity",
+    "objectID": "lectures/lecture-6/lecture-6.html#сходимость-и-сложность-qr-алгоритма",
+    "href": "lectures/lecture-6/lecture-6.html#сходимость-и-сложность-qr-алгоритма",
     "title": "",
-    "section": "What about the convergence and complexity",
-    "text": "What about the convergence and complexity\nStatement\nMatrices A_k are unitary similar to A\nA_k = Q^*_{k-1} A_{k-1} Q_{k-1} = (Q_{k-1} \\ldots Q_1)^* A (Q_{k-1} \\ldots Q_1)\nand the product of unitary matrices is a unitary matrix.\n\nComplexity of each step is \\mathcal{O}(n^3), if a general QR decomposition is done.\nOur hope is that A_k will be very close to the triangular matrix for suffiently large k.\n\n\nimport jax.numpy as jnp\nn = 40\na = [[1.0/(i - j + 0.5) for i in range(n)] for j in range(n)]\na = np.array(a)\nniters = 10000\nfor k in range(niters):\n    q, rmat = np.linalg.qr(a)\n    a = rmat.dot(q)\nprint('Leading 3x3 block of a:')\nprint(a[:4, :4])\n\nLeading 3x3 block of a:\n[[ 3.08733278e-01  3.08447671e+00  1.39093779e-02 -9.15979870e-02]\n [-3.05714157e+00  2.90031089e-01  1.49436447e-01 -4.41658920e-02]\n [-2.25478613e-21 -1.27296314e-20  5.50815465e-01  3.04169557e+00]\n [-1.45411659e-20 -7.68894785e-21 -3.00877077e+00  5.09624202e-01]]"
+    "section": "Сходимость и сложность QR алгоритма",
+    "text": "Сходимость и сложность QR алгоритма\n\nСходимость QR алгоритма происходит от наибольших собственных значений к наименьшим.\nДля одного собственного значения требуется как минимум 2-3 итерации.\nКаждый шаг состоит из одной QR факторизации и одного произведения матриц, в результате сложность \\mathcal{O}(n^3).\n\nВ: означает ли это, что общая сложность \\mathcal{O}(n^4)?\nО: к счастью, нет.\n\nМы можем ускорить QR алгоритм, используя сдвиги, так как A_k - \\lambda I имеет те же векторы Шура.\nМы обсудим эти детали позже"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#convergence-and-complexity-of-the-qr-algorithm",
-    "href": "lectures/lecture-7/lecture-7.html#convergence-and-complexity-of-the-qr-algorithm",
+    "objectID": "lectures/lecture-6/lecture-6.html#сходимость-qr-алгоритма",
+    "href": "lectures/lecture-6/lecture-6.html#сходимость-qr-алгоритма",
     "title": "",
-    "section": "Convergence and complexity of the QR algorithm",
-    "text": "Convergence and complexity of the QR algorithm\n\nThe convergence of the QR algorithm is from the largest eigenvalues to the smallest.\nAt least 2-3 iterations is needed for an eigenvalue.\nEach step is one QR factorization and one matrix-by-matrix product, as a result \\mathcal{O}(n^3) complexity.\n\nQ: does it mean \\mathcal{O}(n^4) complexity totally?\nA: fortunately, not.\n\nWe can speedup the QR algorithm by using shifts, since A_k - \\lambda I has the same Schur vectors.\nWe will discuss these details later"
+    "section": "Сходимость QR алгоритма",
+    "text": "Сходимость QR алгоритма\nВсегда ли сходится QR алгоритм?\nПриведите пример."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#convergence-of-qr-algorithm",
-    "href": "lectures/lecture-7/lecture-7.html#convergence-of-qr-algorithm",
+    "objectID": "lectures/lecture-6/lecture-6.html#контрпример",
+    "href": "lectures/lecture-6/lecture-6.html#контрпример",
     "title": "",
-    "section": "Convergence of QR algorithm",
-    "text": "Convergence of QR algorithm\nDoes QR algorithm always convergence?\nProvide an example."
+    "section": "Контрпример",
+    "text": "Контрпример\nДля матрицы A = \\begin{bmatrix} 0 & 1 \\\\\n                                  1 & 0 \\end{bmatrix}\nмы имеем A_k = A."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#counterexample",
-    "href": "lectures/lecture-7/lecture-7.html#counterexample",
+    "objectID": "lectures/lecture-6/lecture-6.html#связь-с-ортогональной-итерацией",
+    "href": "lectures/lecture-6/lecture-6.html#связь-с-ортогональной-итерацией",
     "title": "",
-    "section": "Counterexample",
-    "text": "Counterexample\nFor a matrix A = \\begin{bmatrix} 0 & 1 \\\\\n                                  1 & 0 \\end{bmatrix}\nwe have A_k = A."
+    "section": "Связь с ортогональной итерацией",
+    "text": "Связь с ортогональной итерацией\nВ предыдущей лекции мы рассмотрели степенной метод, который представляет собой A^k v – приближение собственного вектора.\nQR алгоритм вычисляет (неявно) QR-разложение матрицы A^k:\nA^k = A \\cdot \\ldots \\cdot A = Q_1 R_1 Q_1 R_1 \\ldots = Q_1 Q_2 R_2 Q_2 R_2 \\ldots (R_2 R_1) = \\ldots (Q_1 Q_2 \\ldots Q_k) (R_k \\ldots R_1)."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#connection-to-orthogonal-iteration",
-    "href": "lectures/lecture-7/lecture-7.html#connection-to-orthogonal-iteration",
+    "objectID": "lectures/lecture-6/lecture-6.html#несколько-слов-о-svd",
+    "href": "lectures/lecture-6/lecture-6.html#несколько-слов-о-svd",
     "title": "",
-    "section": "Connection to orthogonal iteration",
-    "text": "Connection to orthogonal iteration\nIn the previous lecture, we considered power iteration, which is A^k v – approximation of the eigenvector.\nThe QR algorithm computes (implicitly) QR-factorization of the matrix A^k:\nA^k = A \\cdot \\ldots \\cdot A = Q_1 R_1 Q_1 R_1 \\ldots = Q_1 Q_2 R_2 Q_2 R_2 \\ldots (R_2 R_1) = \\ldots (Q_1 Q_2 \\ldots Q_k) (R_k \\ldots R_1)."
+    "section": "Несколько слов о SVD",
+    "text": "Несколько слов о SVD\n\nИ последнее, но не менее важное: сингулярное разложение матрицы.\n\nA = U \\Sigma V^*.\n\nМы можем вычислить его через собственное разложение\n\nA^* A = V^* \\Sigma^2 V,\nи/или\nAA^* = U^* \\Sigma^2 U\nс помощью QR алгоритма, но это плохая идея (см. матрицы Грама).\n\nМы обсудим методы вычисления SVD позже."
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#a-few-words-about-the-svd",
-    "href": "lectures/lecture-7/lecture-7.html#a-few-words-about-the-svd",
+    "objectID": "lectures/lecture-6/lecture-6.html#итоги",
+    "href": "lectures/lecture-6/lecture-6.html#итоги",
     "title": "",
-    "section": "A few words about the SVD",
-    "text": "A few words about the SVD\n\nLast but not least: the singular value decomposition of matrix.\n\nA = U \\Sigma V^*.\n\nWe can compute it via eigendecomposition of\n\nA^* A = V^* \\Sigma^2 V,\nand/or\nAA^* = U^* \\Sigma^2 U\nwith QR algorithm, but it is a bad idea (c.f. Gram matrices).\n\nWe will discuss methods for computing SVD later."
+    "section": "Итоги",
+    "text": "Итоги\n\nQR разложение и алгоритм Грама-Шмидта, приведение к более простой форме с помощью преобразований Хаусхолдера\nРазложение Шура и QR алгоритм"
   },
   {
-    "objectID": "lectures/lecture-7/lecture-7.html#bonus-cs-cosine-sine-decomposition",
-    "href": "lectures/lecture-7/lecture-7.html#bonus-cs-cosine-sine-decomposition",
+    "objectID": "lectures/lecture-6/lecture-6.html#следующие-шаги",
+    "href": "lectures/lecture-6/lecture-6.html#следующие-шаги",
     "title": "",
-    "section": "Bonus: CS (Cosine-Sine) decomposition",
-    "text": "Bonus: CS (Cosine-Sine) decomposition\n\nLet Q be square unitary matrix with even number of rows and it is splitted in four equal size blocks\n\n Q = \\begin{bmatrix} Q_{11} & Q_{12} \\\\ Q_{21} & Q_{22} \\end{bmatrix} \n\nThen there exist unitary matrices U_1, U_2, V_1, V_2 such that\n\n \\begin{bmatrix} U_1^* & 0 \\\\ 0 & U_2^* \\end{bmatrix} \\begin{bmatrix} Q_{11} & Q_{12} \\\\ Q_{21} & Q_{22} \\end{bmatrix} \\begin{bmatrix} V_1 & 0 \\\\ 0 & V_2 \\end{bmatrix} = \\begin{bmatrix} C & S \\\\ -S & C \\end{bmatrix}, \nwhere C = \\mathrm{diag}(c) and S = \\mathrm{diag}(s) such that c_i \\geq 0, s_i \\geq 0 and c_i^2 + s_i^2 = 1\n\nQ: how many SVD do we have inside the CS decomposition?\nThe case of rectangular matrix with orthonormal columns\n\n \\begin{bmatrix} U_1^* & 0 \\\\ 0 & U_2^* \\end{bmatrix} \\begin{bmatrix} Q_{1} \\\\ Q_{2} \\end{bmatrix} V = \\begin{bmatrix} C \\\\ S \\end{bmatrix} \n\nThe algorithm for computing this decomposition is presented here\nThis decomposition naturally arises in the problem of finding distances and angles between subspaces"
-  },
-  {
-    "objectID": "lectures/lecture-7/lecture-7.html#summary-1",
-    "href": "lectures/lecture-7/lecture-7.html#summary-1",
-    "title": "",
-    "section": "Summary",
-    "text": "Summary\n\nQR decomposition and Gram-Schmidt algorithm, reduction to a simpler form by Householder transformations\nSchur decomposition and QR algorithm"
-  },
-  {
-    "objectID": "lectures/lecture-7/lecture-7.html#next-steps",
-    "href": "lectures/lecture-7/lecture-7.html#next-steps",
-    "title": "",
-    "section": "Next steps",
-    "text": "Next steps\n\nEfficient implementation of QR algorithm and its convergence\nEfficient computation of the SVD: 4 algorithms\nMore applications of the SVD\n\n\nQuestions?\n\nfrom IPython.core.display import HTML\ndef css_styling():\n    styles = open(\"./styles/custom.css\", \"r\").read()\n    return HTML(styles)\ncss_styling()"
+    "section": "Следующие шаги",
+    "text": "Следующие шаги\n\nЭффективная реализация QR алгоритма и его сходимость\nЭффективное вычисление SVD: 4 алгоритма\nДополнительные применения SVD\n\n\nВопросы?\n\nfrom IPython.core.display import HTML\ndef css_styling():\n    styles = open(\"./styles/custom.css\", \"r\").read()\n    return HTML(styles)\ncss_styling()"
   },
   {
     "objectID": "lectures/lecture-8/lecture-8.html#recap-of-the-previous-part",

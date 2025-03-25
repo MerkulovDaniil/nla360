@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Лекция 6: Собственные значения и собственные векторы</title>
+<title>Лекция 5: Собственные значения и собственные векторы</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -149,12 +149,12 @@ window.Quarto = {
 };
 </script>
 
-<meta property="og:title" content="Лекция 6: Собственные значения и собственные векторы">
+<meta property="og:title" content="Лекция 5: Собственные значения и собственные векторы">
 <meta property="og:description" content="">
 <meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-5/lecture-5_files/figure-html/cell-3-output-1.png">
 <meta property="og:image:height" content="389">
 <meta property="og:image:width" content="515">
-<meta name="twitter:title" content="Лекция 6: Собственные значения и собственные векторы">
+<meta name="twitter:title" content="Лекция 5: Собственные значения и собственные векторы">
 <meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-5/lecture-5_files/figure-html/cell-3-output-1.png">
 <meta name="twitter:image-height" content="389">
@@ -240,10 +240,7 @@ window.Quarto = {
 <p>то это можно записать как</p>
 <p><span class="math display"> A S = S \Lambda, \quad\text{где}\quad S=(s_1,\dots,s_n), \quad \Lambda = \text{diag}(\lambda_1, \dots, \lambda_n), </span></p>
 <p>или эквивалентно</p>
-<p><span class="math display"> A = S\Lambda S^{-1}. </span></p>
-<ul>
-<li>Это называется <strong>разложением по собственным значениям</strong> матрицы. Матрицы, которые могут быть представлены через разложение по собственным значениям, называются <strong>диагонализируемыми</strong>.</li>
-</ul>
+<p><span class="math display"> A = S\Lambda S^{-1}. </span> Это называется <strong>собственное разложение (eigendecomposition)</strong> матрицы. Матрицы, которые могут быть представлены через разложение по собственным значениям, называются <strong>диагонализируемыми</strong>.</p>
 <section id="существование" class="level3">
 <h3 class="anchored" data-anchor-id="существование">Существование</h3>
 <ul>
@@ -330,7 +327,7 @@ window.Quarto = {
 <li><p>Мы будем использовать простой пример <a href="https://en.wikipedia.org/wiki/Zachary%27s_karate_club">сети карате-клуба Захари</a>.</p></li>
 <li><p>Эти данные были собраны вручную в 1977 году и представляют собой классический набор данных социальной сети.</p></li>
 </ul>
-<div id="cell-16" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="3">
+<div id="cell-16" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -350,7 +347,7 @@ window.Quarto = {
 <li>Теперь мы можем вычислить PageRank, используя встроенную функцию NetworkX.</li>
 <li>Мы также отображаем размер узлов больше, если их PageRank больше.</li>
 </ul>
-<div id="cell-18" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="5">
+<div id="cell-18" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pr <span class="op">=</span> nx.algorithms.link_analysis.pagerank(kn)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>pr_vector <span class="op">=</span> <span class="bu">list</span>(pr.values())</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>pr_vector <span class="op">=</span> np.array(pr_vector) <span class="op">*</span> <span class="dv">3000</span></span>
@@ -424,7 +421,7 @@ window.Quarto = {
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">40</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span> <span class="op">/</span> (i <span class="op">-</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.array(a)</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>ev <span class="op">=</span> np.linalg.eigvals(a)</span>
@@ -611,7 +608,6 @@ x_k = \frac{c_1}{|c_1|}\left(\frac{\lambda_1}{|\lambda_1|}\right)^k\frac{ v_1 + 
 <h2 class="anchored" data-anchor-id="summary-of-todays-lecture">Summary of todays lecture</h2>
 <ul>
 <li>Eigenvalues, eigenvectors</li>
-<li>Gershgorin theorem</li>
 <li>Power method</li>
 <li>Schur theorem</li>
 <li>Normal matrices</li>
