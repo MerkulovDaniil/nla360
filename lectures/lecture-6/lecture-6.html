@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Лекция-6: Обзор матричных разложений. Как вычислять QR-разложение и разложение Шура</title>
+<title>Лекция 6: Обзор матричных разложений. Как вычислять QR-разложение и разложение Шура</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -146,9 +146,9 @@ window.Quarto = {
 };
 </script>
 
-<meta property="og:title" content="Лекция-6: Обзор матричных разложений. Как вычислять QR-разложение и разложение Шура">
+<meta property="og:title" content="Лекция 6: Обзор матричных разложений. Как вычислять QR-разложение и разложение Шура">
 <meta property="og:description" content="">
-<meta name="twitter:title" content="Лекция-6: Обзор матричных разложений. Как вычислять QR-разложение и разложение Шура">
+<meta name="twitter:title" content="Лекция 6: Обзор матричных разложений. Как вычислять QR-разложение и разложение Шура">
 <meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
@@ -219,7 +219,7 @@ window.Quarto = {
 <li>LU-разложение и метод Гаусса — уже рассмотрены</li>
 <li>QR-разложение и алгоритм Грама-Шмидта</li>
 <li>Разложение Шура и QR-алгоритм</li>
-<li>Методы вычисления SVD-разложения во второй части</li>
+<li>Методы вычисления SVD-разложения</li>
 </ul></li>
 <li><p>Мы уже вводили QR-разложение некоторое время назад, но теперь мы обсудим его более подробно.</p></li>
 </ul>
@@ -374,10 +374,10 @@ window.Quarto = {
 <ul>
 <li>Это <strong>плохая идея</strong> с точки зрения численной устойчивости. Давайте рассмотрим пример (для подматрицы матрицы Гильберта).</li>
 </ul>
-<div id="cell-18" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="1">
+<div id="cell-18" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">10</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="dv">9</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span> <span class="op">/</span> (i <span class="op">+</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(r)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.array(a)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>q, Rmat <span class="op">=</span> np.linalg.qr(a)</span>
@@ -389,8 +389,8 @@ window.Quarto = {
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>q1 <span class="op">=</span> np.linalg.solve(Rmat1, a.T).T</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Via Cholesky:'</span>, np.linalg.norm(np.dot(q1.T, q1) <span class="op">-</span> e))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Built-in QR orth 7.665422590335931e-16
-Via Cholesky: 8.098126917366574e-09</code></pre>
+<pre><code>Built-in QR orth 7.668461578388947e-16
+Via Cholesky: 0.9966594169095181</code></pre>
 </div>
 </div>
 </section>
@@ -419,7 +419,7 @@ Via Cholesky: 8.098126917366574e-09</code></pre>
 <li><p>В точной арифметике это одно и то же. В арифметике с плавающей точкой это абсолютно разные вещи!</p></li>
 <li><p>Обратите внимание, что сложность составляет <span class="math inline">\mathcal{O}(nm^2)</span> операций</p></li>
 </ul>
-<div id="cell-21" class="cell" data-execution_count="8">
+<div id="cell-21" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span> </span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.random.rand(n)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> a <span class="op">+</span> <span class="fl">1e-9</span><span class="op">*</span>np.random.randn(n)</span>
@@ -431,8 +431,8 @@ Via Cholesky: 8.098126917366574e-09</code></pre>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> c<span class="op">/</span>np.linalg.norm(c)</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.dot(c, a))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>1.576475053416404e-07
--2.42861286636753e-17</code></pre>
+<pre><code>-1.3558882440423137e-07
+5.551115123125783e-17</code></pre>
 </div>
 </div>
 </section>
@@ -557,7 +557,7 @@ Via Cholesky: 8.098126917366574e-09</code></pre>
 <li><p>Сложность каждого шага составляет <span class="math inline">\mathcal{O}(n^3)</span>, если выполняется общее QR разложение.</p></li>
 <li><p>Мы надеемся, что <span class="math inline">A_k</span> будет <strong>очень близка к треугольной матрице</strong> для достаточно большого <span class="math inline">k</span>.</p></li>
 </ul>
-<div id="cell-35" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="2">
+<div id="cell-35" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">40</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [[<span class="fl">1.0</span><span class="op">/</span>(i <span class="op">-</span> j <span class="op">+</span> <span class="fl">0.5</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
@@ -570,8 +570,8 @@ Via Cholesky: 8.098126917366574e-09</code></pre>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(a[:<span class="dv">4</span>, :<span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Leading 3x3 block of a:
-[[ 3.08733278e-01  3.08447671e+00  1.39093778e-02 -9.15979869e-02]
- [-3.05714157e+00  2.90031089e-01  1.49436447e-01 -4.41658919e-02]
+[[ 3.08733278e-01  3.08447671e+00  1.39093779e-02 -9.15979870e-02]
+ [-3.05714157e+00  2.90031089e-01  1.49436447e-01 -4.41658920e-02]
  [-2.25478613e-21 -1.27296314e-20  5.50815465e-01  3.04169557e+00]
  [-1.45411659e-20 -7.68894785e-21 -3.00877077e+00  5.09624202e-01]]</code></pre>
 </div>
