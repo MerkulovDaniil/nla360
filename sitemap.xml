@@ -2,110 +2,114 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-14/lecture-14.html</loc>
-    <lastmod>2025-04-01T16:50:56.822Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.325Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-12/lecture-12.html</loc>
-    <lastmod>2025-04-01T16:50:56.816Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.323Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/general_info.html</loc>
-    <lastmod>2025-04-01T16:50:56.802Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.311Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-3/lecture-3.html</loc>
-    <lastmod>2025-04-01T16:50:56.832Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.332Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-5/lecture-5.html</loc>
-    <lastmod>2025-04-01T16:50:56.835Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.333Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-11/lecture-11.html</loc>
-    <lastmod>2025-04-01T16:50:56.814Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.321Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-7/lecture-7.html</loc>
-    <lastmod>2025-04-01T16:50:56.841Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.337Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-1/lecture-1.html</loc>
-    <lastmod>2025-04-01T16:50:56.806Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.315Z</lastmod>
   </url>
   <url>
-    <loc>https://nla360.fmin.xyz/files/qr_alg_exercise.html</loc>
-    <lastmod>2025-04-01T16:50:56.801Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-2/seminar-2.html</loc>
-    <lastmod>2025-04-01T16:50:57.119Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-1/seminar-1.html</loc>
-    <lastmod>2025-04-01T16:50:57.115Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-7/seminar-7 (unsolved).html</loc>
-    <lastmod>2025-04-01T16:50:57.121Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/projects.html</loc>
-    <lastmod>2025-04-01T16:50:57.015Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/index.html</loc>
-    <lastmod>2025-04-01T16:50:56.802Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-7/seminar-7.html</loc>
-    <lastmod>2025-04-01T16:50:57.121Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-4/seminar-4.html</loc>
-    <lastmod>2025-04-01T16:50:57.119Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-11/seminar-11.html</loc>
-    <lastmod>2025-04-01T16:50:57.115Z</lastmod>
-  </url>
-  <url>
-    <loc>https://nla360.fmin.xyz/seminars/seminar-5/Seminar-5.html</loc>
-    <lastmod>2025-04-01T16:50:57.120Z</lastmod>
+    <loc>https://nla360.fmin.xyz/files/randomized_la.html</loc>
+    <lastmod>2025-04-07T10:54:18.311Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/files/qr_exercise.html</loc>
-    <lastmod>2025-04-01T16:50:56.801Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.311Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-5/Seminar-5.html</loc>
+    <lastmod>2025-04-07T10:54:18.601Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-11/seminar-11.html</loc>
+    <lastmod>2025-04-07T10:54:18.598Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-4/seminar-4.html</loc>
+    <lastmod>2025-04-07T10:54:18.601Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-1/seminar-1.html</loc>
+    <lastmod>2025-04-07T10:54:18.598Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-7/seminar-7 (unsolved).html</loc>
+    <lastmod>2025-04-07T10:54:18.601Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/projects.html</loc>
+    <lastmod>2025-04-07T10:54:18.514Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/index.html</loc>
+    <lastmod>2025-04-07T10:54:18.311Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-7/seminar-7.html</loc>
+    <lastmod>2025-04-07T10:54:18.601Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/seminars/seminar-2/seminar-2.html</loc>
+    <lastmod>2025-04-07T10:54:18.601Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nla360.fmin.xyz/files/qr_alg_exercise.html</loc>
+    <lastmod>2025-04-07T10:54:18.311Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/files/Eigenfaces_exercise.html</loc>
-    <lastmod>2025-04-01T16:50:56.735Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.262Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-6/lecture-6.html</loc>
-    <lastmod>2025-04-01T16:50:56.840Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.336Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-9/lecture-9.html</loc>
-    <lastmod>2025-04-01T16:50:56.844Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.338Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-10/lecture-10.html</loc>
-    <lastmod>2025-04-01T16:50:56.812Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.319Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-2/lecture-2.html</loc>
-    <lastmod>2025-04-01T16:50:56.828Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.328Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-4/lecture-4.html</loc>
-    <lastmod>2025-04-01T16:50:56.834Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.333Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-15/lecture-15.html</loc>
-    <lastmod>2025-04-01T16:50:56.823Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.326Z</lastmod>
   </url>
   <url>
     <loc>https://nla360.fmin.xyz/lectures/lecture-13/lecture-13.html</loc>
-    <lastmod>2025-04-01T16:50:56.816Z</lastmod>
+    <lastmod>2025-04-07T10:54:18.323Z</lastmod>
   </url>
 </urlset>
