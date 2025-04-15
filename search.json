@@ -812,207 +812,74 @@
     "text": "Next lecture\n\nReview of the considered matrix decompositions\nPractical way to compute QR decomposition\nAlmost practical method for computing eigenvalues and eigenvectors\n\n\nQuestions?\n\nfrom IPython.core.display import HTML\ndef css_styling():\n    styles = open(\"./styles/custom.css\", \"r\").read()\n    return HTML(styles)\ncss_styling()"
   },
   {
-    "objectID": "lectures/lecture-11/lecture-11.html#recap-of-the-previous-part",
-    "href": "lectures/lecture-11/lecture-11.html#recap-of-the-previous-part",
+    "objectID": "lectures/lecture-9/lecture-9.html#краткий-обзор-предыдущей-лекции",
+    "href": "lectures/lecture-9/lecture-9.html#краткий-обзор-предыдущей-лекции",
     "title": "Questions?",
-    "section": "Recap of the previous part",
-    "text": "Recap of the previous part\n\nDistributed memory for huge dense matrices\nSparse matrix formats (COO, CSR, CSC)\nMatrix-by-vector product\nInefficiency of sparse matrix processing\nApproaches to reduce cache misses"
+    "section": "Краткий обзор предыдущей лекции",
+    "text": "Краткий обзор предыдущей лекции\n\nРандомизированное умножение матриц\nОценка следа по методу Хатчинсона\nРандомизированное SVD\nМетод Качмажа"
   },
   {
-    "objectID": "lectures/lecture-11/lecture-11.html#plan-for-this-week-how-to-solve-large-sparse-linear-systems",
-    "href": "lectures/lecture-11/lecture-11.html#plan-for-this-week-how-to-solve-large-sparse-linear-systems",
+    "objectID": "lectures/lecture-9/lecture-9.html#план-сегодняшней-лекции",
+    "href": "lectures/lecture-9/lecture-9.html#план-сегодняшней-лекции",
     "title": "Questions?",
-    "section": "Plan for this week: how to solve large sparse linear systems",
-    "text": "Plan for this week: how to solve large sparse linear systems\n\nDirect methods (start today and continue in the next lecture)\n\nLU decomposition\nNumber of reordering techniques to minimize fill-in\n\nKrylov methods"
+    "section": "План сегодняшней лекции",
+    "text": "План сегодняшней лекции\n\nПростая тема в параллельных вычислениях в линейной алгебре (на примере умножения матрицы на вектор)\nЧасть о разреженных матрицах (с отдельным планом)"
   },
   {
-    "objectID": "lectures/lecture-11/lecture-11.html#plan-for-today",
-    "href": "lectures/lecture-11/lecture-11.html#plan-for-today",
+    "objectID": "lectures/lecture-9/lecture-9.html#матрицы-большого-размера",
+    "href": "lectures/lecture-9/lecture-9.html#матрицы-большого-размера",
     "title": "Questions?",
-    "section": "Plan for today",
-    "text": "Plan for today\nSparse direct solvers:\n\nLU decomposition of sparse matrices\nfill-in of L and U factors\nnested dissection\nspectral clustering in details"
+    "section": "Матрицы большого размера",
+    "text": "Матрицы большого размера\n\nЕсли размер плотной матрицы огромен, то она не может быть сохранена в памяти\nВозможные варианты\n\nЭта матрица структурированная, например, блочная теплицева с теплицевыми блоками (следующие лекции). Тогда возможно сжатое хранение\nДля неструктурированных плотных матриц помогает распределенная память\nMPI для обработки матриц с распределенным хранением\n\n\n\nРаспределенная память и MPI\n\nРазделение матрицы на блоки и хранение их на разных машинах\nКаждая машина имеет свое собственное адресное пространство и не может повредить данные на других машинах\nВ этом случае машины взаимодействуют друг с другом для объединения результатов вычислений\nMPI (Message Passing Interface) - это стандарт для параллельных вычислений в распределенной памяти\n\n\n\nПример: умножение матрицы на вектор\n\nПредположим, что вы хотите вычислить Ax, и матрица A не может быть сохранена в доступной памяти\nТогда вы можете разделить её на блоки и распределить блоки на отдельные машины\nВозможные стратегии\n\n1D блочное разделение разбивает только строки на блоки\n2D блочное разделение разбивает как строки, так и столбцы\n\n\n\n1D blocking scheme\n\n\n\nTotal time of computing matvec with 1D blocking\n\nEach machine has $n / p $ complete rows and n / p elements of vector\nTotal operations are n^2 / p\nTotal time for sending and writing data are t_s \\log p + t_w n, where t_s time unit for sending and t_w time unit for writing\n\n\n\n2D blocking scheme\n\n\n\nОбщее время вычисления умножения матрицы на вектор с 2D блочным разделением\n\nКаждая машина имеет блок размера n / \\sqrt{p} и n / \\sqrt{p} элементов вектора\nОбщее количество операций составляет n^2 / p\nОбщее время для отправки и записи данных приблизительно равно t_s \\log p + t_w (n/\\sqrt{p}) \\log p, где t_s - единица времени для отправки, а t_w - единица времени для записи\n\n\n\n\nПакеты, поддерживающие распределенное хранение\n\nScaLAPACK\nTrilinos\n\nВ Python вы можете использовать mpi4py для параллельного программирования вашего алгоритма.\n\nPyTorch поддерживает распределенное обучение и хранение данных, подробности здесь\n\n\n\nРезюме по обработке больших неструктурированных матриц\n\nРаспределенный способ хранения\nMPI\nПакеты, использующие параллельные вычисления\nРазличные стратегии блочного разделения"
   },
   {
-    "objectID": "lectures/lecture-11/lecture-11.html#direct-methods-for-sparse-matrix-lu-decomposition",
-    "href": "lectures/lecture-11/lecture-11.html#direct-methods-for-sparse-matrix-lu-decomposition",
+    "objectID": "lectures/lecture-9/lecture-9.html#введение-в-разреженные-матрицы",
+    "href": "lectures/lecture-9/lecture-9.html#введение-в-разреженные-матрицы",
     "title": "Questions?",
-    "section": "Direct methods for sparse matrix: LU decomposition",
-    "text": "Direct methods for sparse matrix: LU decomposition\n\nWhy sparse linear systems can be solved faster, what is the technique?\nIn the LU factorization of the matrix A the factors L and U can be also sparse:\n\nA = L U\n\nAnd solving linear systems with sparse triangular matrices is very easy.\n\n Note that the inverse matrix to sparse matrix is not sparse! \n\nimport numpy as np\nimport scipy.sparse as spsp\nn = 4\nex = np.ones(n);\n#a = spsp.spdiags(np.vstack((ex,  np.random.rand(n), np.random.rand(n))), [-1, 0, 1], n, n, 'csr'); \na = spsp.spdiags(np.vstack((-ex,  2*ex, -ex)), [-1, 0, 1], n, n, 'csr'); \n\n#a = spsp.spdiags(np.vstack((-ex,  2*ex, -ex), np.random.rand(n)), [-1, 0, 1], n, n, 'csr'); \n\nb = np.array(np.linalg.inv(a.toarray()))\nprint(a.toarray())\nprint(b)\nnp.linalg.svd(b[:3, 4:])[1]\n\n[[ 2. -1.  0.  0.]\n [-1.  2. -1.  0.]\n [ 0. -1.  2. -1.]\n [ 0.  0. -1.  2.]]\n[[0.8 0.6 0.4 0.2]\n [0.6 1.2 0.8 0.4]\n [0.4 0.8 1.2 0.6]\n [0.2 0.4 0.6 0.8]]\n\n\narray([], dtype=float64)"
+    "section": "Введение в разреженные матрицы",
+    "text": "Введение в разреженные матрицы\n\nДля задач плотной линейной алгебры мы ограничены памятью для хранения полной матрицы, это N^2 параметров.\nКласс разреженных матриц, где большинство элементов равны нулю, позволяет нам как минимум хранить такие матрицы.\n\nВопрос в том, можем ли мы:\n\nрешать линейные системы\nрешать задачи на собственные значения\n\nс разреженными матрицами"
   },
   {
-    "objectID": "lectures/lecture-11/lecture-11.html#and-the-factors",
-    "href": "lectures/lecture-11/lecture-11.html#and-the-factors",
+    "objectID": "lectures/lecture-9/lecture-9.html#план-следующей-части-лекции",
+    "href": "lectures/lecture-9/lecture-9.html#план-следующей-части-лекции",
     "title": "Questions?",
-    "section": "And the factors…",
-    "text": "And the factors…\nL and U are typically sparse. In the tridiagonal case they are even bidiagonal!\n\nfrom scipy.sparse.linalg import splu\nT = splu(a.tocsc())#, permc_spec=\"NATURAL\")\nprint(T.L.toarray())\n\n[[ 1.   0.   0.   0. ]\n [ 0.   1.   0.   0. ]\n [-0.5 -0.5  1.   0. ]\n [ 0.  -0.5 -0.5  1. ]]\n\n\nInteresting to note that splu without permc_spec will produce permutations which will not yield the bidiagonal factor:\n\nfrom scipy.sparse.linalg import splu\nT = splu(a.tocsc())\nprint(T.L.todense())\nprint(T.perm_c)\n\n[[ 1.          0.          0.          0.          0.          0.\n   0.        ]\n [ 0.          1.          0.          0.          0.          0.\n   0.        ]\n [ 0.          0.          1.          0.          0.          0.\n   0.        ]\n [ 0.          0.          0.          1.          0.          0.\n   0.        ]\n [ 0.          0.          0.          0.          1.          0.\n   0.        ]\n [ 0.          0.          0.          0.          0.19991324  1.\n   0.        ]\n [ 0.81628124  0.14222853 -0.47418756  0.43359091 -0.00845846  0.23571107\n   1.        ]]\n[0 1 2 3 5 4 6]"
+    "section": "План следующей части лекции",
+    "text": "План следующей части лекции\nТеперь мы поговорим о разреженных матрицах, где они возникают, как мы их храним, как мы с ними работаем.\n\nФорматы: список списков и формат сжатых разреженных строк, связь с графами\nУмножение матрицы на вектор\nПараллельная обработка разреженных матриц\nБыстрые прямые решатели для метода Гаусса (начало)"
   },
   {
-    "objectID": "lectures/lecture-11/lecture-11.html#d-case",
-    "href": "lectures/lecture-11/lecture-11.html#d-case",
+    "objectID": "lectures/lecture-9/lecture-9.html#применения-разреженных-матриц",
+    "href": "lectures/lecture-9/lecture-9.html#применения-разреженных-матриц",
     "title": "Questions?",
-    "section": "2D-case",
-    "text": "2D-case\nFrom a matrix that comes as a discretization of a two-dimensional problem everything is much worse:\n\nimport scipy as sp\nimport scipy.sparse as spsp\nimport scipy.sparse.linalg\nimport matplotlib.pyplot as plt\n%matplotlib inline\nn = 128\nex = np.ones(n);\nlp1 = sp.sparse.spdiags(np.vstack((ex,  -2*ex, ex)), [-1, 0, 1], n, n, 'csr'); \ne = sp.sparse.eye(n)\nA = sp.sparse.kron(lp1, e) + sp.sparse.kron(e, lp1)\nA = spsp.csc_matrix(A)\nT = spsp.linalg.splu(A)#, permc_spec=\"NATURAL\")\nplt.spy(T.L, marker='.', color='k', markersize=8)\nT.L\n#plt.spy(A, marker='.', color='k', markersize=8)\n\n&lt;Compressed Sparse Column sparse matrix of dtype 'float64'\n    with 610620 stored elements and shape (16384, 16384)&gt;\n\n\n\n\n\n\n\n\n\nFor correct permutation in 2D case the number of nonzeros in L factor grows as \\mathcal{O}(N \\log N). But complexity is \\mathcal{O}(N^{3/2})."
+    "section": "Применения разреженных матриц",
+    "text": "Применения разреженных матриц\nРазреженные матрицы возникают в:\n\nдифференциальных уравнениях в частных производных (ДУЧП), математическом моделировании\nанализе графов, например, при анализе социальных сетей\nрекомендательных системах\nвезде, где отношения между объектами являются “разреженными”.\n\n\nРазреженные матрицы повсеместны в ДУЧП\nПростейшее дифференциальное уравнение в частных производных (ДУЧП), называемое\nУравнение Лапласа:\n\n   \\Delta T = \\frac{\\partial^2 T}{\\partial x^2} + \\frac{\\partial^2 T}{\\partial y^2} = f(x,y), \\quad x,y\\in \\Omega\\equiv[0,1]^2,\n\n\n    T_{\\partial\\Omega} = 0.\n\n\nDiscretization\n\\frac{\\partial^2 T}{\\partial x^2} \\approx \\frac{T(x+h) + T(x-h) - 2T(x)}{h^2} + \\mathcal{O}(h^2),\nsame for \\frac{\\partial^2 T}{\\partial y^2}, and we get a linear system.\nFirst, let us consider one-dimensional case:\nПосле дискретизации одномерного уравнения Лапласа с граничными условиями Дирихле мы получаем\n\\frac{u_{i+1} + u_{i-1} - 2u_i}{h^2} = f_i,\\quad i=1,\\dots,N-1\n u_{0} = u_N = 0 или в матричной форме\n A u = f, и (для n = 5) A=-\\frac{1}{h^2}\\begin{bmatrix} 2 & -1 & 0 & 0 & 0\\\\ -1 & 2 & -1 & 0 &0 \\\\ 0 & -1 & 2& -1 & 0 \\\\ 0 & 0 & -1 & 2  &-1\\\\ 0 & 0 & 0 & -1 & 2 \\end{bmatrix}\nМатрица является трехдиагональной и разреженной\n(а также теплицевой: все элементы на диагонали одинаковы)\n\n\nБлочная структура в 2D\nВ двух измерениях мы получаем уравнение вида\n-\\frac{4u_{ij} -u_{(i-1)j} - u_{(i+1)j} - u_{i(j-1)}-u_{i(j+1)}}{h^2} = f_{ij},\nили в форме кронекерова произведения\n\\Delta_{2D} = \\Delta_{1D} \\otimes I + I \\otimes \\Delta_{1D},\nгде \\Delta_{1D} - одномерный оператор Лапласа, а \\otimes - кронекерово произведение матриц.\nДля матриц A\\in\\mathbb{R}^{n\\times m} и B\\in\\mathbb{R}^{l\\times k} их кронекерово произведение определяется как блочная матрица вида\n\n   A\\otimes B = \\begin{bmatrix}a_{11}B & \\dots & a_{1m}B \\\\ \\vdots & \\ddots & \\vdots \\\\ a_{n1}B & \\dots & a_{nm}B\\end{bmatrix}\\in\\mathbb{R}^{nl\\times mk}.\n\nВ блочной матричной форме 2D-матрица Лапласа может быть записана в следующем виде:\nA = -\\frac{1}{h^2}\\begin{bmatrix} \\Delta_1 + 2I & -I & 0 & 0 & 0\\\\ -I & \\Delta_1 + 2I  & -I & 0 &0 \\\\ 0 & -I & \\Delta_1 + 2I & -I & 0 \\\\ 0 & 0 & -I & \\Delta_1 + 2I   &-I\\\\ 0 & 0 & 0 & -I & \\Delta_1 + 2I \\end{bmatrix}\n\nКраткий список свойств кронекерова произведения\n\nОно билинейно\n(A\\otimes B) (C\\otimes D) = AC \\otimes BD\nПусть \\mathrm{vec}(X) - векторизация матрицы X по столбцам. Тогда \\mathrm{vec}(AXB) = (B^T \\otimes A) \\mathrm{vec}(X).\n\n\n\n\n\nРазреженные матрицы помогают в вычислительной теории графов\n\nГрафы представляются матрицей смежности, которая обычно разрежена\nЧисленное решение задач теории графов основано на обработке этой разреженной матрицы\n\nОбнаружение сообществ и кластеризация графов\nОбучение ранжированию\nСлучайные блуждания\nДругие\n\nПример: вероятно, самый большой общедоступный граф гиперссылок состоит из 3,5 миллиардов веб-страниц и 128 миллиардов гиперссылок, подробнее см. здесь\nГрафы среднего масштаба для тестирования ваших алгоритмов доступны в Стэнфордской коллекции больших сетевых данных\n\n\n\nКоллекция разреженных матриц SuiteSparse (ранее известная как коллекция разреженных матриц Флориды)\nБольше разреженных матриц вы можете найти в коллекции матриц SuiteSparse, которая содержит различные типы матриц для разных приложений.\n\nfrom IPython.display import IFrame\nIFrame(\"http://yifanhu.net/GALLERY/GRAPHS/search.html\", width=700, height=450)\n\n\n        \n        \n\n\n\n\nSparse matrices and deep learning\n\nDNN has a lot of parameters\nSome of them may be redundant\nHow to prune the parameters without significantly accuracy reduction?\nSparse variational dropout method leads to significantly sparse filters in DNN almost without accuracy decreasing: the idea of pruning"
   },
   {
-    "objectID": "lectures/lecture-11/lecture-11.html#main-challenge-how-to-make-factors-l-and-u-as-sparse-as-possible",
-    "href": "lectures/lecture-11/lecture-11.html#main-challenge-how-to-make-factors-l-and-u-as-sparse-as-possible",
+    "objectID": "lectures/lecture-9/lecture-9.html#разреженная-матрица-построение",
+    "href": "lectures/lecture-9/lecture-9.html#разреженная-матрица-построение",
     "title": "Questions?",
-    "section": "Main challenge: how to make factors L and U as sparse as possible?",
-    "text": "Main challenge: how to make factors L and U as sparse as possible?"
+    "section": "Разреженная матрица: построение",
+    "text": "Разреженная матрица: построение\n\nМы можем создать разреженную матрицу, используя пакет scipy.sparse (на самом деле это не лучший пакет для разреженных матриц)\nМы можем работать с действительно большими размерами (по крайней мере, для хранения этой матрицы в памяти)\n\nОбратите внимание на следующие функции - Создание разреженных матриц с заданными диагоналями spdiags - Кронекерово произведение разреженных матриц kron - Также для разреженных матриц перегружена арифметика\n\nimport numpy as np\nimport scipy as sp\nimport scipy.sparse\nfrom scipy.sparse import csc_matrix, csr_matrix\nimport matplotlib.pyplot as plt\nimport scipy.linalg\nimport scipy.sparse.linalg\n%matplotlib inline\nn = 128\nex = np.ones(n);\nlp1 = sp.sparse.spdiags(np.vstack((ex,  -2*ex, ex)), [-1, 0, 1], n, n, 'csr'); \ne = sp.sparse.eye(n)\nA = sp.sparse.kron(lp1, e) + sp.sparse.kron(e, lp1)\nA = csc_matrix(A)\nplt.spy(A, aspect='equal', marker='.', markersize=5)\n\n\n\n\n\n\n\n\n\nСтруктура разреженности\n\nКоманда spy отображает структуру разреженности матрицы: пиксель (i, j) отображается, если соответствующий элемент матрицы ненулевой.\nСтруктура разреженности действительно важна для понимания сложности алгоритмов разреженной линейной алгебры.\nЧасто для анализа “насколько сложна” матрица достаточно только структуры разреженности.\n\n\n\nРазреженная матрица: определение\n\nОпределение “разреженной матрицы” заключается в том, что количество ненулевых элементов намного меньше общего числа элементов.\nВы можете выполнять основные операции линейной алгебры (в первую очередь решение линейных систем) быстрее, чем при работе с полной матрицей."
   },
   {
-    "objectID": "lectures/lecture-11/lecture-11.html#main-tool-to-analyze-factors-sparsity-graph-theory",
-    "href": "lectures/lecture-11/lecture-11.html#main-tool-to-analyze-factors-sparsity-graph-theory",
+    "objectID": "lectures/lecture-9/lecture-9.html#что-нам-нужно-выяснить-чтобы-понять-как-это-работает-на-самом-деле",
+    "href": "lectures/lecture-9/lecture-9.html#что-нам-нужно-выяснить-чтобы-понять-как-это-работает-на-самом-деле",
     "title": "Questions?",
-    "section": "Main tool to analyze factors sparsity: graph theory",
-    "text": "Main tool to analyze factors sparsity: graph theory\n\nThe number of nonzeros in LU decomposition has a deep connection to the graph theory.\nnetworkx package can be used to visualize graphs, given only the adjacency matrix.\nIt may even recover to some extend the graph structure.\n\n\nimport networkx as nx\nimport scipy as sp\nn = 3\nex = np.ones(n);\nlp1 = sp.sparse.spdiags(np.vstack((ex,  -2*ex, ex)), [-1, 0, 1], n, n, 'csr'); \ne = sp.sparse.eye(n)\nA = sp.sparse.kron(sp.sparse.kron(lp1, e), e) + sp.sparse.kron(sp.sparse.kron(e, lp1), e) + sp.sparse.kron(sp.sparse.kron(e, e), lp1)\nA = spsp.csc_matrix(A)\nG = nx.Graph(A)\nnx.draw(G, pos=nx.spectral_layout(G))#, node_size=1)"
+    "section": "Что нам нужно выяснить, чтобы понять, как это работает на самом деле",
+    "text": "Что нам нужно выяснить, чтобы понять, как это работает на самом деле\n\nВопрос 1: Как хранить разреженную матрицу в памяти?\nВопрос 2: Как быстро умножать разреженную матрицу на вектор?\nВопрос 3: Как быстро решать линейные системы с разреженными матрицами?\n\n\nХранение разреженных матриц\nСуществует множество форматов хранения, важные из них:\n\nCOO (Координатный формат)\nLIL (Списки списков)\nCSR (сжатая разреженная строка)\nCSC (сжатый разреженный столбец)\nБлочные варианты\n\nВ scipy есть конструкторы для каждого из этих форматов, например\n\nКоординатный формат (COO)\nПростейший формат - это использование координатного формата для представления разреженной матрицы в виде позиций и значений ненулевых элементов.\n\n\nОсновные недостатки\n\nНе оптимален по хранению (почему?)\nНе оптимален для умножения матрицы на вектор (почему?)\nНе оптимален для удаления элементов, так как нужно выполнить nnz операций, чтобы найти один элемент (это хорошо в формате LIL)\n\nПервые два недостатка решаются форматом сжатой разреженной строки (CSR).\n\n\nСжатая разреженная строка (CSR)\nВ формате CSR матрица хранится в виде 3 различных массивов:\n\n\n\nРазреженные матрицы в PyTorch и Tensorflow\n\nPyTorch поддерживает разреженные матрицы, хранящиеся в формате COO\nНеполная обратная операция для этих матриц, см. сводку здесь\nTensorflow также поддерживает разреженные матрицы в формате COO\nСписок поддерживаемых операций находится здесь, и поддержка градиентов также ограничена\n\n\n\nCSR помогает в умножении разреженной матрицы на вектор (SpMV)\nДавайте проведем короткий тест на время выполнения\n\nimport numpy as np\nimport scipy as sp\nimport scipy.sparse\nimport scipy.sparse.linalg\nfrom scipy.sparse import csc_matrix, csr_matrix, coo_matrix\nimport matplotlib.pyplot as plt\n%matplotlib inline\nn = 1024\nex = np.ones(n);\nlp1 = sp.sparse.spdiags(np.vstack((ex,  -2*ex, ex)), [-1, 0, 1], n, n, 'csr'); \ne = sp.sparse.eye(n)\nA = sp.sparse.kron(lp1, e) + sp.sparse.kron(e, lp1)\nA = csr_matrix(A)\nrhs = np.ones(n * n)\nB = coo_matrix(A)\n%timeit A.dot(rhs)\n%timeit B.dot(rhs)\n\n3.24 ms ± 74.4 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n19.7 ms ± 379 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n\n\nКак видите, CSR работает быстрее, и для более неструктурированных шаблонов выигрыш будет еще больше.\n\n\nРазреженные матрицы и эффективность\n\nРазреженные матрицы дают снижение вычислительной сложности.\nНо они не очень хороши для параллельной/GPU реализации.\nОни не дают максимальной эффективности из-за случайного доступа к данным.\nОбычно пиковая эффективность в 10\\%-15\\% считается хорошей.\n\n\n\nВспомним, как мы измеряем эффективность операций линейной алгебры\nСтандартный способ измерения эффективности операций линейной алгебры на конкретной вычислительной архитектуре - использовать flops (количество операций с плавающей точкой в секунду)\nМы можем измерить пиковую эффективность обычного умножения матрицы на вектор.\n\nimport numpy as np\nimport time\nn = 4000\nk = 1400\na = np.random.randn(n, n)\nv = np.random.randn(n, k)\nt = time.time()\nnp.dot(a, v)\nt = time.time() - t\nprint('Time: {0: 3.1e}, Efficiency: {1: 3.1e} Gflops'.\\\n      format(t,  ((k*2 * n ** 2)/t) / 10 ** 9))\n\nTime:  8.8e-02, Efficiency:  5.1e+02 Gflops\n\n\n\nn = 4000000\nk = 10\nex = np.ones(n)\na = sp.sparse.spdiags(np.vstack((ex,  -2*ex, ex)), [-1, 0, 1], n, n, 'csr'); \nrhs = np.random.randn(n, k)\nt = time.time()\na.dot(rhs)\nt = time.time() - t\nprint('Time: {0: 3.1e}, Efficiency: {1: 3.1e} Gflops'.\\\n      format(t,  (3 * n * k) / t / 10 ** 9))\n\nTime:  9.5e-02, Efficiency:  1.3e+00 Gflops\n\n\n\n\nСлучайный доступ к данным и кэш-промахи\n\nИзначально все элементы матрицы и вектора хранятся в оперативной памяти (RAM)\nЕсли вы хотите вычислить произведение матрицы на вектор, часть элементов матрицы и вектора перемещается в кэш (быстрая память малого объема, см. (лекцию об алгоритме Штрассена))\nПосле этого процессор берет данные из кэша для обработки и возвращает результат также в кэш\nЕсли процессору нужны данные, которых еще нет в кэше, такая ситуация называется кэш-промахом\nПри кэш-промахе требуемые данные перемещаются из оперативной памяти в кэш\n\nВопрос: что если в кэше нет свободного места?\n\nЧем больше кэш-промахов, тем медленнее вычисления\n\n\nCSR sparse matrix by vector product\n\n\n\nПереупорядочение уменьшает кэш-промахи\n\nЕсли ja хранит последовательные элементы, то они будут перемещены в кэш вместе, и количество кэш-промахов уменьшается\nЭто происходит, когда разреженная матрица является ленточной или по крайней мере блочно-диагональной\nМы можем преобразовать заданную разреженную матрицу в ленточную или блочно-диагональную с помощью перестановок\nПусть P - матрица перестановки строк, а Q - матрица перестановки столбцов\nA_1 = PAQ - матрица, которая имеет меньшую ширину ленты, чем A\ny = Ax \\to \\tilde{y} = A_1 \\tilde{x}, где \\tilde{x} = Q^{\\top}x и \\tilde{y} = Py\nРазделенная блочно-диагональная форма - это кэш-независимый формат для произведения разреженной матрицы на вектор\nЭто можно расширить для 2D, где разделены не только строки, но и столбцы\n\n\nПример, как выглядит переупорядочение\n\nSBD in 1D \n\n\n\n\nПроизведение разреженной транспонированной матрицы на вектор\n\nВ некоторых случаях важно вычислить не только Ax для разреженной A, но и A^{\\top}x\nБолее подробно это будет обсуждаться в лекции о методах Крылова для несимметричных линейных систем\nТранспонирование вычислительно затратно\nЗдесь предложен формат хранения compressed sparse block, подходящий для этого случая\n\n\nCompressed sparse block (CSB)\n\nРазделение матрицы на блоки\nХранение индексов блоков и индексов данных внутри каждого блока\nТаким образом, достигается разумное количество битов для хранения индексов\nПорядок блоков и элементов внутри блоков важен для параллельной реализации\nПереключение между строками блоков и столбцами блоков делает этот формат подходящим для умножения транспонированной матрицы на вектор"
   },
   {
-    "objectID": "lectures/lecture-11/lecture-11.html#what-is-fill-in",
-    "href": "lectures/lecture-11/lecture-11.html#what-is-fill-in",
+    "objectID": "lectures/lecture-9/lecture-9.html#решение-линейных-систем-с-разреженными-матрицами",
+    "href": "lectures/lecture-9/lecture-9.html#решение-линейных-систем-с-разреженными-матрицами",
     "title": "Questions?",
-    "section": "What is fill-in?",
-    "text": "What is fill-in?\n\nThe fill-in of a matrix are those entries which change from an initial zero to a nonzero value during the execution of an algorithm.\nThe fill-in is different for different permutations. So, before factorization we need to find reordering which produces the smallest fill-in.\n\nExample\nA = \\begin{bmatrix} * & * & * & * & *\\\\ * & * & 0 & 0 & 0 \\\\ * & 0  & * & 0 & 0 \\\\ * & 0 & 0& * & 0 \\\\ * & 0 & 0& 0 & * \\end{bmatrix} \nIf we eliminate elements from the top to the bottom, then we will obtain dense matrix. However, we could maintain sparsity if elimination was done from the bottom to the top."
+    "section": "Решение линейных систем с разреженными матрицами",
+    "text": "Решение линейных систем с разреженными матрицами\n\nПрямые методы\n\nLU-разложение\nРяд методов переупорядочения для минимизации заполнения\n\nМетоды Крылова\n\nДавайте начнем с небольшой демонстрации решения разреженной линейной системы…\n\nn = 1024\nex = np.ones(n);\nlp1 = sp.sparse.spdiags(np.vstack((ex,  -2*ex, ex)), [-1, 0, 1], n, n, 'csr'); \ne = sp.sparse.eye(n)\nA = sp.sparse.kron(lp1, e) + sp.sparse.kron(e, lp1)\nA = csr_matrix(A)\nrhs = np.ones(n * n)\nsol = sp.sparse.linalg.spsolve(A, rhs)\n_, (ax1, ax2) = plt.subplots(1, 2)\nax1.plot(sol)\nax1.set_title('Not reshaped solution')\nax2.contourf(sol.reshape((n, n), order='f'))\nax2.set_title('Reshaped solution')\n\nText(0.5, 1.0, 'Reshaped solution')"
   },
   {
-    "objectID": "lectures/lecture-11/lecture-11.html#example-of-dense-factors-after-lu",
-    "href": "lectures/lecture-11/lecture-11.html#example-of-dense-factors-after-lu",
+    "objectID": "lectures/lecture-9/lecture-9.html#основные-выводы",
+    "href": "lectures/lecture-9/lecture-9.html#основные-выводы",
     "title": "Questions?",
-    "section": "Example of dense factors after LU",
-    "text": "Example of dense factors after LU\nGiven matrix A=A^*&gt;0 we calculate its Cholesky decomposition A = LL^*.\nFactor L can be dense even if A is sparse:\n\n\\begin{bmatrix} * & * & * & * \\\\ * & * &  &  \\\\ * &  & * &  \\\\ * &  &  & * \\end{bmatrix} =\n\\begin{bmatrix} * &  &  &  \\\\ * & * &  &  \\\\ * & * & * &  \\\\ * & * & * & * \\end{bmatrix}\n\\begin{bmatrix} * & * & * & * \\\\  & * & * & * \\\\  &  & * & * \\\\  &  &  & * \\end{bmatrix}\n\nHow to make factors sparse, i.e. to minimize the fill-in?"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#why-permutations-can-reduce-fill-in-here-the-example",
-    "href": "lectures/lecture-11/lecture-11.html#why-permutations-can-reduce-fill-in-here-the-example",
-    "title": "Questions?",
-    "section": "Why permutations can reduce fill-in? Here the example…",
-    "text": "Why permutations can reduce fill-in? Here the example…\nWe need to find a permutation of indices so that factors are sparse, i.e. we build Cholesky factorisation of PAP^\\top, where P is a permutation matrix.\nFor the example from the previous slide\n\nP \\begin{bmatrix} * & * & * & * \\\\ * & * &  &  \\\\ * &  & * &  \\\\ * &  &  & * \\end{bmatrix} P^\\top =\n\\begin{bmatrix} * &  &  & *  \\\\  & * &  & * \\\\  &  & * & * \\\\ * & * & * & * \\end{bmatrix} =\n\\begin{bmatrix} * &  &  &  \\\\  & * &  &  \\\\  &  & * &  \\\\ * & * & * & * \\end{bmatrix}\n\\begin{bmatrix} * &  &  & *  \\\\  & * &  & * \\\\  &  & * & * \\\\  & &  & * \\end{bmatrix}\n\nwhere\n\nP = \\begin{bmatrix}  &  &  & 1 \\\\  &  & 1 &  \\\\  & 1 &  &  \\\\ 1 &  &  &  \\end{bmatrix}\n\n\nArrowhead form of the matrix gives sparse factors in LU decomposition\n\n\nimport numpy as np\nimport scipy.sparse as spsp\nimport scipy.sparse.linalg as spsplin\nimport scipy.linalg as splin\nimport matplotlib.pyplot as plt\n%matplotlib inline\n\nA = spsp.coo_matrix((np.random.randn(10), ([0, 0, 0, 0, 1, 1, 2, 2, 3, 3], \n                                           [0, 1, 2, 3, 0, 1, 0, 2, 0, 3])))\nprint(\"Original matrix\")\nplt.spy(A)\nplt.show()\nlu = spsplin.splu(A.tocsc(), permc_spec=\"NATURAL\")\nprint(\"L factor\")\nplt.spy(lu.L)\nplt.show()\nprint(\"U factor\")\nplt.spy(lu.U)\nplt.show()\nprint(\"Column permutation:\", lu.perm_c)\nprint(\"Row permutation:\", lu.perm_r)\n\nOriginal matrix\n\n\n\n\n\n\n\n\n\nL factor\n\n\n\n\n\n\n\n\n\nU factor\n\n\n\n\n\n\n\n\n\nColumn permutation: [0 1 2 3]\nRow permutation: [1 3 2 0]"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#block-version-of-appropriate-sparsity-pattern-arrowhead-structure",
-    "href": "lectures/lecture-11/lecture-11.html#block-version-of-appropriate-sparsity-pattern-arrowhead-structure",
-    "title": "Questions?",
-    "section": "Block version of appropriate sparsity pattern (arrowhead structure)",
-    "text": "Block version of appropriate sparsity pattern (arrowhead structure)\n\nPAP^\\top = \\begin{bmatrix} A_{11} &  & A_{13} \\\\  & A_{22} & A_{23} \\\\ A_{31} & A_{32} & A_{33}\\end{bmatrix}\n\nthen\n\nPAP^\\top = \\begin{bmatrix} A_{11} & 0 & 0 \\\\ 0 & A_{22} & 0 \\\\ A_{31} & A_{32} & A_{33} - A_{31}A_{11}^{-1} A_{13} - A_{32}A_{22}^{-1}A_{23} \\end{bmatrix} \\begin{bmatrix}  I & 0 & A_{11}^{-1}A_{13} \\\\ 0 & I & A_{22}^{-1}A_{23} \\\\ 0 & 0 & I\\end{bmatrix}\n\n\nBlock $ A_{33} - A_{31}A_{11}^{-1} A_{13} - A_{32}A_{22}^{-1}A_{23}$ is Schur complement for block diagonal matrix \\begin{bmatrix} A_{11} & 0 \\\\ 0 & A_{22} \\end{bmatrix}\nWe reduce problem to solving smaller linear systems with A_{11} and A_{22}"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#what-we-can-do-to-minimize-fill-in",
-    "href": "lectures/lecture-11/lecture-11.html#what-we-can-do-to-minimize-fill-in",
-    "title": "Questions?",
-    "section": "What we can do to minimize fill-in?",
-    "text": "What we can do to minimize fill-in?\n\nReordering the rows and the columns of the sparse matrix in order to reduce the number of nonzeros in L and U factors is called fill-in minimization.\nUnfortunately, this paper by Rose and Tarjan in 1975 proves that fill-in minimization problem is NP-complete.\nBut, many heuristics exist:\n\nMarkowitz pivoting - order by the product of nonzeros in column and row and stability constraint\nMinimum degree ordering - order by the degree of the vertex\nCuthill–McKee algorithm (and reverse Cuthill-McKee) - reorder to minimize the bandwidth (does not exploit graph representation).\nNested dissection: split the graph into two with minimal number of vertices on the separator (set of vertices removed after we separate the graph into two distinct connected graphs).  Complexity of the algorithm depends on the size of the graph separator. For 1D Laplacian separator contains only 1 vertex, in 2D - \\sqrt{N} vertices.\n\n\n\nHow can we find permutation?\n\nKey idea comes from graph theory\nSparse matrix can be treated as an adjacency matrix of a certain graph: the vertices (i, j) are connected, if the corresponding matrix element is non-zero.\n\n\n\nExample\nGraphs of \\begin{bmatrix} * & * & * & * \\\\ * & * &  &  \\\\ * &  & * &  \\\\ * &  &  & * \\end{bmatrix} and \\begin{bmatrix} * &  &  & *  \\\\  & * &  & * \\\\  &  & * & * \\\\ * & * & * & * \\end{bmatrix} have the following form:\n and \n\nWhy the second ordering is better than the first one?"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#fill-in-upper-bound-minimization-markowitz-pivoting",
-    "href": "lectures/lecture-11/lecture-11.html#fill-in-upper-bound-minimization-markowitz-pivoting",
-    "title": "Questions?",
-    "section": "Fill-in upper bound minimization: Markowitz pivoting",
-    "text": "Fill-in upper bound minimization: Markowitz pivoting\n\nGeneral purpose approach to ordering the elements of sparse matrix that will be eliminated\nThe Markowitz merit for every non-zero element with indices (i, j) is computed as (r_i - 1)(c_j - 1), where r_i is number of nonzeros elements in the i-th row and c_j is a number of non-zero elements in the j-th column\nThis value is an upper abound on the fill-in after eliminating the (i, j) element. Why?\nWe can order elements with respect to these values, select the one with minimum value, eliminate it and update matrix. What about stability?\nThen re-compute these values and repeat the procedure\nThis method gives us the permutations of rows and columns and sparse factors\nMain drawback is efficient supporting number of nnz in every row and column after matrix update without complete re-calculating\nMore details can be found in book Direct Methods for Sparse Matrices by I. S. Duff, A. M. Erisman, and J. K. Reid\nDe facto standard approach in solving Linear programming (LP) problems and their MILP modifications"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#what-if-consider-only-neighbours-we-get-minimal-degree-ordering",
-    "href": "lectures/lecture-11/lecture-11.html#what-if-consider-only-neighbours-we-get-minimal-degree-ordering",
-    "title": "Questions?",
-    "section": "What if consider only neighbours? We get minimal degree ordering!",
-    "text": "What if consider only neighbours? We get minimal degree ordering!\n\nThe idea is to eliminate rows and/or columns with fewer non-zeros, update fill-in and then repeat. How it relates to Markowitz pivoting?\nEfficient implementation is an issue (adding/removing elements).\nCurrent champion is “approximate minimal degree” by Amestoy, Davis, Duff.\nIt is suboptimal even for 2D PDE problems\nSciPy sparse package uses minimal ordering approach for different matrices (A^{\\top}A, A + A^{\\top})"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#but-in-these-methods-we-ignore-the-knowledge-of-good-structure-for-sparse-lu-lets-exploit-it-explicitly-in-the-method",
-    "href": "lectures/lecture-11/lecture-11.html#but-in-these-methods-we-ignore-the-knowledge-of-good-structure-for-sparse-lu-lets-exploit-it-explicitly-in-the-method",
-    "title": "Questions?",
-    "section": "But in these methods we ignore the knowledge of good structure for sparse LU! Let’s exploit it explicitly in the method!",
-    "text": "But in these methods we ignore the knowledge of good structure for sparse LU! Let’s exploit it explicitly in the method!"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#how-to-formalize-reduction-to-block-arrowhead-form",
-    "href": "lectures/lecture-11/lecture-11.html#how-to-formalize-reduction-to-block-arrowhead-form",
-    "title": "Questions?",
-    "section": "How to formalize reduction to block arrowhead form?",
-    "text": "How to formalize reduction to block arrowhead form?\nDefinition. A separator in a graph G is a set S of vertices whose removal leaves at least two connected components.\nSeparator S gives the following ordering for an N-vertex graph G: - Find a separator S, whose removal leaves connected components T_1, T_2, \\ldots, T_k - Number the vertices of S from N − |S| + 1 to N - Recursively, number the vertices of each component: T_1 from 1 to |T_1|, T_2 from |T_1| + 1 to |T_1| + |T_2|, etc - If a component is small enough, enumeration in this component is arbitrarily\n\nSeparator and block arrowhead structure: example\nSeparator for the 2D Laplacian matrix\n\nA_{2D} = I \\otimes A_{1D} + A_{1D} \\otimes I, \\quad A_{1D} = \\mathrm{tridiag}(-1, 2, -1),\n\nis as follows\n \nOnce we have enumerated first indices in \\alpha, then in \\beta and separators indices in \\sigma we get the following matrix\n\nPAP^\\top = \\begin{bmatrix} A_{\\alpha\\alpha} &  & A_{\\alpha\\sigma} \\\\  & A_{\\beta\\beta} & A_{\\beta\\sigma} \\\\ A_{\\sigma\\alpha} & A_{\\sigma\\beta} & A_{\\sigma\\sigma}\\end{bmatrix}\n\nwhich has arrowhrad structure.\n\nThus, the problem of finding permutation was reduced to the problem of finding graph separator!"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#the-method-of-recursive-reduction-to-block-arrowhead-structure-nested-dissection",
-    "href": "lectures/lecture-11/lecture-11.html#the-method-of-recursive-reduction-to-block-arrowhead-structure-nested-dissection",
-    "title": "Questions?",
-    "section": "The method of recursive reduction to block arrowhead structure – Nested dissection",
-    "text": "The method of recursive reduction to block arrowhead structure – Nested dissection\n\nFor blocks A_{\\alpha\\alpha}, A_{\\beta\\beta} we continue splitting recursively.\nWhen the recursion is done, we need to eliminate blocks A_{\\sigma\\alpha} and A_{\\sigma\\beta}.\nThis makes block in the position of A_{\\sigma\\sigma}\\in\\mathbb{R}^{n\\times n} dense.\n\nCalculation of Cholesky of this block costs \\mathcal{O}(n^3) = \\mathcal{O}(N^{3/2}), where N = n^2 is the total number of nodes.\nSo, the complexity is \\mathcal{O}(N^{3/2})"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#packages-for-nested-dissection",
-    "href": "lectures/lecture-11/lecture-11.html#packages-for-nested-dissection",
-    "title": "Questions?",
-    "section": "Packages for nested dissection",
-    "text": "Packages for nested dissection\n\nMUltifrontal Massively Parallel sparse direct Solver (MUMPS)\nPardiso\nUmfpack as part of SuiteSparse\n\nAll of them have interfaces for C/C++, Fortran and Matlab\n\nNested dissection summary\n\nEnumeration: find a separator.\nDivide-and-conquer paradigm\nRecursively process two subsets of vertices after separation\nIn theory, nested dissection gives optimal complexity.\nIn practice, it beats others only for very large problems."
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#separators-in-practice",
-    "href": "lectures/lecture-11/lecture-11.html#separators-in-practice",
-    "title": "Questions?",
-    "section": "Separators in practice",
-    "text": "Separators in practice\n\nComputing separators is not a trivial task.\nGraph partitioning heuristics has been an active research area for many years, often motivated by partitioning for parallel computation.\n\nExisting approaches:\n\nSpectral partitioning (uses eigenvectors of Laplacian matrix of graph) - more details below\nGeometric partitioning (for meshes with specified vertex coordinates) review and analysis\nIterative-swapping ((Kernighan-Lin, 1970), (Fiduccia-Matheysses, 1982)\nBreadth-first search (Lipton, Tarjan 1979)\nMultilevel recursive bisection (heuristic, currently most practical) (review and paper). Package for such kind of partitioning is called METIS, written in C, and available here"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#one-of-the-ways-to-construct-separators-spectral-graph-partitioning",
-    "href": "lectures/lecture-11/lecture-11.html#one-of-the-ways-to-construct-separators-spectral-graph-partitioning",
-    "title": "Questions?",
-    "section": "One of the ways to construct separators – spectral graph partitioning",
-    "text": "One of the ways to construct separators – spectral graph partitioning\n\nThe idea of spectral partitioning goes back to Miroslav Fiedler, who studied connectivity of graphs (paper).\nWe need to split the vertices into two sets.\nConsider +1/-1 labeling of vertices and the cost\n\nE_c(x) = \\sum_{j} \\sum_{i \\in N(j)} (x_i - x_j)^2, \\quad N(j) \\text{ denotes set of neighbours of a node } j. \n\nWe need a balanced partition, thus\n\n\\sum_i x_i =  0 \\quad \\Longleftrightarrow \\quad x^\\top e = 0, \\quad e = \\begin{bmatrix}1 & \\dots & 1\\end{bmatrix}^\\top,\nand since we have +1/-1 labels, we have\n\\sum_i x^2_i = n \\quad \\Longleftrightarrow \\quad \\|x\\|_2^2 = n."
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#graph-laplacian",
-    "href": "lectures/lecture-11/lecture-11.html#graph-laplacian",
-    "title": "Questions?",
-    "section": "Graph Laplacian",
-    "text": "Graph Laplacian\nCost E_c can be written as (check why)\nE_c = (Lx, x)\nwhere L is the graph Laplacian, which is defined as a symmetric matrix with\nL_{ii} = \\mbox{degree of node $i$},\nL_{ij} = -1, \\quad \\mbox{if $i \\ne j$  and there is an edge},\nand 0 otherwise.\n\nRows of L sum to zero, thus there is an eigenvalue 0 and gives trivial eigenvector of all ones.\nEigenvalues are non-negative (why?)."
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#partitioning-as-an-optimization-problem",
-    "href": "lectures/lecture-11/lecture-11.html#partitioning-as-an-optimization-problem",
-    "title": "Questions?",
-    "section": "Partitioning as an optimization problem",
-    "text": "Partitioning as an optimization problem\n\nMinimization of E_c with the mentioned constraints leads to a partitioning that tries to minimize number of edges in a separator, while keeping the partition balanced.\nWe now relax the integer quadratic programming to the continuous quadratic programming\n\nE_c(x) = (Lx, x)\\to \\min_{\\substack{x^\\top e =0, \\\\ \\|x\\|_2^2 = n}}"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#from-fiedler-vector-to-separator",
-    "href": "lectures/lecture-11/lecture-11.html#from-fiedler-vector-to-separator",
-    "title": "Questions?",
-    "section": "From Fiedler vector to separator",
-    "text": "From Fiedler vector to separator\n\nThe solution to the minimization problem is given by the eigenvector (called Fiedler vector) corresponding to the second smallest eigenvalue of the graph Laplacian. Indeed,\n\n\n    \\min_{\\substack{x^\\top e =0, \\\\ \\|x\\|_2^2 = n}} (Lx, x) = n \\cdot \\min_{{x^\\top e =0}} \\frac{(Lx, x)}{(x, x)} = n \\cdot \\min_{{x^\\top e =0}} R(x), \\quad R(x) \\text{ is the Rayleigh quotient}\n\n\nSince e is the eigenvector, corresponding to the smallest eigenvalue, on the space x^\\top e =0 we get the second minimal eigevalue.\nThe sign x_i indicates the partitioning.\nIn computations, we need to find out, how to find this second minimal eigenvalue –– we at least know about power method, but it finds the largest. We will discuss iterative methods for eigenvalue problems later in our course.\nThis is the main goal of the iterative methods for large-scale linear problems, and can be achieved via few matrix-by-vector products.\n\n\nimport numpy as np\n%matplotlib inline\nimport matplotlib.pyplot as plt\nimport networkx as nx\nkn = nx.read_gml('karate.gml')\nprint(\"Number of vertices = {}\".format(kn.number_of_nodes()))\nprint(\"Number of edges = {}\".format(kn.number_of_edges()))\nnx.draw_networkx(kn, node_color=\"red\") #Draw the graph\n\nNumber of vertices = 34\nNumber of edges = 78\n\n\n\n\n\n\n\n\n\n\nimport scipy.sparse.linalg as spsplin\nLaplacian = nx.laplacian_matrix(kn).asfptype()\nplt.spy(Laplacian, markersize=5)\nplt.title(\"Graph laplacian\")\nplt.axis(\"off\")\nplt.show()\neigval, eigvec = spsplin.eigsh(Laplacian, k=3, which=\"SM\")\nprint(\"The 2 smallest eigenvalues =\", eigval)\n\n\n\n\n\n\n\n\nThe 2 smallest eigenvalues = [2.52665709e-17 4.68525227e-01 9.09247664e-01]\n\n\n\n#plt.scatter(np.arange(len(eigvec[:, 1])), np.sign(eigvec[:, 1]))\nplt.scatter(np.arange(len(eigvec[:, 1])), eigvec[:, 1])\n\nplt.show()\nprint(\"Sum of elements in Fiedler vector = {}\".format(np.sum(eigvec[:, 1].real)))\n\n\n\n\n\n\n\n\nSum of elements in Fiedler vector = -8.493206138382448e-15\n\n\n\nnx.draw_networkx(kn, node_color=np.sign(eigvec[:, 1]))\n\n\n\n\n\n\n\n\n\nSummary on demo\n\nHere we call SciPy sparse function to find fixed number of eigenvalues (and eigenvectors) that are smallest (other options are possible)\nDetails of the underlying method we will discuss soon\nFiedler vector gives simple separation of the graph\nTo separate graph on more than two parts you should use eigenvectors of laplacian as feature vectors and run some clustering algorithm, e.g. k-means"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#from-fiedler-vector-to-separator-1",
-    "href": "lectures/lecture-11/lecture-11.html#from-fiedler-vector-to-separator-1",
-    "title": "Questions?",
-    "section": "From Fiedler vector to separator",
-    "text": "From Fiedler vector to separator\n\nElements of eigenvector v corresponding to the second smallest eigenvalue of the Laplacian indicate the partitioning of vertices\nIf we select some small positive \\tau &gt;0, then we can split the vertices in three groups\n\nv_i &lt; -\\tau\nv_i \\in [-\\tau, \\tau]\nv_i &gt; \\tau\n\nAfter that the separator is composed with the vertices corresponding to elements of v such that v_i \\in [-\\tau, \\tau]\nThe size of separator can be tuned by the magnitude of \\tau\nThe distribution of elements in v is important to identify the size of separator\n\n\nFiedler vector and algebraic connectivity of a graph\nDefinition. The algebraic connectivity of a graph is the second-smallest eigenvalue of the Laplacian matrix.\nClaim. The algebraic connectivity of a graph is greater than 0 if and only if a graph is a connected graph."
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#practical-problems",
-    "href": "lectures/lecture-11/lecture-11.html#practical-problems",
-    "title": "Questions?",
-    "section": "Practical problems",
-    "text": "Practical problems\nComputing bisection recursively is expensive.\nAs an alternative, one typically computes multilevel bisection that consists of 3 phases.\n\nGraph coarsening: From a given graph, we join vertices into larger nodes, and get sequences of graphs G_1, \\ldots, G_m.\nAt the coarse level, we do high-quality bisection\nThen, we do uncoarsening: we propagate the splitting from G_k to G_{k-1} and improve the quality of the split by local optimization algorithms (refinement)."
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#practical-problems-2",
-    "href": "lectures/lecture-11/lecture-11.html#practical-problems-2",
-    "title": "Questions?",
-    "section": "Practical problems (2)",
-    "text": "Practical problems (2)\n\nOnce the permutation has been computed, we need to implement the elimination, making use of efficient computational kernels.\nIf in the elemination we will be able to get the elements into blocks, we will be able to use BLAS-3 computations.\nIt is done by supernodal data structures:\nIf adjacent rows have the same sparsity structure, they can be stored in blocks:\nAlso, we can use such structure in efficient computations!\n\nDetails in this survey"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#take-home-message",
-    "href": "lectures/lecture-11/lecture-11.html#take-home-message",
-    "title": "Questions?",
-    "section": "Take home message",
-    "text": "Take home message\n\nSparse matrices & graphs ordering\nOrdering is important for LU fill-in: more details in the next lecture\nMarkowitz pivoting and minimal degree ordering\nOrderings from SciPy sparse package\nSeparators and how do they help in fill-in minimization\nNested dissection idea\nFiedler vector and spectral bipartitioning"
-  },
-  {
-    "objectID": "lectures/lecture-11/lecture-11.html#plan-for-the-next-lecture",
-    "href": "lectures/lecture-11/lecture-11.html#plan-for-the-next-lecture",
-    "title": "Questions?",
-    "section": "Plan for the next lecture",
-    "text": "Plan for the next lecture\n\nBasic iterative methods for solving large linear systems\nConvergence\nAcceleration"
+    "section": "Основные выводы",
+    "text": "Основные выводы\n\nО параллельном умножении матрицы на вектор и различных способах блочного разделения.\nФормат CSR для хранения\nПроблемы кэширования и параллельной обработки в работе с разреженными матрицами\nПереупорядочение и блочное разделение как способы решения этих проблем"
   },
   {
     "objectID": "lectures/lecture-6/lecture-6.html#краткий-обзор-предыдущей-лекции",
@@ -1232,144 +1099,144 @@
     "text": "Следующие шаги\n\nЭффективная реализация QR алгоритма и его сходимость\nЭффективное вычисление SVD: 4 алгоритма\nДополнительные применения SVD\n\n\nВопросы?\n\nfrom IPython.core.display import HTML\ndef css_styling():\n    styles = open(\"./styles/custom.css\", \"r\").read()\n    return HTML(styles)\ncss_styling()"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#brief-recap-of-the-previous-lecture",
-    "href": "lectures/lecture-8/lecture-8.html#brief-recap-of-the-previous-lecture",
-    "title": "Questions?",
-    "section": "Brief recap of the previous lecture",
-    "text": "Brief recap of the previous lecture\nSVD and algorithms for its computations: divide-and-conquer, QR, Jacobi, bisection."
+    "objectID": "lectures/lecture-8/lecture-8.html#краткий-обзор-предыдущей-лекции",
+    "href": "lectures/lecture-8/lecture-8.html#краткий-обзор-предыдущей-лекции",
+    "title": "",
+    "section": "Краткий обзор предыдущей лекции",
+    "text": "Краткий обзор предыдущей лекции\nSVD и алгоритмы для его вычисления: разделяй-и-властвуй, QR, Якоби, бисекция."
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#todays-lecture",
-    "href": "lectures/lecture-8/lecture-8.html#todays-lecture",
-    "title": "Questions?",
-    "section": "Todays lecture",
-    "text": "Todays lecture\nToday, we will do a brief dive into the randomized NLA.\nA good read is (https://arxiv.org/pdf/2002.01387.pdf)"
+    "objectID": "lectures/lecture-8/lecture-8.html#сегодняшняя-лекция",
+    "href": "lectures/lecture-8/lecture-8.html#сегодняшняя-лекция",
+    "title": "",
+    "section": "Сегодняшняя лекция",
+    "text": "Сегодняшняя лекция\nСегодня мы кратко погрузимся в рандомизированную линейную алгебру.\nХорошим источником для чтения является (https://arxiv.org/pdf/2002.01387.pdf)"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#random-numbers",
-    "href": "lectures/lecture-8/lecture-8.html#random-numbers",
-    "title": "Questions?",
-    "section": "Random numbers",
-    "text": "Random numbers\nAll the computations that we considered up to today were deterministic.\nHowever, reduction of complexity can be done by using randomized (stochastic) computation.\nExample: randomized matrix multiplication."
+    "objectID": "lectures/lecture-8/lecture-8.html#алгоритмы-бывают-детерминированными-и-рандомизированными",
+    "href": "lectures/lecture-8/lecture-8.html#алгоритмы-бывают-детерминированными-и-рандомизированными",
+    "title": "",
+    "section": "Алгоритмы бывают детерминированными и рандомизированными",
+    "text": "Алгоритмы бывают детерминированными и рандомизированными\nВсе вычисления, которые мы рассматривали до сегодняшнего дня, были детерминированными.\nОднако снижение сложности может быть достигнуто с помощью рандомизированных (стохастических) вычислений.\nПример: рандомизированное умножение матриц."
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#checking-matrix-equality",
-    "href": "lectures/lecture-8/lecture-8.html#checking-matrix-equality",
-    "title": "Questions?",
-    "section": "Checking matrix equality",
-    "text": "Checking matrix equality\nWe can check, if $ A B = C$ in \\mathcal{O}(n^2) operations.\nHow?"
+    "objectID": "lectures/lecture-8/lecture-8.html#оказывается-мы-можем-проверить-если-a-b-c-за-mathcalon2-операций.",
+    "href": "lectures/lecture-8/lecture-8.html#оказывается-мы-можем-проверить-если-a-b-c-за-mathcalon2-операций.",
+    "title": "",
+    "section": "Оказывается, мы можем проверить, если $ A B = C$ за \\mathcal{O}(n^2) операций.",
+    "text": "Оказывается, мы можем проверить, если $ A B = C$ за \\mathcal{O}(n^2) операций.\nДано: A, B, C — матрицы n \\times n.\nЗадача: проверить, если $ A B = C$.\nКак?"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#freivalds-algorithm",
-    "href": "lectures/lecture-8/lecture-8.html#freivalds-algorithm",
-    "title": "Questions?",
-    "section": "Freivalds algorithm",
-    "text": "Freivalds algorithm\nChecks by multiplying by random vectors!\nComplexity is k n^2, probability is of failure is \\frac{1}{2^k}."
+    "objectID": "lectures/lecture-8/lecture-8.html#ответ-дает-алгоритм-фрейвальдса",
+    "href": "lectures/lecture-8/lecture-8.html#ответ-дает-алгоритм-фрейвальдса",
+    "title": "",
+    "section": "Ответ дает Алгоритм Фрейвальдса",
+    "text": "Ответ дает Алгоритм Фрейвальдса\nВ его основе – проверка на равенство матриц путем умножения на случайные векторы!\nСложность составляет k n^2, вероятность ошибки равна \\frac{1}{2^k}."
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#matrix-multiplication",
-    "href": "lectures/lecture-8/lecture-8.html#matrix-multiplication",
-    "title": "Questions?",
-    "section": "Matrix multiplication",
-    "text": "Matrix multiplication\nBut can we multiply matrices faster using randomization ideas?"
+    "objectID": "lectures/lecture-8/lecture-8.html#а-что-мы-можем-сделать-с-умножением-матриц",
+    "href": "lectures/lecture-8/lecture-8.html#а-что-мы-можем-сделать-с-умножением-матриц",
+    "title": "",
+    "section": "А что мы можем сделать с умножением матриц?",
+    "text": "А что мы можем сделать с умножением матриц?\nНо можем ли мы умножать матрицы быстрее, используя идеи рандомизации?"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#randomized-matrix-multiplication",
-    "href": "lectures/lecture-8/lecture-8.html#randomized-matrix-multiplication",
-    "title": "Questions?",
-    "section": "Randomized matrix multiplication",
-    "text": "Randomized matrix multiplication\n\nWe know that matrix multiplication AB costs O(mnp) for matrices m \\times p and p \\times n\nWe can construct approximation of this product by sampling rows and columns of the multipliers\n\nQ: how to sample them?\nA: generate probabilities from their norms!\n\nSo the final approximation expression\n\n AB \\approx \\sum_{t=1}^k \\frac{1}{kp_{i_t}} A^{(i_t)} B_{(i_t)}, \nwhere A^{(i_t)} is a column of A and B_{(i_t)} is a row of B\n\nComplexity reduction from O(mnp) to O(mnk)\n\n\nimport numpy as np\n\nn = 1\np = 10000\nm = 1\nA = np.random.randn(n, p)\nB = np.random.randn(p, m)\nC = A @ A.T\n\ndef randomized_matmul(A, B, k):\n    p1 = A.shape[1]\n    p = np.linalg.norm(A, axis=0) * np.linalg.norm(B, axis=1)\n    p = p\n    p = p.ravel() / p.sum()\n    n = A.shape[1]\n    p = np.ones(p1)\n    p = p/p.sum()\n    idx = np.random.choice(np.arange(n), (k,), False, p)\n    #d = 1 / np.sqrt(k * p[idx])\n    d = 1.0/np.sqrt(k)#np.sqrt(p1)/np.sqrt(k*p[idx])\n    A_sketched = A[:, idx]*np.sqrt(p1)/np.sqrt(k)#* d[None, :]\n    B_sketched = B[idx, :]*np.sqrt(p1)/np.sqrt(k) #* d[:, None]\n    C = A_sketched @ B_sketched\n    print(d)\n    return C\n\ndef randomized_matmul_topk(A, B, K):\n    \n    norm_mult = np.linalg.norm(A,axis=0) * np.linalg.norm(B,axis=1)\n    top_k_idx = np.sort(np.argsort(norm_mult)[::-1][:K])\n    \n    A_top_k_cols = A[:, top_k_idx]\n    B_top_k_rows = B[top_k_idx, :]\n\n    C_approx = A_top_k_cols @ B_top_k_rows\n    return C_approx\n\nnum_items = 3000\nC_appr_samples = randomized_matmul(A, B, num_items)\nprint(C_appr_samples, 'appr')\nprint(C, 'true')\nC_appr_topk = randomized_matmul_topk(A, B, num_items)\nprint(np.linalg.norm(C_appr_topk - C, 2) / np.linalg.norm(C, 2))\nprint(np.linalg.norm(C_appr_samples - C, 2) / np.linalg.norm(C, 2))\n\n0.018257418583505537\n[[-209.68265641]] appr\n[[10065.73675927]] true\n1.012091041179466\n1.020831327246555"
+    "objectID": "lectures/lecture-8/lecture-8.html#можно-построить-быстрое-но-приближенное-умножение-матриц",
+    "href": "lectures/lecture-8/lecture-8.html#можно-построить-быстрое-но-приближенное-умножение-матриц",
+    "title": "",
+    "section": "Можно построить быстрое, но приближенное умножение матриц",
+    "text": "Можно построить быстрое, но приближенное умножение матриц\n\nМы знаем, что умножение матриц AB стоит O(mnp) для матриц размеров m \\times p и p \\times n\nМы можем построить аппроксимацию этого произведения, выбирая строки и столбцы множителей\n\nВопрос: как их выбирать?\nОтвет: генерировать вероятности из их норм!\n\nИтак, окончательное выражение аппроксимации\n\n AB \\approx \\sum_{t=1}^k \\frac{1}{kp_{i_t}} A^{(i_t)} B_{(i_t)}, \nгде A^{(i_t)} - столбец A, а B_{(i_t)} - строка B\n\nСнижение сложности с O(mnp) до O(mnk)\n\n\nimport numpy as np\n\nn = 5\np = 10000\nm = 5\nA = np.random.randn(n, p)\nB = np.random.randn(p, m)\nC = A @ B\n\ndef randomized_matmul(A, B, k):\n    p1 = A.shape[1]\n    p = np.linalg.norm(A, axis=0) * np.linalg.norm(B, axis=1)\n    p = p\n    p = p.ravel() / p.sum()\n    n = A.shape[1]\n    p = np.ones(p1)\n    p = p/p.sum()\n    idx = np.random.choice(np.arange(n), (k,), False, p)\n    #d = 1 / np.sqrt(k * p[idx])\n    d = 1.0/np.sqrt(k)#np.sqrt(p1)/np.sqrt(k*p[idx])\n    A_sketched = A[:, idx]*np.sqrt(p1)/np.sqrt(k)#* d[None, :]\n    B_sketched = B[idx, :]*np.sqrt(p1)/np.sqrt(k) #* d[:, None]\n    C = A_sketched @ B_sketched\n    #print(d)\n    return C\n\ndef randomized_matmul_topk(A, B, K):\n    \n    norm_mult = np.linalg.norm(A,axis=0) * np.linalg.norm(B,axis=1)\n    top_k_idx = np.sort(np.argsort(norm_mult)[::-1][:K])\n    \n    A_top_k_cols = A[:, top_k_idx]\n    B_top_k_rows = B[top_k_idx, :]\n\n    C_approx = A_top_k_cols @ B_top_k_rows\n    return C_approx\n\nnum_items = 4000\nC_appr_samples = randomized_matmul(A, B, num_items)\n#print(C_appr_samples, 'appr')\n#print(C, 'true')\nC_appr_topk = randomized_matmul_topk(A, B, num_items)\nprint(np.linalg.norm(C_appr_topk - C, 2) / np.linalg.norm(C, 2))\nprint(np.linalg.norm(C_appr_samples - C, 2) / np.linalg.norm(C, 2))\n\n0.47962255089465017\n1.8999756830536187"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#approximation-error",
-    "href": "lectures/lecture-8/lecture-8.html#approximation-error",
-    "title": "Questions?",
-    "section": "Approximation error",
-    "text": "Approximation error\n \\mathbb{E} [\\|AB - CR\\|^2_F] = \\frac{1}{k} \\left(\\sum_{i=1}^n \\| A^{(i)} \\|_2 \\| B_{(i)} \\|_2\\right)^2   - \\frac{1}{k}\\|AB\\|_F^2 \n\nOther sampling probabilities are possible\nUse approximation  AB \\approx ASD(SD)^\\top B  = ACC^{\\top}B can replace sampling and scaling with another matrix that\n\nreduces the dimension\nsufficiently accurately approximates\n\n\nQ: what matrices can be used?\n\nStochastic trace estimator\nMany problems can be written in the form of the trace estimation:\n\\mathrm{Tr}(A) = \\sum_{i} A_{ii}.\nCan we compute the trace of the matrix if we only have access to matrix-by-vector products?"
+    "objectID": "lectures/lecture-8/lecture-8.html#оценка-ошибки-аппроксимации-потребует-знания-теории-вероятностей",
+    "href": "lectures/lecture-8/lecture-8.html#оценка-ошибки-аппроксимации-потребует-знания-теории-вероятностей",
+    "title": "",
+    "section": "Оценка ошибки аппроксимации потребует знания теории вероятностей",
+    "text": "Оценка ошибки аппроксимации потребует знания теории вероятностей\n \\mathbb{E} [\\|AB - CR\\|^2_F] = \\frac{1}{k} \\left(\\sum_{i=1}^n \\| A^{(i)} \\|_2 \\| B_{(i)} \\|_2\\right)^2   - \\frac{1}{k}\\|AB\\|_F^2 \n\nВозможны другие вероятности выборки\nИспользуйте аппроксимацию  AB \\approx ASD(SD)^\\top B  = ACC^{\\top}B можно заменить выборку и масштабирование другой матрицей, которая\n\nуменьшает размерность\nдостаточно точно аппроксимирует\n\n\nВопрос: какие матрицы можно использовать?"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#two-estimators",
-    "href": "lectures/lecture-8/lecture-8.html#two-estimators",
-    "title": "Questions?",
-    "section": "Two estimators",
-    "text": "Two estimators\nThe randomized trace estimators can be computed from the following formula:\n\\mathrm{Tr}(A) = E_w w^* A w, \\quad E ww^* = 1\nIn order to sample, we pick k independent samples of w_k, get random variable X_k and average the results.\nGirard trace estimator: Sample w \\sim N(0, 1)\nThen, \\mathrm{Var} X_k = \\frac{2}{k} \\sum_{i, j=1}^n \\vert A_{ij} \\vert^2 = \\frac{2}{k} \\Vert A \\Vert^2_F\nHutchinson trace estimator: Let w be a Rademacher random vector (i.e., elements are sampled from the uniform distribution.\nIt gives the minimal variance estimator."
+    "objectID": "lectures/lecture-8/lecture-8.html#след-матрицы-тоже-можно-оценить",
+    "href": "lectures/lecture-8/lecture-8.html#след-матрицы-тоже-можно-оценить",
+    "title": "",
+    "section": "След матрицы тоже можно оценить",
+    "text": "След матрицы тоже можно оценить\nМногие задачи могут быть записаны в форме оценки следа:\n\\mathrm{Tr}(A) = \\sum_{i} A_{ii}.\nМожем ли мы вычислить след матрицы, если у нас есть доступ только к произведениям матрицы на вектор?"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#intdim",
-    "href": "lectures/lecture-8/lecture-8.html#intdim",
-    "title": "Questions?",
-    "section": "Intdim",
-    "text": "Intdim\nThe variance of the trace can be estimated in terms of intrinsic dimension (intdim) for symmetric positive definite matrices.\nIt is defined as \\mathrm{intdim}(A) = \\frac{\\mathrm{Tr}(A)}{\\Vert A \\Vert_F}. It is easy to show that\n1 \\leq \\mathrm{intdim}(A) \\leq ?.\nThen, the probability of the large deviation can be estimated as\nP( \\vert \\overline{X}_k - \\mathrm{Tr}(A) \\vert \\geq t \\mathrm{Tr}(A)) \\leq \\frac{2}{k \\mathrm{intdim}(A) t^2}"
+    "objectID": "lectures/lecture-8/lecture-8.html#есть-две-оценки-одна-с-меньшей-дисперсией-другая-с-большей",
+    "href": "lectures/lecture-8/lecture-8.html#есть-две-оценки-одна-с-меньшей-дисперсией-другая-с-большей",
+    "title": "",
+    "section": "Есть две оценки – одна с меньшей дисперсией, другая с большей",
+    "text": "Есть две оценки – одна с меньшей дисперсией, другая с большей\nРандомизированные оценщики следа могут быть вычислены по следующей формуле:\n\\mathrm{Tr}(A) = E_w w^* A w, \\quad E ww^* = 1\nДля выборки мы берем k независимых образцов w_k, получаем случайную величину X_k и усредняем результаты.\nОценщик следа Жирара: Выборка w \\sim N(0, 1)\nТогда, \\mathrm{Var} X_k = \\frac{2}{k} \\sum_{i, j=1}^n \\vert A_{ij} \\vert^2 = \\frac{2}{k} \\Vert A \\Vert^2_F\nОценщик следа Хатчинсона: Пусть w будет случайным вектором Радемахера (т.е. элементы выбираются из равномерного распределения.\nОн дает оценщик с минимальной дисперсией."
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#better-bounds-for-spd-matrices",
-    "href": "lectures/lecture-8/lecture-8.html#better-bounds-for-spd-matrices",
-    "title": "Questions?",
-    "section": "Better bounds for SPD matrices",
-    "text": "Better bounds for SPD matrices\nIf A is SPD, then\nP(\\overline{X}_k \\geq \\tau \\mathrm{Tr}(A) ) \\leq \\exp\\left(-1/2 \\mathrm{intdim}(A) (\\sqrt{\\tau} - 1)^2)\\right) \nSimilar inequality holds for the lower bound.\nThis estimate is much better.\nAn interesting (and often mislooked) property of stochastic estimator is that it comes with a stochastic variance estimate (from samples!)\nWarning: we still need \\varepsilon^{-2} samples to get to the accuracy \\varepsilon when using independent samples.\n\nDistances between languages (original paper)"
+    "objectID": "lectures/lecture-8/lecture-8.html#можно-строить-более-тонкие-оценки-на-основе-внутренней-размерности",
+    "href": "lectures/lecture-8/lecture-8.html#можно-строить-более-тонкие-оценки-на-основе-внутренней-размерности",
+    "title": "",
+    "section": "Можно строить более тонкие оценки на основе внутренней размерности",
+    "text": "Можно строить более тонкие оценки на основе внутренней размерности\nДисперсия следа может быть оценена в терминах внутренней размерности (intdim) для симметричных положительно определенных матриц.\nОна определяется как \\mathrm{intdim}(A) = \\frac{\\mathrm{Tr}(A)}{\\Vert A \\Vert_F}. Легко показать, что\n1 \\leq \\mathrm{intdim}(A) \\leq ?.\nТогда вероятность большого отклонения может быть оценена как\nP( \\vert \\overline{X}_k - \\mathrm{Tr}(A) \\vert \\geq t \\mathrm{Tr}(A)) \\leq \\frac{2}{k \\mathrm{intdim}(A) t^2}"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#where-do-stochastic-methods-also-help",
-    "href": "lectures/lecture-8/lecture-8.html#where-do-stochastic-methods-also-help",
-    "title": "Questions?",
-    "section": "Where do stochastic methods also help?",
-    "text": "Where do stochastic methods also help?\n\nSVD\nLinear systems"
+    "objectID": "lectures/lecture-8/lecture-8.html#лучшие-оценки-для-симметричных-положительно-определенных-матриц",
+    "href": "lectures/lecture-8/lecture-8.html#лучшие-оценки-для-симметричных-положительно-определенных-матриц",
+    "title": "",
+    "section": "Лучшие оценки для симметричных положительно определенных матриц",
+    "text": "Лучшие оценки для симметричных положительно определенных матриц\nЕсли A - симметричная положительно определенная матрица, то\nP(\\overline{X}_k \\geq \\tau \\mathrm{Tr}(A) ) \\leq \\exp\\left(-1/2 \\mathrm{intdim}(A) (\\sqrt{\\tau} - 1)^2)\\right) \nАналогичное неравенство справедливо и для нижней границы.\nЭта оценка намного лучше.\nИнтересное (и часто упускаемое из виду) свойство стохастического оценщика заключается в том, что он поставляется со стохастической оценкой дисперсии (из выборки!)\nПредупреждение: нам все равно нужно \\varepsilon^{-2} выборок, чтобы достичь точности \\varepsilon при использовании независимых выборок.\n\nПример результата, где применялось – надо читать исходную статью (original paper)"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#randomized-svd-halko-et-al-2011",
-    "href": "lectures/lecture-8/lecture-8.html#randomized-svd-halko-et-al-2011",
-    "title": "Questions?",
-    "section": "Randomized SVD (Halko et al, 2011)",
-    "text": "Randomized SVD (Halko et al, 2011)\n\nProblem statement reminder\n\n A \\approx U\\Sigma V^\\top, \nwhere A is of size m \\times n, U is of size m \\times k and V is of size n \\times k.\n\nWe have already known that the complexity of rank-k approximation is O(mnk)\nHow can we reduce this complexity?\nAssume we know orthogonal matrix Q of size m \\times k such that\n\nA \\approx Q Q^{\\top}A \n\nIn other words, columns of Q represent orthogonal basis in the column space of matrix A\nThen the following deterministic steps can give the factors U, \\Sigma and V corresponding of SVD of matrix A\n\nForm k \\times n matrix B = Q^{\\top}A\nCompute SVD of small matrix B = \\hat{U}\\Sigma V^{\\top}\nUpdate left singular vectors U = Q\\hat{U}\n\nIf k \\ll \\min(m, n) then these steps can be performed fast\nIf Q forms exact basis in column space of A, then U, \\Sigma and V are also exact!\nSo, how to compose matrix Q?\n\n\nRandomized approximation of basis in column space of A\n\nThe main approach\n\nGenerate k + p Gaussian vectors of size m and form matrix G\nCompute Y = AG\nCompute QR decomposition of Y and use the resulting matrix Q as an approximation of the basis\n\nParameter p is called oversampling parameter and is needed to improve approximation of the leading k left singular vectors later\nComputing of Y can be done in parallel\nHere we need only matvec function for matrix A rather than its elements as a 2D array - black-box concept!\nInstead of Gaussian random matrix one can use more structured but still random matrix that can be multiplied by A fast\n\n\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nn = 1000\nk = 100\nm = 200\n# Lowrank matrix\nA = np.random.randn(n, k)\nB = np.random.randn(k, m)\nA = A @ B\n\n# Random matrix\n# A = np.random.randn(n, m)\n\ndef randomized_svd(A, rank, p):\n    m, n = A.shape\n    G = np.random.randn(n, rank + p)\n    Y = A @ G\n    Q, _ = np.linalg.qr(Y)\n    B = Q.T @ A\n    u, S, V = np.linalg.svd(B)\n    U = Q @ u\n    return U, S, V\n\nrank = 100\np = 5\nU, S, V = randomized_svd(A, rank, p)\nprint(\"Error from randomized SVD\", np.linalg.norm(A - U[:, :rank] * S[None, :rank] @ V[:rank, :]))\nplt.semilogy(S[:rank] / S[0], label=\"Random SVD\")\nu, s, v = np.linalg.svd(A)\nprint(\"Error from exact SVD\", np.linalg.norm(A - u[:, :rank] * s[None, :rank] @ v[:rank, :]))\nplt.semilogy(s[:rank] / s[0], label=\"Exact SVD\")\nplt.legend(fontsize=18)\nplt.xticks(fontsize=16)\nplt.yticks(fontsize=16)\nplt.ylabel(\"$\\sigma_i / \\sigma_0$\", fontsize=16)\n_ = plt.xlabel(\"Index of singular value\", fontsize=16)\n\nError from randomized SVD 1.7704601563939492e-11\nError from exact SVD 1.195330542835496e-11\n\n\n\n\n\n\n\n\n\n\nimport scipy.sparse.linalg as spsplin\n# More details about Facebook package for computing randomized SVD is here: https://research.fb.com/blog/2014/09/fast-randomized-svd/ \nimport fbpca\nn = 1000\nm = 200\nA = np.random.randn(n, m)\nk = 10\np = 10\n%timeit spsplin.svds(A, k=k)\n%timeit randomized_svd(A, k, p)\n%timeit fbpca.pca(A, k=k, raw=False) \n\n60.5 ms ± 11.5 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)\n8.07 ms ± 3.32 ms per loop (mean ± std. dev. of 7 runs, 100 loops each)\n3.09 ms ± 177 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n\n\n\n\nConvergence theorem\nThe averaged error of the presented algorithm, where k is target rank and p is oversampling parameter, is the following - in Frobenius norm\n \\mathbb{E}\\|A - QQ^{\\top}A \\|_F \\leq \\left( 1 + \\frac{k}{p-1} \\right)^{1/2}\\left( \\sum_{j=k+1}^{\\min(m, n)} \\sigma^2_j \\right)^{1/2}  \n\nin spectral norm\n\n \\mathbb{E}\\|A - QQ^{\\top}A \\|_2 \\leq \\left( 1 + \\sqrt{\\frac{k}{p-1}} \\right)\\sigma_{k+1} + \\frac{e\\sqrt{k+p}}{p}\\left( \\sum_{j=k+1}^{\\min(m, n)} \\sigma^2_j \\right)^{1/2} \nThe expectation is taken w.r.t. random matrix G generated in the method described above.\nCompare these upper bounds with Eckart-Young theorem. Are these bounds good?"
+    "objectID": "lectures/lecture-8/lecture-8.html#где-еще-помогают-стохастические-методы",
+    "href": "lectures/lecture-8/lecture-8.html#где-еще-помогают-стохастические-методы",
+    "title": "",
+    "section": "Где еще помогают стохастические методы?",
+    "text": "Где еще помогают стохастические методы?\n\nSVD\nЛинейные системы"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#accuracy-enhanced-randomized-svd",
-    "href": "lectures/lecture-8/lecture-8.html#accuracy-enhanced-randomized-svd",
-    "title": "Questions?",
-    "section": "Accuracy enhanced randomized SVD",
-    "text": "Accuracy enhanced randomized SVD\n\nMain idea: power iteration\nIf A = U \\Sigma V^\\top, then $A^{(q)} = (AA{})qA = U {2q+1}V$, where q some small natural number, e.g. 1 or 2\nThen we sample from A^{(q)}, not from A\n\n Y = (AA^{\\top})^qAG \\qquad Q, R = \\mathtt{qr}(Y) \n\nThe main reason: if singular values of A decays slowly, the singular values of A^{(q)} will decay faster\n\n\nn = 1000\nm = 200\nA = np.random.randn(n, m)\ns = np.linalg.svd(A, compute_uv=False)\nAq = A @ A.T @ A\nsq = np.linalg.svd(Aq, compute_uv=False)\nplt.semilogy(s / s[0], label=\"$A$\")\nplt.semilogy(sq / sq[0], label=\"$A^{(1)}$\")\nplt.legend(fontsize=18)\nplt.xticks(fontsize=16)\nplt.yticks(fontsize=16)\nplt.ylabel(\"$\\sigma_i / \\sigma_0$\", fontsize=16)\n_ = plt.xlabel(\"Index of singular value\", fontsize=16)\n\n\n\n\n\n\n\n\n\nLoss of accuracy with rounding errors\n\nCompose A^{(q)} naively leads to condition number grows and loss of accuracy\n\nQ: how can we battle with this issue?\nA: sequential orthogonalization!\n\ndef more_accurate_randomized_svd(A, rank, p, q):\n    m, n = A.shape\n    G = np.random.randn(n, rank + p)\n    Y = A @ G\n    Q, _ = np.linalg.qr(Y)\n    for i in range(q):\n        W = A.T @ Q\n        W, _ = np.linalg.qr(W)\n        Q = A @ W\n        Q, _ = np.linalg.qr(Q)\n    B = Q.T @ A\n    u, S, V = np.linalg.svd(B)\n    U = Q @ u\n    return U, S, V\n\nn = 1000\nm = 200\nA = np.random.randn(n, m)\n\nrank = 100\np = 20\nU, S, V = randomized_svd(A, rank, p)\nprint(\"Error from randomized SVD\", np.linalg.norm(A - U[:, :rank] * S[None, :rank] @ V[:rank, :]))\nplt.semilogy(S[:rank] / S[0], label=\"Random SVD\")\n\nUq, Sq, Vq = more_accurate_randomized_svd(A, rank, p, 5)\nprint(\"Error from more accurate randomized SVD\", np.linalg.norm(A - Uq[:, :rank] * Sq[None, :rank] @ Vq[:rank, :]))\nplt.semilogy(Sq[:rank] / Sq[0], label=\"Accurate random SVD\")\n\nu, s, v = np.linalg.svd(A)\nprint(\"Error from exact SVD\", np.linalg.norm(A - u[:, :rank] * s[None, :rank] @ v[:rank, :]))\nplt.semilogy(s[:rank] / s[0], label=\"Exact SVD\")\nplt.legend(fontsize=18)\nplt.xticks(fontsize=16)\nplt.yticks(fontsize=16)\nplt.ylabel(\"$\\sigma_i / \\sigma_0$\", fontsize=16)\n_ = plt.xlabel(\"Index of singular value\", fontsize=16)\n\nError from randomized SVD 286.99760873015225\nError from more accurate randomized SVD 250.2388642432797\nError from exact SVD 249.3503301291079\n\n\n\n\n\n\n\n\n\n\n%timeit spsplin.svds(A, k=k)\n%timeit fbpca.pca(A, k=k, raw=False)\n%timeit randomized_svd(A, k, p) \n%timeit more_accurate_randomized_svd(A, k, p, 1)\n%timeit more_accurate_randomized_svd(A, k, p, 2)\n%timeit more_accurate_randomized_svd(A, k, p, 5)\n\n347 ms ± 60.1 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n82.3 ms ± 6.93 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)\n68.7 ms ± 4.99 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)\n118 ms ± 6.57 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)\n176 ms ± 13.9 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)\n352 ms ± 43.3 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n\n\n\n\nConvergence theorem\nThe presented above method provides the following upper bound\n \\mathbb{E}\\|A - QQ^{\\top}A \\|_2 \\leq \\left[\\left( 1 + \\sqrt{\\frac{k}{p-1}} \\right)\\sigma^{2q+1}_{k+1} + \\frac{e\\sqrt{k+p}}{p}\\left( \\sum_{j=k+1}^{\\min(m, n)} \\sigma^{2(2q+1)}_j \\right)^{1/2}\\right]^{1/(2q+1)} \nConsider the worst case, where no lowrank structure exists in the given matrix.\nQ: what is the degree of suboptimality w.r.t. Eckart-Young theorem?\n\n\nSummary on randomized SVD\n\nEfficient method to get approximate SVD\nSimple to implement\nIt can be extended to one-pass method, where matrix A is needed only to construct Q\nIt requires only matvec with target matrix"
+    "objectID": "lectures/lecture-8/lecture-8.html#рандомизированный-svd-halko-et-al-2011",
+    "href": "lectures/lecture-8/lecture-8.html#рандомизированный-svd-halko-et-al-2011",
+    "title": "",
+    "section": "Рандомизированный SVD (Halko et al, 2011)",
+    "text": "Рандомизированный SVD (Halko et al, 2011)\n\nНапоминание о постановке задачи\n\n A \\approx U\\Sigma V^\\top, \nгде A имеет размер m \\times n, U имеет размер m \\times k и V имеет размер n \\times k.\n\nМы уже знаем, что сложность аппроксимации ранга k составляет O(mnk)\nКак мы можем уменьшить эту сложность?\nПредположим, что мы знаем ортогональную матрицу Q размера m \\times k такую, что\n\nA \\approx Q Q^{\\top}A \n\nДругими словами, столбцы Q представляют ортогональный базис в пространстве столбцов матрицы A\nТогда следующие детерминированные шаги могут дать факторы U, \\Sigma и V, соответствующие SVD матрицы A\n\nФормируем матрицу B = Q^{\\top}A размера k \\times n\nВычисляем SVD малой матрицы B = \\hat{U}\\Sigma V^{\\top}\nОбновляем левые сингулярные векторы U = Q\\hat{U}\n\nЕсли k \\ll \\min(m, n), то эти шаги можно выполнить быстро\nЕсли Q образует точный базис в пространстве столбцов A, то U, \\Sigma и V также будут точными!\nИтак, как составить матрицу Q?\n\n\nРандомизированная аппроксимация базиса в пространстве столбцов A\n\nОсновной подход\n\nСгенерировать k + p гауссовых векторов размера m и сформировать матрицу G\nВычислить Y = AG\nВычислить QR-разложение Y и использовать полученную матрицу Q как аппроксимацию базиса\n\nПараметр p называется параметром переизбыточности и нужен для улучшения аппроксимации ведущих k левых сингулярных векторов\nВычисление Y может быть выполнено параллельно\nЗдесь нам нужна только функция умножения матрицы A на вектор, а не её элементы в виде 2D массива - концепция черного ящика!\nВместо гауссовой случайной матрицы можно использовать более структурированную, но все еще случайную матрицу, которую можно быстро умножить на A\n\n\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nn = 1000\nk = 100\nm = 200\n# Lowrank matrix\nA = np.random.randn(n, k)\nB = np.random.randn(k, m)\nA = A @ B\n\n# Random matrix\n# A = np.random.randn(n, m)\n\ndef randomized_svd(A, rank, p):\n    m, n = A.shape\n    G = np.random.randn(n, rank + p)\n    Y = A @ G\n    Q, _ = np.linalg.qr(Y)\n    B = Q.T @ A\n    u, S, V = np.linalg.svd(B)\n    U = Q @ u\n    return U, S, V\n\nrank = 100\np = 5\nU, S, V = randomized_svd(A, rank, p)\nprint(\"Error from randomized SVD\", np.linalg.norm(A - U[:, :rank] * S[None, :rank] @ V[:rank, :]))\nplt.semilogy(S[:rank] / S[0], label=\"Random SVD\")\nu, s, v = np.linalg.svd(A)\nprint(\"Error from exact SVD\", np.linalg.norm(A - u[:, :rank] * s[None, :rank] @ v[:rank, :]))\nplt.semilogy(s[:rank] / s[0], label=\"Exact SVD\")\nplt.legend(fontsize=18)\nplt.xticks(fontsize=16)\nplt.yticks(fontsize=16)\nplt.ylabel(\"$\\sigma_i / \\sigma_0$\", fontsize=16)\n_ = plt.xlabel(\"Index of singular value\", fontsize=16)\n\nError from randomized SVD 2.159802807908629e-11\nError from exact SVD 1.3779850607705733e-11\n\n\n\n\n\n\n\n\n\n\nimport scipy.sparse.linalg as spsplin\n# More details about Facebook package for computing randomized SVD is here: https://research.fb.com/blog/2014/09/fast-randomized-svd/ \nimport fbpca\nn = 1000\nm = 200\nA = np.random.randn(n, m)\nk = 10\np = 10\n%timeit spsplin.svds(A, k=k)\n%timeit randomized_svd(A, k, p)\n%timeit fbpca.pca(A, k=k, raw=False) \n\n60.5 ms ± 11.5 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)\n8.07 ms ± 3.32 ms per loop (mean ± std. dev. of 7 runs, 100 loops each)\n3.09 ms ± 177 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n\n\n\n\nМожно получить нетривиальные оценки сходимости\nУсредненная ошибка представленного алгоритма, где k - целевой ранг, а p - параметр избыточной выборки, следующая - в норме Фробениуса\n \\mathbb{E}\\|A - QQ^{\\top}A \\|_F \\leq \\left( 1 + \\frac{k}{p-1} \\right)^{1/2}\\left( \\sum_{j=k+1}^{\\min(m, n)} \\sigma^2_j \\right)^{1/2}  \n\nв спектральной норме\n\n \\mathbb{E}\\|A - QQ^{\\top}A \\|_2 \\leq \\left( 1 + \\sqrt{\\frac{k}{p-1}} \\right)\\sigma_{k+1} + \\frac{e\\sqrt{k+p}}{p}\\left( \\sum_{j=k+1}^{\\min(m, n)} \\sigma^2_j \\right)^{1/2} \nМатематическое ожидание берется относительно случайной матрицы G, сгенерированной в методе, описанном выше.\nСравните эти верхние границы с теоремой Экарта-Янга. Хороши ли эти границы?"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#kaczmarz-method-to-solve-linear-systems",
-    "href": "lectures/lecture-8/lecture-8.html#kaczmarz-method-to-solve-linear-systems",
-    "title": "Questions?",
-    "section": "Kaczmarz method to solve linear systems",
-    "text": "Kaczmarz method to solve linear systems\n\nWe have already discussed how to solve overdetermined linear systems Ax = f in the least-squares manner\n\npseudoinverse matrix\nQR decomposition\n\nOne more approach is based on iterative projections a.k.a. Kaczmarz method or algebraic reconstruction technique in compoutational tomography domain\nInstead of solving all equations, pick one randomly, which reads\n\na^{\\top}_i x = f_i,\nand given an approximation x_k try to find x_{k+1} as\nx_{k+1} = \\arg \\min_x \\frac12 \\Vert x - x_k \\Vert^2_2, \\quad \\mbox{s.t.} \\quad  a^{\\top}_i x = f_i.\n\nA simple analysis gives\n\nx_{k+1} = x_k - \\frac{(a_i, x_k) - f_i}{(a_i, a_i)} a_i. \n\nA cheap update, but the analysis is quite complicated.\nYou can recognize in this method stochastic gradient descent with specific step size equal to \\frac{1}{\\|a_i\\|_2^2} for every sample"
+    "objectID": "lectures/lecture-8/lecture-8.html#умножив-несколько-раз-можно-оценить-больше-сингулярных-значений",
+    "href": "lectures/lecture-8/lecture-8.html#умножив-несколько-раз-можно-оценить-больше-сингулярных-значений",
+    "title": "",
+    "section": "Умножив несколько раз, можно оценить больше сингулярных значений",
+    "text": "Умножив несколько раз, можно оценить больше сингулярных значений\n\nОсновная идея: степенной метод\nЕсли A = U \\Sigma V^\\top, то $A^{(q)} = (AA{})qA = U {2q+1}V$, где q - некоторое небольшое натуральное число, например 1 или 2\nЗатем мы делаем выборку из A^{(q)}, а не из A\n\n Y = (AA^{\\top})^qAG \\qquad Q, R = \\mathtt{qr}(Y) \n\nОсновная причина: если сингулярные значения A убывают медленно, то сингулярные значения A^{(q)} будут убывать быстрее\n\n\nn = 1000\nm = 200\nA = np.random.randn(n, m)\ns = np.linalg.svd(A, compute_uv=False)\nAq = A @ A.T @ A\nsq = np.linalg.svd(Aq, compute_uv=False)\nplt.semilogy(s / s[0], label=\"$A$\")\nplt.semilogy(sq / sq[0], label=\"$A^{(1)}$\")\nplt.legend(fontsize=18)\nplt.xticks(fontsize=16)\nplt.yticks(fontsize=16)\nplt.ylabel(\"$\\sigma_i / \\sigma_0$\", fontsize=16)\n_ = plt.xlabel(\"Index of singular value\", fontsize=16)"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#convergence-theorem-2",
-    "href": "lectures/lecture-8/lecture-8.html#convergence-theorem-2",
-    "title": "Questions?",
-    "section": "Convergence theorem",
-    "text": "Convergence theorem\n\nAssume we generate i according to the distribution over the all available indices proportional to norms of the rows, i.e. \\mathbb{P}[i = k] = \\frac{\\|a_k\\|_2^2}{\\| A \\|^2_F}. This method is called Randomized Kaczmarz method (RKM)\nWhy sampling strategy is important here?\nInvestigation of the best sampling is provided here\nIf the overdetermined linear system is consistent, then\n\n \\mathbb{E}[\\|x_{k+1} - x^*\\|^2_2] \\leq \\left(1 - \\frac{1}{\\kappa^2_F(A)}\\right) \\mathbb{E}[\\|x_{k} - x^*\\|^2_2], \nwhere \\kappa_F(A) = \\frac{\\| A \\|_F}{\\sigma_{\\min}(A)} and \\sigma_{\\min}(A) is a minimal non-zero singular value of A. This result was presented in (Strohmer and Vershynin, 2009)\n\nIf the overdetermined linear system is inconsistent, then\n\n \\mathbb{E}[\\|x_{k+1} - x^*\\|^2_2] \\leq \\left(1 - \\frac{1}{\\kappa^2_F(A)}\\right) \\mathbb{E}[\\|x_{k} - x^*\\|^2_2] + \\frac{\\|r^*\\|_2^2}{\\| A \\|^2_F}, \nwhere r^* = Ax^* - f\n\nInconsistent overdetermined linear system\n\nIt was shown in (Needell, 2010) that RKM does not converge to A^{\\dagger}f\nTo address this issue Randomized extended Kaczmarz method was proposed in (A Zouzias, N Freris, 2013)\nThe main idea is to use two steps of RKM:\n\nthe first step is for system A^\\top z = 0 starting from z_k\n\n z^{k+1} = z^{k} - \\frac{a^\\top_{:, j} z^k}{\\| a_{:, j} \\|_2^2}a_{:, j}  \n\nthe second step is for system Ax = f - z_{k+1} starting from x_k\n\nx^{k+1} = x^k - \\frac{a_{i,:}x_k - f_i + z^{k+1}_i}{\\|a_{i,:}\\|_2^2}a^{\\top}_{i,:} \n\nHere a_{:, j} denotes the j-th column of A and a_{i, :} denotes the i-th row of A\n\nIf z^0 \\in f + \\mathrm{range}(A) and x^0 \\in \\mathrm{range}(A^\\top), then REK converges exponentially to A^{\\dagger}f"
+    "objectID": "lectures/lecture-8/lecture-8.html#потеря-точности-из-за-ошибок-округления-но-мы-сможем-ее-исправить",
+    "href": "lectures/lecture-8/lecture-8.html#потеря-точности-из-за-ошибок-округления-но-мы-сможем-ее-исправить",
+    "title": "",
+    "section": "Потеря точности из-за ошибок округления, но мы сможем ее исправить",
+    "text": "Потеря точности из-за ошибок округления, но мы сможем ее исправить\nНаивное составление A^{(q)} приводит к росту числа обусловленности и потере точности\nQ: как мы можем бороться с этой проблемой?\nA: sequential orthogonalization!\n\ndef more_accurate_randomized_svd(A, rank, p, q):\n    m, n = A.shape\n    G = np.random.randn(n, rank + p)\n    Y = A @ G\n    Q, _ = np.linalg.qr(Y)\n    for i in range(q):\n        W = A.T @ Q\n        W, _ = np.linalg.qr(W)\n        Q = A @ W\n        Q, _ = np.linalg.qr(Q)\n    B = Q.T @ A\n    u, S, V = np.linalg.svd(B)\n    U = Q @ u\n    return U, S, V\n\nn = 1000\nm = 200\nA = np.random.randn(n, m)\n\nrank = 100\np = 20\nU, S, V = randomized_svd(A, rank, p)\nprint(\"Error from randomized SVD\", np.linalg.norm(A - U[:, :rank] * S[None, :rank] @ V[:rank, :]))\nplt.semilogy(S[:rank] / S[0], label=\"Random SVD\")\n\nUq, Sq, Vq = more_accurate_randomized_svd(A, rank, p, 5)\nprint(\"Error from more accurate randomized SVD\", np.linalg.norm(A - Uq[:, :rank] * Sq[None, :rank] @ Vq[:rank, :]))\nplt.semilogy(Sq[:rank] / Sq[0], label=\"Accurate random SVD\")\n\nu, s, v = np.linalg.svd(A)\nprint(\"Error from exact SVD\", np.linalg.norm(A - u[:, :rank] * s[None, :rank] @ v[:rank, :]))\nplt.semilogy(s[:rank] / s[0], label=\"Exact SVD\")\nplt.legend(fontsize=18)\nplt.xticks(fontsize=16)\nplt.yticks(fontsize=16)\nplt.ylabel(\"$\\sigma_i / \\sigma_0$\", fontsize=16)\n_ = plt.xlabel(\"Index of singular value\", fontsize=16)\n\nError from randomized SVD 286.99760873015225\nError from more accurate randomized SVD 250.2388642432797\nError from exact SVD 249.3503301291079\n\n\n\n\n\n\n\n\n\n\n%timeit spsplin.svds(A, k=k)\n%timeit fbpca.pca(A, k=k, raw=False)\n%timeit randomized_svd(A, k, p) \n%timeit more_accurate_randomized_svd(A, k, p, 1)\n%timeit more_accurate_randomized_svd(A, k, p, 2)\n%timeit more_accurate_randomized_svd(A, k, p, 5)\n\n347 ms ± 60.1 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n82.3 ms ± 6.93 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)\n68.7 ms ± 4.99 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)\n118 ms ± 6.57 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)\n176 ms ± 13.9 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)\n352 ms ± 43.3 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n\n\n\nЗдесь тоже есть теорема сходимости\nПредставленный выше метод обеспечивает следующую верхнюю границу\n \\mathbb{E}\\|A - QQ^{\\top}A \\|_2 \\leq \\left[\\left( 1 + \\sqrt{\\frac{k}{p-1}} \\right)\\sigma^{2q+1}_{k+1} + \\frac{e\\sqrt{k+p}}{p}\\left( \\sum_{j=k+1}^{\\min(m, n)} \\sigma^{2(2q+1)}_j \\right)^{1/2}\\right]^{1/(2q+1)} \nРассмотрим наихудший случай, когда в данной матрице не существует структуры низкого ранга.\nВопрос: какова степень субоптимальности по отношению к теореме Экарта-Янга?\n\n\nРезюме по рандомизированному SVD\n\nЭффективный метод для получения приближенного SVD\nПрост в реализации\nМожет быть расширен до однопроходного метода, где матрица A нужна только для построения Q\nТребует только умножение матрицы на вектор с целевой матрицей"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#sampling-and-sketching",
-    "href": "lectures/lecture-8/lecture-8.html#sampling-and-sketching",
-    "title": "Questions?",
-    "section": "Sampling and sketching",
-    "text": "Sampling and sketching\n\nSampling of a particular row can be considered as a particular case of more general approach called sketching\nIdea: replace matrix A with another matrix SA, where matrix SA has significantly smaller number of rows but preserves some important properties of matrix A\nPossible choices:\n\nrandom projection\nrandom row selection\n\nExample: linear least squares problem \\|Ax - b\\|_2^2 \\to \\min_x transforms to \\| (SA)y - Sb \\|_2^2 \\to \\min_y and we expect that x \\approx y\nBlendenpick solver is based on that idea and outperforms LAPACK routine\nMore details see in Sketching as a Tool for Numerical Linear Algebra by D. Woodruff"
+    "objectID": "lectures/lecture-8/lecture-8.html#метод-качмажа-kaczmarz-method-для-решения-линейных-систем-позволяет-приближенно-решать-не-считая-даже-все-строки",
+    "href": "lectures/lecture-8/lecture-8.html#метод-качмажа-kaczmarz-method-для-решения-линейных-систем-позволяет-приближенно-решать-не-считая-даже-все-строки",
+    "title": "",
+    "section": "Метод Качмажа (Kaczmarz method) для решения линейных систем позволяет приближенно решать, не считая даже все строки",
+    "text": "Метод Качмажа (Kaczmarz method) для решения линейных систем позволяет приближенно решать, не считая даже все строки\n\nМы уже обсудили, как решать переопределенные линейные системы Ax = f в смысле наименьших квадратов\n\nпсевдообратная матрица\nQR разложение\n\nЕще один подход основан на итеративных проекциях, известный как метод Качмажа или алгебраический метод реконструкции в области вычислительной томографии\nВместо решения всех уравнений, выбираем одно случайно, которое имеет вид\n\na^{\\top}_i x = f_i,\nи имея приближение x_k, пытаемся найти x_{k+1} как\nx_{k+1} = \\arg \\min_x \\frac12 \\Vert x - x_k \\Vert^2_2, \\quad \\mbox{s.t.} \\quad  a^{\\top}_i x = f_i.\n\nПростой анализ дает\n\nx_{k+1} = x_k - \\frac{(a_i, x_k) - f_i}{(a_i, a_i)} a_i. \n\nЭто недорогое обновление, но анализ довольно сложный.\nВ этом методе можно узнать стохастический градиентный спуск с определенным размером шага, равным \\frac{1}{\\|a_i\\|_2^2} для каждого образца"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#coherence",
-    "href": "lectures/lecture-8/lecture-8.html#coherence",
-    "title": "Questions?",
-    "section": "Coherence",
-    "text": "Coherence\nThe key idea is the coherence of the matrix.\nLet A be n \\times r and U be an orthogonal matrix whose columns form the basis of the column space of A.\nThen, coherence is defined as\n\\mu(A) = \\max \\Vert U_{i, *} \\Vert^2\nCoherence is always smaller than 1 and bigger than \\frac{r}{n}, it has nothing to do with the condition number.\nWhat does it mean?"
+    "objectID": "lectures/lecture-8/lecture-8.html#теорема-сходимости-была-доказана-очень-недавно",
+    "href": "lectures/lecture-8/lecture-8.html#теорема-сходимости-была-доказана-очень-недавно",
+    "title": "",
+    "section": "Теорема сходимости была доказана очень недавно",
+    "text": "Теорема сходимости была доказана очень недавно\n\nПредположим, что мы генерируем i согласно распределению по всем доступным индексам пропорционально нормам строк, т.е. \\mathbb{P}[i = k] = \\frac{\\|a_k\\|_2^2}{\\| A \\|^2_F}. Этот метод называется рандомизированным методом Качмажа (RKM)\nПочему стратегия выборки здесь важна?\nИсследование наилучшей выборки представлено здесь\nЕсли переопределенная линейная система совместна, то\n\n \\mathbb{E}[\\|x_{k+1} - x^*\\|^2_2] \\leq \\left(1 - \\frac{1}{\\kappa^2_F(A)}\\right) \\mathbb{E}[\\|x_{k} - x^*\\|^2_2], \nгде \\kappa_F(A) = \\frac{\\| A \\|_F}{\\sigma_{\\min}(A)} и \\sigma_{\\min}(A) - минимальное ненулевое сингулярное число матрицы A. Этот результат был представлен в работе (Strohmer and Vershynin, 2009)\n\nЕсли переопределенная линейная система несовместна, то\n\n \\mathbb{E}[\\|x_{k+1} - x^*\\|^2_2] \\leq \\left(1 - \\frac{1}{\\kappa^2_F(A)}\\right) \\mathbb{E}[\\|x_{k} - x^*\\|^2_2] + \\frac{\\|r^*\\|_2^2}{\\| A \\|^2_F}, \nгде r^* = Ax^* - f"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#coherence-1",
-    "href": "lectures/lecture-8/lecture-8.html#coherence-1",
-    "title": "Questions?",
-    "section": "Coherence",
-    "text": "Coherence\nSmall coherence means, that sampling rows uniformly gives a good preconditioner (will be covered later in the course, and why it is important)\nOne can do S A = QR, and look at the condition number of AR^{-1}.\n\nSummary on randomized methods in solving linear systems\n\nEasy to use family of methods\nEspecially useful in problems with streaming data\nExisting theoretical bounds for convergence\nMany interpretations in different domains (SGD in deep learning, ART in computational tomography)\n\n\n\nSummary on randomized matmul\n\nSimple method to get approximation of result\nCan be used if the high accuracy is not crucial\nEspecially useful for large dense matrices"
+    "objectID": "lectures/lecture-8/lecture-8.html#хотелось-бы-поговорить-о-скетчинге-но-это-уже-другая-история",
+    "href": "lectures/lecture-8/lecture-8.html#хотелось-бы-поговорить-о-скетчинге-но-это-уже-другая-история",
+    "title": "",
+    "section": "Хотелось бы поговорить о скетчинге, но это уже другая история",
+    "text": "Хотелось бы поговорить о скетчинге, но это уже другая история\n\nВыборка определенной строки может рассматриваться как частный случай более общего подхода, называемого скетчингом\nИдея: заменить матрицу A другой матрицей SA, где матрица SA имеет значительно меньшее количество строк, но сохраняет некоторые важные свойства матрицы A\nВозможные варианты:\n\nслучайная проекция\nслучайный выбор строк\n\nПример: задача линейных наименьших квадратов \\|Ax - b\\|_2^2 \\to \\min_x преобразуется в \\| (SA)y - Sb \\|_2^2 \\to \\min_y, и мы ожидаем, что x \\approx y\nРешатель Blendenpick основан на этой идее и превосходит по производительности процедуру LAPACK\nБолее подробную информацию см. в работе Sketching as a Tool for Numerical Linear Algebra автора D. Woodruff\n\n\nРезюме по рандомизированным методам решения линейных систем\n\nСемейство методов, простых в использовании\nОсобенно полезны в задачах с потоковыми данными\nСуществуют теоретические границы сходимости\nМножество интерпретаций в различных областях (SGD в глубоком обучении, ART в вычислительной томографии)\n\n\n\nРезюме по рандомизированному матричному умножению\n\nПростой метод для получения приближенного результата\nМожет использоваться, если высокая точность не критична\nОсобенно полезен для больших плотных матриц"
   },
   {
-    "objectID": "lectures/lecture-8/lecture-8.html#next-lecture",
-    "href": "lectures/lecture-8/lecture-8.html#next-lecture",
-    "title": "Questions?",
-    "section": "Next lecture",
-    "text": "Next lecture\n\nWe start sparse and/or structured NLA."
+    "objectID": "lectures/lecture-8/lecture-8.html#следующая-лекция",
+    "href": "lectures/lecture-8/lecture-8.html#следующая-лекция",
+    "title": "",
+    "section": "Следующая лекция",
+    "text": "Следующая лекция\n\nМы начинаем изучение разреженной и/или структурированной численной линейной алгебры.\n\nВопросы?"
   },
   {
     "objectID": "files/sparse_la.html",
@@ -2128,74 +1995,207 @@
     "text": "Следующая лекция\n\nМы начинаем разреженную и/или структурированную численную линейную алгебру."
   },
   {
-    "objectID": "lectures/lecture-10/lecture-10.html#recap-of-the-previous-lecture",
-    "href": "lectures/lecture-10/lecture-10.html#recap-of-the-previous-lecture",
+    "objectID": "lectures/lecture-11/lecture-11.html#recap-of-the-previous-part",
+    "href": "lectures/lecture-11/lecture-11.html#recap-of-the-previous-part",
     "title": "Questions?",
-    "section": "Recap of the previous lecture",
-    "text": "Recap of the previous lecture\n\nRandomized matmul\nHutchinson trace estimator\nRandomized SVD\nKarcmarz"
+    "section": "Recap of the previous part",
+    "text": "Recap of the previous part\n\nDistributed memory for huge dense matrices\nSparse matrix formats (COO, CSR, CSC)\nMatrix-by-vector product\nInefficiency of sparse matrix processing\nApproaches to reduce cache misses"
   },
   {
-    "objectID": "lectures/lecture-10/lecture-10.html#plan-of-todays-lecture",
-    "href": "lectures/lecture-10/lecture-10.html#plan-of-todays-lecture",
+    "objectID": "lectures/lecture-11/lecture-11.html#plan-for-this-week-how-to-solve-large-sparse-linear-systems",
+    "href": "lectures/lecture-11/lecture-11.html#plan-for-this-week-how-to-solve-large-sparse-linear-systems",
     "title": "Questions?",
-    "section": "Plan of todays lecture",
-    "text": "Plan of todays lecture\n\nSimple topic in parallel computing in NLA (on the matvec example)\nSparse matrix part (with a separate plan)"
+    "section": "Plan for this week: how to solve large sparse linear systems",
+    "text": "Plan for this week: how to solve large sparse linear systems\n\nDirect methods (start today and continue in the next lecture)\n\nLU decomposition\nNumber of reordering techniques to minimize fill-in\n\nKrylov methods"
   },
   {
-    "objectID": "lectures/lecture-10/lecture-10.html#large-scale-dense-matrices",
-    "href": "lectures/lecture-10/lecture-10.html#large-scale-dense-matrices",
+    "objectID": "lectures/lecture-11/lecture-11.html#plan-for-today",
+    "href": "lectures/lecture-11/lecture-11.html#plan-for-today",
     "title": "Questions?",
-    "section": "Large scale dense matrices",
-    "text": "Large scale dense matrices\n\nIf the size of the dense matrix is huge, then it can not be stored in memory\nPossible options\n\nThis matrix is structured, e.g. block Toeplitz with Toeptitz blocks (next lectures). Then the compressed storage is possible\nFor unstructured dense matrices distributed memory helps\nMPI for processing distributed storing matrices\n\n\n\nDistributed memory and MPI\n\nSplit matrix into blocks and store them on different machines\nEvery machine has its own address space and can not damage data on other machines\nIn this case machines communicate with each other to aggregate results of computations\nMPI (Message Passing Interface) is a standard for parallel computing in distributed memory\n\n\n\nExample: matrix-by-vector product\n\nAssume you want to compute Ax and matrix A can not be stored in available memory\nThen you can split it on blocks and distribute blocks on separate machines\nPossible strategies\n\n1D blocking splits only rows on blocks\n2D blocking splits both rows and columns\n\n\n\n1D blocking scheme\n\n\n\nTotal time of computing matvec with 1D blocking\n\nEach machine has $n / p $ complete rows and n / p elements of vector\nTotal operations are n^2 / p\nTotal time for sending and writing data are t_s \\log p + t_w n, where t_s time unit for sending and t_w time unit for writing\n\n\n\n2D blocking scheme\n\n\n\nTotal time of computing matvec with 2D blocking\n\nEach machine has $n / $ size block and n / \\sqrt{p} elements of vector\nTotal operations are n^2 / p\nTotal time for sending and writing data are approximately t_s \\log p + t_w (n/\\sqrt{p}) \\log p, where t_s time unit for sending and t_w time unit for writing\n\n\n\n\nPackages supported distributed storage\n\nScaLAPACK\nTrilinos\n\nIn Python you can use mpi4py for parallel programming of your algorithm.\n\nPyTorch supports distributed training and data storage, see details here\n\n\n\nSummary on large unstructered matrix processing\n\nDistributed manner of storage\nMPI\nPackages that use parallel computations\nDifferent blocking strategies"
+    "section": "Plan for today",
+    "text": "Plan for today\nSparse direct solvers:\n\nLU decomposition of sparse matrices\nfill-in of L and U factors\nnested dissection\nspectral clustering in details"
   },
   {
-    "objectID": "lectures/lecture-10/lecture-10.html#sparse-matrices-intro",
-    "href": "lectures/lecture-10/lecture-10.html#sparse-matrices-intro",
+    "objectID": "lectures/lecture-11/lecture-11.html#direct-methods-for-sparse-matrix-lu-decomposition",
+    "href": "lectures/lecture-11/lecture-11.html#direct-methods-for-sparse-matrix-lu-decomposition",
     "title": "Questions?",
-    "section": "Sparse matrices intro",
-    "text": "Sparse matrices intro\n\nFor dense linear algebra problems, we are limited by the memory to store the full matrix, it is N^2 parameters.\nThe class of sparse matrices where most of the elements are zero, allows us at least to store such matrices.\n\nThe question if we can:\n\nsolve linear systems\nsolve eigenvalue problems\n\nwith sparse matrices"
+    "section": "Direct methods for sparse matrix: LU decomposition",
+    "text": "Direct methods for sparse matrix: LU decomposition\n\nWhy sparse linear systems can be solved faster, what is the technique?\nIn the LU factorization of the matrix A the factors L and U can be also sparse:\n\nA = L U\n\nAnd solving linear systems with sparse triangular matrices is very easy.\n\n Note that the inverse matrix to sparse matrix is not sparse! \n\nimport numpy as np\nimport scipy.sparse as spsp\nn = 4\nex = np.ones(n);\n#a = spsp.spdiags(np.vstack((ex,  np.random.rand(n), np.random.rand(n))), [-1, 0, 1], n, n, 'csr'); \na = spsp.spdiags(np.vstack((-ex,  2*ex, -ex)), [-1, 0, 1], n, n, 'csr'); \n\n#a = spsp.spdiags(np.vstack((-ex,  2*ex, -ex), np.random.rand(n)), [-1, 0, 1], n, n, 'csr'); \n\nb = np.array(np.linalg.inv(a.toarray()))\nprint(a.toarray())\nprint(b)\nnp.linalg.svd(b[:3, 4:])[1]\n\n[[ 2. -1.  0.  0.]\n [-1.  2. -1.  0.]\n [ 0. -1.  2. -1.]\n [ 0.  0. -1.  2.]]\n[[0.8 0.6 0.4 0.2]\n [0.6 1.2 0.8 0.4]\n [0.4 0.8 1.2 0.6]\n [0.2 0.4 0.6 0.8]]\n\n\narray([], dtype=float64)"
   },
   {
-    "objectID": "lectures/lecture-10/lecture-10.html#plan-for-the-next-part-of-the-lecture",
-    "href": "lectures/lecture-10/lecture-10.html#plan-for-the-next-part-of-the-lecture",
+    "objectID": "lectures/lecture-11/lecture-11.html#and-the-factors",
+    "href": "lectures/lecture-11/lecture-11.html#and-the-factors",
     "title": "Questions?",
-    "section": "Plan for the next part of the lecture",
-    "text": "Plan for the next part of the lecture\nNow we will talk about sparse matrices, where they arise, how we store them, how we operate with them.\n\nFormats: list of lists and compressed sparse row format, relation to graphs\nMatrix-by-vector product\nParallell processing of sparse matrices\nFast direct solvers for Gaussian elimination (start)"
+    "section": "And the factors…",
+    "text": "And the factors…\nL and U are typically sparse. In the tridiagonal case they are even bidiagonal!\n\nfrom scipy.sparse.linalg import splu\nT = splu(a.tocsc())#, permc_spec=\"NATURAL\")\nprint(T.L.toarray())\n\n[[ 1.   0.   0.   0. ]\n [ 0.   1.   0.   0. ]\n [-0.5 -0.5  1.   0. ]\n [ 0.  -0.5 -0.5  1. ]]\n\n\nInteresting to note that splu without permc_spec will produce permutations which will not yield the bidiagonal factor:\n\nfrom scipy.sparse.linalg import splu\nT = splu(a.tocsc())\nprint(T.L.todense())\nprint(T.perm_c)\n\n[[ 1.          0.          0.          0.          0.          0.\n   0.        ]\n [ 0.          1.          0.          0.          0.          0.\n   0.        ]\n [ 0.          0.          1.          0.          0.          0.\n   0.        ]\n [ 0.          0.          0.          1.          0.          0.\n   0.        ]\n [ 0.          0.          0.          0.          1.          0.\n   0.        ]\n [ 0.          0.          0.          0.          0.19991324  1.\n   0.        ]\n [ 0.81628124  0.14222853 -0.47418756  0.43359091 -0.00845846  0.23571107\n   1.        ]]\n[0 1 2 3 5 4 6]"
   },
   {
-    "objectID": "lectures/lecture-10/lecture-10.html#applications-of-sparse-matrices",
-    "href": "lectures/lecture-10/lecture-10.html#applications-of-sparse-matrices",
+    "objectID": "lectures/lecture-11/lecture-11.html#d-case",
+    "href": "lectures/lecture-11/lecture-11.html#d-case",
     "title": "Questions?",
-    "section": "Applications of sparse matrices",
-    "text": "Applications of sparse matrices\nSparse matrices arise in:\n\npartial differential equations (PDE), mathematical modelling\ngraphs mining, e.g. social networks analysis\nrecommender systems\nwherever relations between objects are “sparse”.\n\n\nSparse matrices are ubiquitous in PDE\nThe simplest partial differential equation (PDE), called\nLaplace equation:\n\n   \\Delta T = \\frac{\\partial^2 T}{\\partial x^2} + \\frac{\\partial^2 T}{\\partial y^2} = f(x,y), \\quad x,y\\in \\Omega\\equiv[0,1]^2,\n\n\n    T_{\\partial\\Omega} = 0.\n\n\nDiscretization\n\\frac{\\partial^2 T}{\\partial x^2} \\approx \\frac{T(x+h) + T(x-h) - 2T(x)}{h^2} + \\mathcal{O}(h^2),\nsame for \\frac{\\partial^2 T}{\\partial y^2}, and we get a linear system.\nFirst, let us consider one-dimensional case:\nAfter the discretization of the one-dimensional Laplace equation with Dirichlet boundary conditions we have\n\\frac{u_{i+1} + u_{i-1} - 2u_i}{h^2} = f_i,\\quad i=1,\\dots,N-1\n u_{0} = u_N = 0 or in the matrix form\n A u = f, and (for n = 5) A=-\\frac{1}{h^2}\\begin{bmatrix} 2 & -1 & 0 & 0 & 0\\\\ -1 & 2 & -1 & 0 &0 \\\\ 0 & -1 & 2& -1 & 0 \\\\ 0 & 0 & -1 & 2  &-1\\\\ 0 & 0 & 0 & -1 & 2 \\end{bmatrix}\nThe matrix is triadiagonal and sparse\n(and also Toeplitz: all elements on the diagonal are the same)\n\n\nBlock structure in 2D\nIn two dimensions, we get equation of the form\n-\\frac{4u_{ij} -u_{(i-1)j} - u_{(i+1)j} - u_{i(j-1)}-u_{i(j+1)}}{h^2} = f_{ij},\nor in the Kronecker product form\n\\Delta_{2D} = \\Delta_{1D} \\otimes I + I \\otimes \\Delta_{1D},\nwhere \\Delta_{1D} is a 1D Laplacian, and \\otimes is a Kronecker product of matrices.\nFor matrices A\\in\\mathbb{R}^{n\\times m} and B\\in\\mathbb{R}^{l\\times k} its Kronecker product is defined as a block matrix of the form\n\n   A\\otimes B = \\begin{bmatrix}a_{11}B & \\dots & a_{1m}B \\\\ \\vdots & \\ddots & \\vdots \\\\ a_{n1}B & \\dots & a_{nm}B\\end{bmatrix}\\in\\mathbb{R}^{nl\\times mk}.\n\nIn the block matrix form the 2D-Laplace matrix can be written in the following form:\nA = -\\frac{1}{h^2}\\begin{bmatrix} \\Delta_1 + 2I & -I & 0 & 0 & 0\\\\ -I & \\Delta_1 + 2I  & -I & 0 &0 \\\\ 0 & -I & \\Delta_1 + 2I & -I & 0 \\\\ 0 & 0 & -I & \\Delta_1 + 2I   &-I\\\\ 0 & 0 & 0 & -I & \\Delta_1 + 2I \\end{bmatrix}\n\nShort list of Kronecker product properties\n\nIt is bilinear\n(A\\otimes B) (C\\otimes D) = AC \\otimes BD\nLet \\mathrm{vec}(X) be vectorization of matrix X columnwise. Then \\mathrm{vec}(AXB) = (B^T \\otimes A) \\mathrm{vec}(X).\n\n\n\n\n\nSparse matrices help in computational graph theory\n\nGraphs are represented with adjacency matrix, which is usually sparse\nNumerical solution of graph theory problems are based on processing of this sparse matrix\n\nCommunity detection and graph clustering\nLearning to rank\nRandom walks\nOthers\n\nExample: probably the largest publicly available hyperlink graph consists of 3.5 billion web pages and 128 billion hyperlinks, more details see here\nMore medium scale graphs to test your algorithms are available in Stanford Large Network Dataset Collection\n\n\n\nSuiteSpare matrix collection (formerly Florida sparse matrix collection)\nMore sparse matrices you can find in SuiteSparse matrix collection which contains all sorts of matrices for different applications.\n\nfrom IPython.display import IFrame\nIFrame(\"http://yifanhu.net/GALLERY/GRAPHS/search.html\", width=700, height=450)\n\n\n        \n        \n\n\n\n\nSparse matrices and deep learning\n\nDNN has a lot of parameters\nSome of them may be redundant\nHow to prune the parameters without significantly accuracy reduction?\nSparse variational dropout method leads to significantly sparse filters in DNN almost without accuracy decreasing: the idea of pruning"
+    "section": "2D-case",
+    "text": "2D-case\nFrom a matrix that comes as a discretization of a two-dimensional problem everything is much worse:\n\nimport scipy as sp\nimport scipy.sparse as spsp\nimport scipy.sparse.linalg\nimport matplotlib.pyplot as plt\n%matplotlib inline\nn = 128\nex = np.ones(n);\nlp1 = sp.sparse.spdiags(np.vstack((ex,  -2*ex, ex)), [-1, 0, 1], n, n, 'csr'); \ne = sp.sparse.eye(n)\nA = sp.sparse.kron(lp1, e) + sp.sparse.kron(e, lp1)\nA = spsp.csc_matrix(A)\nT = spsp.linalg.splu(A)#, permc_spec=\"NATURAL\")\nplt.spy(T.L, marker='.', color='k', markersize=8)\nT.L\n#plt.spy(A, marker='.', color='k', markersize=8)\n\n&lt;Compressed Sparse Column sparse matrix of dtype 'float64'\n    with 610620 stored elements and shape (16384, 16384)&gt;\n\n\n\n\n\n\n\n\n\nFor correct permutation in 2D case the number of nonzeros in L factor grows as \\mathcal{O}(N \\log N). But complexity is \\mathcal{O}(N^{3/2})."
   },
   {
-    "objectID": "lectures/lecture-10/lecture-10.html#sparse-matrix-construction",
-    "href": "lectures/lecture-10/lecture-10.html#sparse-matrix-construction",
+    "objectID": "lectures/lecture-11/lecture-11.html#main-challenge-how-to-make-factors-l-and-u-as-sparse-as-possible",
+    "href": "lectures/lecture-11/lecture-11.html#main-challenge-how-to-make-factors-l-and-u-as-sparse-as-possible",
     "title": "Questions?",
-    "section": "Sparse matrix: construction",
-    "text": "Sparse matrix: construction\n\nWe can create sparse matrix using scipy.sparse package (actually this is not the best sparse matrix package)\nWe can go to really large sizes (at least, to store this matrix in the memory)\n\nPlease note the following functions - Create sparse matrices with given diagonals spdiags - Kronecker product of sparse matrices kron - There is also overloaded arithmectics for sparse matrices\n\nimport numpy as np\nimport scipy as sp\nimport scipy.sparse\nfrom scipy.sparse import csc_matrix, csr_matrix\nimport matplotlib.pyplot as plt\nimport scipy.linalg\nimport scipy.sparse.linalg\n%matplotlib inline\nn = 128\nex = np.ones(n);\nlp1 = sp.sparse.spdiags(np.vstack((ex,  -2*ex, ex)), [-1, 0, 1], n, n, 'csr'); \ne = sp.sparse.eye(n)\nA = sp.sparse.kron(lp1, e) + sp.sparse.kron(e, lp1)\nA = csc_matrix(A)\nplt.spy(A, aspect='equal', marker='.', markersize=5)\n\n\n\n\n\n\n\n\n\nSparsity pattern\n\nThe spy command plots the sparsity pattern of the matrix: the (i, j) pixel is drawn, if the corresponding matrix element is non-zero.\nSparsity pattern is really important for the understanding the complexity of the sparse linear algebra algorithms.\nOften, only the sparsity pattern is needed for the analysis of “how complex” the matrix is.\n\n\n\nSparse matrix: definition\n\nThe definition of “sparse matrix” is that the number of non-zero elements is much less than the total number of elements.\nYou can do the basic linear algebra operations (like solving linear systems at the first place) faster, than if working for with the full matrix."
+    "section": "Main challenge: how to make factors L and U as sparse as possible?",
+    "text": "Main challenge: how to make factors L and U as sparse as possible?"
   },
   {
-    "objectID": "lectures/lecture-10/lecture-10.html#what-we-need-to-find-out-to-see-how-it-actually-works",
-    "href": "lectures/lecture-10/lecture-10.html#what-we-need-to-find-out-to-see-how-it-actually-works",
+    "objectID": "lectures/lecture-11/lecture-11.html#main-tool-to-analyze-factors-sparsity-graph-theory",
+    "href": "lectures/lecture-11/lecture-11.html#main-tool-to-analyze-factors-sparsity-graph-theory",
     "title": "Questions?",
-    "section": "What we need to find out to see how it actually works",
-    "text": "What we need to find out to see how it actually works\n\nQuestion 1: How to store the sparse matrix in memory?\nQuestion 2: How to multiply sparse matrix by vector fast?\nQuestion 3: How to solve linear systems with sparse matrices fast?\n\n\nSparse matrix storage\nThere are many storage formats, important ones:\n\nCOO (Coordinate format)\nLIL (Lists of lists)\nCSR (compressed sparse row)\nCSC (compressed sparse column)\nBlock variants\n\nIn scipy there are constructors for each of these formats, e.g. \nscipy.sparse.lil_matrix(A).\n\nCoordinate format (COO)\nThe simplest format is to use coordinate format to represent the sparse matrix as positions and values of non-zero elements.\ni, j, val\nwhere i, j are integer array of indices, val is the real array of matrix elements.  So we need to store 3\\cdot nnz elements, where nnz denotes number of nonzeroes in the matrix.\nQ: What is good and what is bad in this format?\n\n\nMain disadvantages\n\nIt is not optimal in storage (why?)\nIt is not optimal for matrix-by-vector product (why?)\nIt is not optimal for removing elements as you must make nnz operations to find one element (this is good in LIL format)\n\nFirst two disadvantages are solved by compressed sparse row (CSR) format.\n\n\nCompressed sparse row (CSR)\nIn the CSR format a matrix is stored as 3 different arrays:\nia, ja, sa\nwhere:\n\nia (row start) is an integer array of length n+1\nja (column indices) is an integer array of length nnz\nsa (values) is an real-value array of length nnz\n\n\nSo, we got 2\\cdot{\\bf nnz} + n+1 elements.\n\n\n\nSparse matrices in PyTorch and Tensorflow\n\nPyTorch supports sparse matrices stored in COO format\nIncompletre backward operation for these matrices, see summary here\nTensorflow also supports sparse matrices in COO format\nThe list of supported operations is here and gradient support is also limited\n\n\n\nCSR helps in sparse matrix by vector product (SpMV)\n\n   for i in range(n):\n        \n        for k in range(ia[i]:ia[i+1]):\n            \n            y[i] += sa[k] * x[ja[k]]\nLet us do a short timing test\n\nimport numpy as np\nimport scipy as sp\nimport scipy.sparse\nimport scipy.sparse.linalg\nfrom scipy.sparse import csc_matrix, csr_matrix, coo_matrix\nimport matplotlib.pyplot as plt\n%matplotlib inline\nn = 1024\nex = np.ones(n);\nlp1 = sp.sparse.spdiags(np.vstack((ex,  -2*ex, ex)), [-1, 0, 1], n, n, 'csr'); \ne = sp.sparse.eye(n)\nA = sp.sparse.kron(lp1, e) + sp.sparse.kron(e, lp1)\nA = csr_matrix(A)\nrhs = np.ones(n * n)\nB = coo_matrix(A)\n%timeit A.dot(rhs)\n%timeit B.dot(rhs)\n\n3.24 ms ± 74.4 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n19.7 ms ± 379 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n\n\nAs you see, CSR is faster, and for more unstructured patterns the gain will be larger.\n\n\nSparse matrices and efficiency\n\nSparse matrices give complexity reduction.\n\nBut they are not very good for parallel/GPU implementation.\n\nThey do not give maximal efficiency due to random data access.\n\nTypically, peak efficiency of 10\\%-15\\% is considered good.\n\n\n\nRecall how we measure efficiency of linear algebra operations\nThe standard way to measure the efficiency of linear algebra operations on a particular computing architecture is to use flops (number of floating point operations per second)\nWe can measure peak efficiency of an ordinary matrix-by-vector product.\n\nimport numpy as np\nimport time\nn = 4000\nk = 1400\na = np.random.randn(n, n)\nv = np.random.randn(n, k)\nt = time.time()\nnp.dot(a, v)\nt = time.time() - t\nprint('Time: {0: 3.1e}, Efficiency: {1: 3.1e} Gflops'.\\\n      format(t,  ((k*2 * n ** 2)/t) / 10 ** 9))\n\nTime:  8.8e-02, Efficiency:  5.1e+02 Gflops\n\n\n\nn = 4000000\nk = 10\nex = np.ones(n)\na = sp.sparse.spdiags(np.vstack((ex,  -2*ex, ex)), [-1, 0, 1], n, n, 'csr'); \nrhs = np.random.randn(n, k)\nt = time.time()\na.dot(rhs)\nt = time.time() - t\nprint('Time: {0: 3.1e}, Efficiency: {1: 3.1e} Gflops'.\\\n      format(t,  (3 * n * k) / t / 10 ** 9))\n\nTime:  9.5e-02, Efficiency:  1.3e+00 Gflops\n\n\n\n\nRandom data access and cache misses\n\nInitially all matrix and vector entries are stored in RAM (Random Access Memory)\nIf you want to compute matvec, the part of matrix and vector elements are moved to cache (fast and small capacity memory, see lecture about Strassen algorithm)\nAfter that, CPU takes data from cache to proccess it and then returns result in cache, too\nIf CPU needs some data that is not already in cache, this situation is called cache miss\nIf cache miss happens, the required data is moved from RAM to cache\n\nQ: what if cache does not have free space?\n\nThe larger number of cache misses, the slower computations\n\n\nCSR sparse matrix by vector product\n\n   for i in range(n):\n        \n        for k in range(ia[i]:ia[i+1]):\n            \n            y[i] += sa[k] * x[ja[k]]\n            \n\nWhat part of operands is strongly led cache misses?\n\nHow this issue can be solved?\n\n\n\n\nReordering reduces cache misses\n\nIf ja stores sequential elements, then they will be moved to cache altogether and number of cache misses decreases\nThis happens when sparse matrix is banded or at least block diagonal\nWe can convert given sparse matrix to banded or block diagonal with permutations\nLet P be row permutation matrix and Q be column permutation matrix\nA_1 = PAQ is a matrix, which has less bandwith than A\ny = Ax \\to \\tilde{y} = A_1 \\tilde{x}, where \\tilde{x} = Q^{\\top}x and \\tilde{y} = Py\nSeparated block diagonal form is a cache-oblivious format for sparse matrix by vector product\nIt can be extended for 2D, where separated not only rows, but also columns\n\n\nExample\n\nSBD in 1D \n\n\n\n\nSparse transpose matrix-by-vector product\n\nIn some cases it is important to compute not only Ax for sparse A, but also A^{\\top}x\nMort details will be discussed in the lecture about Krylov methods for non-symmetric linear systems\nTransposing is computationally expensive\nHere is proposed compressed sparse block format of storage appropriate for this case\n\n\nCompressed sparse block (CSB)\n\nSplit matrix in blocks\nStore block indices and indices of data inside each block\nThus, feasible number of bits to store indices\nOrdering of the blocks and inside blocks is impoprtant for parallel implementation\nSwitching between blockrow to blockcolumn makes this format appropriate to transpose matrix by vector product"
+    "section": "Main tool to analyze factors sparsity: graph theory",
+    "text": "Main tool to analyze factors sparsity: graph theory\n\nThe number of nonzeros in LU decomposition has a deep connection to the graph theory.\nnetworkx package can be used to visualize graphs, given only the adjacency matrix.\nIt may even recover to some extend the graph structure.\n\n\nimport networkx as nx\nimport scipy as sp\nn = 3\nex = np.ones(n);\nlp1 = sp.sparse.spdiags(np.vstack((ex,  -2*ex, ex)), [-1, 0, 1], n, n, 'csr'); \ne = sp.sparse.eye(n)\nA = sp.sparse.kron(sp.sparse.kron(lp1, e), e) + sp.sparse.kron(sp.sparse.kron(e, lp1), e) + sp.sparse.kron(sp.sparse.kron(e, e), lp1)\nA = spsp.csc_matrix(A)\nG = nx.Graph(A)\nnx.draw(G, pos=nx.spectral_layout(G))#, node_size=1)"
   },
   {
-    "objectID": "lectures/lecture-10/lecture-10.html#solve-linear-systems-with-sparse-matrices",
-    "href": "lectures/lecture-10/lecture-10.html#solve-linear-systems-with-sparse-matrices",
+    "objectID": "lectures/lecture-11/lecture-11.html#what-is-fill-in",
+    "href": "lectures/lecture-11/lecture-11.html#what-is-fill-in",
     "title": "Questions?",
-    "section": "Solve linear systems with sparse matrices",
-    "text": "Solve linear systems with sparse matrices\n\nDirect methods\n\nLU decomposition\nNumber of reordering techniques to minimize fill-in\n\nKrylov methods\n\nLet us start with small demo of solving sparse linear system…\n\nn = 1024\nex = np.ones(n);\nlp1 = sp.sparse.spdiags(np.vstack((ex,  -2*ex, ex)), [-1, 0, 1], n, n, 'csr'); \ne = sp.sparse.eye(n)\nA = sp.sparse.kron(lp1, e) + sp.sparse.kron(e, lp1)\nA = csr_matrix(A)\nrhs = np.ones(n * n)\nsol = sp.sparse.linalg.spsolve(A, rhs)\n_, (ax1, ax2) = plt.subplots(1, 2)\nax1.plot(sol)\nax1.set_title('Not reshaped solution')\nax2.contourf(sol.reshape((n, n), order='f'))\nax2.set_title('Reshaped solution')\n\nText(0.5, 1.0, 'Reshaped solution')"
+    "section": "What is fill-in?",
+    "text": "What is fill-in?\n\nThe fill-in of a matrix are those entries which change from an initial zero to a nonzero value during the execution of an algorithm.\nThe fill-in is different for different permutations. So, before factorization we need to find reordering which produces the smallest fill-in.\n\nExample\nA = \\begin{bmatrix} * & * & * & * & *\\\\ * & * & 0 & 0 & 0 \\\\ * & 0  & * & 0 & 0 \\\\ * & 0 & 0& * & 0 \\\\ * & 0 & 0& 0 & * \\end{bmatrix} \nIf we eliminate elements from the top to the bottom, then we will obtain dense matrix. However, we could maintain sparsity if elimination was done from the bottom to the top."
   },
   {
-    "objectID": "lectures/lecture-10/lecture-10.html#take-home-message",
-    "href": "lectures/lecture-10/lecture-10.html#take-home-message",
+    "objectID": "lectures/lecture-11/lecture-11.html#example-of-dense-factors-after-lu",
+    "href": "lectures/lecture-11/lecture-11.html#example-of-dense-factors-after-lu",
+    "title": "Questions?",
+    "section": "Example of dense factors after LU",
+    "text": "Example of dense factors after LU\nGiven matrix A=A^*&gt;0 we calculate its Cholesky decomposition A = LL^*.\nFactor L can be dense even if A is sparse:\n\n\\begin{bmatrix} * & * & * & * \\\\ * & * &  &  \\\\ * &  & * &  \\\\ * &  &  & * \\end{bmatrix} =\n\\begin{bmatrix} * &  &  &  \\\\ * & * &  &  \\\\ * & * & * &  \\\\ * & * & * & * \\end{bmatrix}\n\\begin{bmatrix} * & * & * & * \\\\  & * & * & * \\\\  &  & * & * \\\\  &  &  & * \\end{bmatrix}\n\nHow to make factors sparse, i.e. to minimize the fill-in?"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#why-permutations-can-reduce-fill-in-here-the-example",
+    "href": "lectures/lecture-11/lecture-11.html#why-permutations-can-reduce-fill-in-here-the-example",
+    "title": "Questions?",
+    "section": "Why permutations can reduce fill-in? Here the example…",
+    "text": "Why permutations can reduce fill-in? Here the example…\nWe need to find a permutation of indices so that factors are sparse, i.e. we build Cholesky factorisation of PAP^\\top, where P is a permutation matrix.\nFor the example from the previous slide\n\nP \\begin{bmatrix} * & * & * & * \\\\ * & * &  &  \\\\ * &  & * &  \\\\ * &  &  & * \\end{bmatrix} P^\\top =\n\\begin{bmatrix} * &  &  & *  \\\\  & * &  & * \\\\  &  & * & * \\\\ * & * & * & * \\end{bmatrix} =\n\\begin{bmatrix} * &  &  &  \\\\  & * &  &  \\\\  &  & * &  \\\\ * & * & * & * \\end{bmatrix}\n\\begin{bmatrix} * &  &  & *  \\\\  & * &  & * \\\\  &  & * & * \\\\  & &  & * \\end{bmatrix}\n\nwhere\n\nP = \\begin{bmatrix}  &  &  & 1 \\\\  &  & 1 &  \\\\  & 1 &  &  \\\\ 1 &  &  &  \\end{bmatrix}\n\n\nArrowhead form of the matrix gives sparse factors in LU decomposition\n\n\nimport numpy as np\nimport scipy.sparse as spsp\nimport scipy.sparse.linalg as spsplin\nimport scipy.linalg as splin\nimport matplotlib.pyplot as plt\n%matplotlib inline\n\nA = spsp.coo_matrix((np.random.randn(10), ([0, 0, 0, 0, 1, 1, 2, 2, 3, 3], \n                                           [0, 1, 2, 3, 0, 1, 0, 2, 0, 3])))\nprint(\"Original matrix\")\nplt.spy(A)\nplt.show()\nlu = spsplin.splu(A.tocsc(), permc_spec=\"NATURAL\")\nprint(\"L factor\")\nplt.spy(lu.L)\nplt.show()\nprint(\"U factor\")\nplt.spy(lu.U)\nplt.show()\nprint(\"Column permutation:\", lu.perm_c)\nprint(\"Row permutation:\", lu.perm_r)\n\nOriginal matrix\n\n\n\n\n\n\n\n\n\nL factor\n\n\n\n\n\n\n\n\n\nU factor\n\n\n\n\n\n\n\n\n\nColumn permutation: [0 1 2 3]\nRow permutation: [1 3 2 0]"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#block-version-of-appropriate-sparsity-pattern-arrowhead-structure",
+    "href": "lectures/lecture-11/lecture-11.html#block-version-of-appropriate-sparsity-pattern-arrowhead-structure",
+    "title": "Questions?",
+    "section": "Block version of appropriate sparsity pattern (arrowhead structure)",
+    "text": "Block version of appropriate sparsity pattern (arrowhead structure)\n\nPAP^\\top = \\begin{bmatrix} A_{11} &  & A_{13} \\\\  & A_{22} & A_{23} \\\\ A_{31} & A_{32} & A_{33}\\end{bmatrix}\n\nthen\n\nPAP^\\top = \\begin{bmatrix} A_{11} & 0 & 0 \\\\ 0 & A_{22} & 0 \\\\ A_{31} & A_{32} & A_{33} - A_{31}A_{11}^{-1} A_{13} - A_{32}A_{22}^{-1}A_{23} \\end{bmatrix} \\begin{bmatrix}  I & 0 & A_{11}^{-1}A_{13} \\\\ 0 & I & A_{22}^{-1}A_{23} \\\\ 0 & 0 & I\\end{bmatrix}\n\n\nBlock $ A_{33} - A_{31}A_{11}^{-1} A_{13} - A_{32}A_{22}^{-1}A_{23}$ is Schur complement for block diagonal matrix \\begin{bmatrix} A_{11} & 0 \\\\ 0 & A_{22} \\end{bmatrix}\nWe reduce problem to solving smaller linear systems with A_{11} and A_{22}"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#what-we-can-do-to-minimize-fill-in",
+    "href": "lectures/lecture-11/lecture-11.html#what-we-can-do-to-minimize-fill-in",
+    "title": "Questions?",
+    "section": "What we can do to minimize fill-in?",
+    "text": "What we can do to minimize fill-in?\n\nReordering the rows and the columns of the sparse matrix in order to reduce the number of nonzeros in L and U factors is called fill-in minimization.\nUnfortunately, this paper by Rose and Tarjan in 1975 proves that fill-in minimization problem is NP-complete.\nBut, many heuristics exist:\n\nMarkowitz pivoting - order by the product of nonzeros in column and row and stability constraint\nMinimum degree ordering - order by the degree of the vertex\nCuthill–McKee algorithm (and reverse Cuthill-McKee) - reorder to minimize the bandwidth (does not exploit graph representation).\nNested dissection: split the graph into two with minimal number of vertices on the separator (set of vertices removed after we separate the graph into two distinct connected graphs).  Complexity of the algorithm depends on the size of the graph separator. For 1D Laplacian separator contains only 1 vertex, in 2D - \\sqrt{N} vertices.\n\n\n\nHow can we find permutation?\n\nKey idea comes from graph theory\nSparse matrix can be treated as an adjacency matrix of a certain graph: the vertices (i, j) are connected, if the corresponding matrix element is non-zero.\n\n\n\nExample\nGraphs of \\begin{bmatrix} * & * & * & * \\\\ * & * &  &  \\\\ * &  & * &  \\\\ * &  &  & * \\end{bmatrix} and \\begin{bmatrix} * &  &  & *  \\\\  & * &  & * \\\\  &  & * & * \\\\ * & * & * & * \\end{bmatrix} have the following form:\n and \n\nWhy the second ordering is better than the first one?"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#fill-in-upper-bound-minimization-markowitz-pivoting",
+    "href": "lectures/lecture-11/lecture-11.html#fill-in-upper-bound-minimization-markowitz-pivoting",
+    "title": "Questions?",
+    "section": "Fill-in upper bound minimization: Markowitz pivoting",
+    "text": "Fill-in upper bound minimization: Markowitz pivoting\n\nGeneral purpose approach to ordering the elements of sparse matrix that will be eliminated\nThe Markowitz merit for every non-zero element with indices (i, j) is computed as (r_i - 1)(c_j - 1), where r_i is number of nonzeros elements in the i-th row and c_j is a number of non-zero elements in the j-th column\nThis value is an upper abound on the fill-in after eliminating the (i, j) element. Why?\nWe can order elements with respect to these values, select the one with minimum value, eliminate it and update matrix. What about stability?\nThen re-compute these values and repeat the procedure\nThis method gives us the permutations of rows and columns and sparse factors\nMain drawback is efficient supporting number of nnz in every row and column after matrix update without complete re-calculating\nMore details can be found in book Direct Methods for Sparse Matrices by I. S. Duff, A. M. Erisman, and J. K. Reid\nDe facto standard approach in solving Linear programming (LP) problems and their MILP modifications"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#what-if-consider-only-neighbours-we-get-minimal-degree-ordering",
+    "href": "lectures/lecture-11/lecture-11.html#what-if-consider-only-neighbours-we-get-minimal-degree-ordering",
+    "title": "Questions?",
+    "section": "What if consider only neighbours? We get minimal degree ordering!",
+    "text": "What if consider only neighbours? We get minimal degree ordering!\n\nThe idea is to eliminate rows and/or columns with fewer non-zeros, update fill-in and then repeat. How it relates to Markowitz pivoting?\nEfficient implementation is an issue (adding/removing elements).\nCurrent champion is “approximate minimal degree” by Amestoy, Davis, Duff.\nIt is suboptimal even for 2D PDE problems\nSciPy sparse package uses minimal ordering approach for different matrices (A^{\\top}A, A + A^{\\top})"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#but-in-these-methods-we-ignore-the-knowledge-of-good-structure-for-sparse-lu-lets-exploit-it-explicitly-in-the-method",
+    "href": "lectures/lecture-11/lecture-11.html#but-in-these-methods-we-ignore-the-knowledge-of-good-structure-for-sparse-lu-lets-exploit-it-explicitly-in-the-method",
+    "title": "Questions?",
+    "section": "But in these methods we ignore the knowledge of good structure for sparse LU! Let’s exploit it explicitly in the method!",
+    "text": "But in these methods we ignore the knowledge of good structure for sparse LU! Let’s exploit it explicitly in the method!"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#how-to-formalize-reduction-to-block-arrowhead-form",
+    "href": "lectures/lecture-11/lecture-11.html#how-to-formalize-reduction-to-block-arrowhead-form",
+    "title": "Questions?",
+    "section": "How to formalize reduction to block arrowhead form?",
+    "text": "How to formalize reduction to block arrowhead form?\nDefinition. A separator in a graph G is a set S of vertices whose removal leaves at least two connected components.\nSeparator S gives the following ordering for an N-vertex graph G: - Find a separator S, whose removal leaves connected components T_1, T_2, \\ldots, T_k - Number the vertices of S from N − |S| + 1 to N - Recursively, number the vertices of each component: T_1 from 1 to |T_1|, T_2 from |T_1| + 1 to |T_1| + |T_2|, etc - If a component is small enough, enumeration in this component is arbitrarily\n\nSeparator and block arrowhead structure: example\nSeparator for the 2D Laplacian matrix\n\nA_{2D} = I \\otimes A_{1D} + A_{1D} \\otimes I, \\quad A_{1D} = \\mathrm{tridiag}(-1, 2, -1),\n\nis as follows\n \nOnce we have enumerated first indices in \\alpha, then in \\beta and separators indices in \\sigma we get the following matrix\n\nPAP^\\top = \\begin{bmatrix} A_{\\alpha\\alpha} &  & A_{\\alpha\\sigma} \\\\  & A_{\\beta\\beta} & A_{\\beta\\sigma} \\\\ A_{\\sigma\\alpha} & A_{\\sigma\\beta} & A_{\\sigma\\sigma}\\end{bmatrix}\n\nwhich has arrowhrad structure.\n\nThus, the problem of finding permutation was reduced to the problem of finding graph separator!"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#the-method-of-recursive-reduction-to-block-arrowhead-structure-nested-dissection",
+    "href": "lectures/lecture-11/lecture-11.html#the-method-of-recursive-reduction-to-block-arrowhead-structure-nested-dissection",
+    "title": "Questions?",
+    "section": "The method of recursive reduction to block arrowhead structure – Nested dissection",
+    "text": "The method of recursive reduction to block arrowhead structure – Nested dissection\n\nFor blocks A_{\\alpha\\alpha}, A_{\\beta\\beta} we continue splitting recursively.\nWhen the recursion is done, we need to eliminate blocks A_{\\sigma\\alpha} and A_{\\sigma\\beta}.\nThis makes block in the position of A_{\\sigma\\sigma}\\in\\mathbb{R}^{n\\times n} dense.\n\nCalculation of Cholesky of this block costs \\mathcal{O}(n^3) = \\mathcal{O}(N^{3/2}), where N = n^2 is the total number of nodes.\nSo, the complexity is \\mathcal{O}(N^{3/2})"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#packages-for-nested-dissection",
+    "href": "lectures/lecture-11/lecture-11.html#packages-for-nested-dissection",
+    "title": "Questions?",
+    "section": "Packages for nested dissection",
+    "text": "Packages for nested dissection\n\nMUltifrontal Massively Parallel sparse direct Solver (MUMPS)\nPardiso\nUmfpack as part of SuiteSparse\n\nAll of them have interfaces for C/C++, Fortran and Matlab\n\nNested dissection summary\n\nEnumeration: find a separator.\nDivide-and-conquer paradigm\nRecursively process two subsets of vertices after separation\nIn theory, nested dissection gives optimal complexity.\nIn practice, it beats others only for very large problems."
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#separators-in-practice",
+    "href": "lectures/lecture-11/lecture-11.html#separators-in-practice",
+    "title": "Questions?",
+    "section": "Separators in practice",
+    "text": "Separators in practice\n\nComputing separators is not a trivial task.\nGraph partitioning heuristics has been an active research area for many years, often motivated by partitioning for parallel computation.\n\nExisting approaches:\n\nSpectral partitioning (uses eigenvectors of Laplacian matrix of graph) - more details below\nGeometric partitioning (for meshes with specified vertex coordinates) review and analysis\nIterative-swapping ((Kernighan-Lin, 1970), (Fiduccia-Matheysses, 1982)\nBreadth-first search (Lipton, Tarjan 1979)\nMultilevel recursive bisection (heuristic, currently most practical) (review and paper). Package for such kind of partitioning is called METIS, written in C, and available here"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#one-of-the-ways-to-construct-separators-spectral-graph-partitioning",
+    "href": "lectures/lecture-11/lecture-11.html#one-of-the-ways-to-construct-separators-spectral-graph-partitioning",
+    "title": "Questions?",
+    "section": "One of the ways to construct separators – spectral graph partitioning",
+    "text": "One of the ways to construct separators – spectral graph partitioning\n\nThe idea of spectral partitioning goes back to Miroslav Fiedler, who studied connectivity of graphs (paper).\nWe need to split the vertices into two sets.\nConsider +1/-1 labeling of vertices and the cost\n\nE_c(x) = \\sum_{j} \\sum_{i \\in N(j)} (x_i - x_j)^2, \\quad N(j) \\text{ denotes set of neighbours of a node } j. \n\nWe need a balanced partition, thus\n\n\\sum_i x_i =  0 \\quad \\Longleftrightarrow \\quad x^\\top e = 0, \\quad e = \\begin{bmatrix}1 & \\dots & 1\\end{bmatrix}^\\top,\nand since we have +1/-1 labels, we have\n\\sum_i x^2_i = n \\quad \\Longleftrightarrow \\quad \\|x\\|_2^2 = n."
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#graph-laplacian",
+    "href": "lectures/lecture-11/lecture-11.html#graph-laplacian",
+    "title": "Questions?",
+    "section": "Graph Laplacian",
+    "text": "Graph Laplacian\nCost E_c can be written as (check why)\nE_c = (Lx, x)\nwhere L is the graph Laplacian, which is defined as a symmetric matrix with\nL_{ii} = \\mbox{degree of node $i$},\nL_{ij} = -1, \\quad \\mbox{if $i \\ne j$  and there is an edge},\nand 0 otherwise.\n\nRows of L sum to zero, thus there is an eigenvalue 0 and gives trivial eigenvector of all ones.\nEigenvalues are non-negative (why?)."
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#partitioning-as-an-optimization-problem",
+    "href": "lectures/lecture-11/lecture-11.html#partitioning-as-an-optimization-problem",
+    "title": "Questions?",
+    "section": "Partitioning as an optimization problem",
+    "text": "Partitioning as an optimization problem\n\nMinimization of E_c with the mentioned constraints leads to a partitioning that tries to minimize number of edges in a separator, while keeping the partition balanced.\nWe now relax the integer quadratic programming to the continuous quadratic programming\n\nE_c(x) = (Lx, x)\\to \\min_{\\substack{x^\\top e =0, \\\\ \\|x\\|_2^2 = n}}"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#from-fiedler-vector-to-separator",
+    "href": "lectures/lecture-11/lecture-11.html#from-fiedler-vector-to-separator",
+    "title": "Questions?",
+    "section": "From Fiedler vector to separator",
+    "text": "From Fiedler vector to separator\n\nThe solution to the minimization problem is given by the eigenvector (called Fiedler vector) corresponding to the second smallest eigenvalue of the graph Laplacian. Indeed,\n\n\n    \\min_{\\substack{x^\\top e =0, \\\\ \\|x\\|_2^2 = n}} (Lx, x) = n \\cdot \\min_{{x^\\top e =0}} \\frac{(Lx, x)}{(x, x)} = n \\cdot \\min_{{x^\\top e =0}} R(x), \\quad R(x) \\text{ is the Rayleigh quotient}\n\n\nSince e is the eigenvector, corresponding to the smallest eigenvalue, on the space x^\\top e =0 we get the second minimal eigevalue.\nThe sign x_i indicates the partitioning.\nIn computations, we need to find out, how to find this second minimal eigenvalue –– we at least know about power method, but it finds the largest. We will discuss iterative methods for eigenvalue problems later in our course.\nThis is the main goal of the iterative methods for large-scale linear problems, and can be achieved via few matrix-by-vector products.\n\n\nimport numpy as np\n%matplotlib inline\nimport matplotlib.pyplot as plt\nimport networkx as nx\nkn = nx.read_gml('karate.gml')\nprint(\"Number of vertices = {}\".format(kn.number_of_nodes()))\nprint(\"Number of edges = {}\".format(kn.number_of_edges()))\nnx.draw_networkx(kn, node_color=\"red\") #Draw the graph\n\nNumber of vertices = 34\nNumber of edges = 78\n\n\n\n\n\n\n\n\n\n\nimport scipy.sparse.linalg as spsplin\nLaplacian = nx.laplacian_matrix(kn).asfptype()\nplt.spy(Laplacian, markersize=5)\nplt.title(\"Graph laplacian\")\nplt.axis(\"off\")\nplt.show()\neigval, eigvec = spsplin.eigsh(Laplacian, k=3, which=\"SM\")\nprint(\"The 2 smallest eigenvalues =\", eigval)\n\n\n\n\n\n\n\n\nThe 2 smallest eigenvalues = [2.52665709e-17 4.68525227e-01 9.09247664e-01]\n\n\n\n#plt.scatter(np.arange(len(eigvec[:, 1])), np.sign(eigvec[:, 1]))\nplt.scatter(np.arange(len(eigvec[:, 1])), eigvec[:, 1])\n\nplt.show()\nprint(\"Sum of elements in Fiedler vector = {}\".format(np.sum(eigvec[:, 1].real)))\n\n\n\n\n\n\n\n\nSum of elements in Fiedler vector = -8.493206138382448e-15\n\n\n\nnx.draw_networkx(kn, node_color=np.sign(eigvec[:, 1]))\n\n\n\n\n\n\n\n\n\nSummary on demo\n\nHere we call SciPy sparse function to find fixed number of eigenvalues (and eigenvectors) that are smallest (other options are possible)\nDetails of the underlying method we will discuss soon\nFiedler vector gives simple separation of the graph\nTo separate graph on more than two parts you should use eigenvectors of laplacian as feature vectors and run some clustering algorithm, e.g. k-means"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#from-fiedler-vector-to-separator-1",
+    "href": "lectures/lecture-11/lecture-11.html#from-fiedler-vector-to-separator-1",
+    "title": "Questions?",
+    "section": "From Fiedler vector to separator",
+    "text": "From Fiedler vector to separator\n\nElements of eigenvector v corresponding to the second smallest eigenvalue of the Laplacian indicate the partitioning of vertices\nIf we select some small positive \\tau &gt;0, then we can split the vertices in three groups\n\nv_i &lt; -\\tau\nv_i \\in [-\\tau, \\tau]\nv_i &gt; \\tau\n\nAfter that the separator is composed with the vertices corresponding to elements of v such that v_i \\in [-\\tau, \\tau]\nThe size of separator can be tuned by the magnitude of \\tau\nThe distribution of elements in v is important to identify the size of separator\n\n\nFiedler vector and algebraic connectivity of a graph\nDefinition. The algebraic connectivity of a graph is the second-smallest eigenvalue of the Laplacian matrix.\nClaim. The algebraic connectivity of a graph is greater than 0 if and only if a graph is a connected graph."
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#practical-problems",
+    "href": "lectures/lecture-11/lecture-11.html#practical-problems",
+    "title": "Questions?",
+    "section": "Practical problems",
+    "text": "Practical problems\nComputing bisection recursively is expensive.\nAs an alternative, one typically computes multilevel bisection that consists of 3 phases.\n\nGraph coarsening: From a given graph, we join vertices into larger nodes, and get sequences of graphs G_1, \\ldots, G_m.\nAt the coarse level, we do high-quality bisection\nThen, we do uncoarsening: we propagate the splitting from G_k to G_{k-1} and improve the quality of the split by local optimization algorithms (refinement)."
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#practical-problems-2",
+    "href": "lectures/lecture-11/lecture-11.html#practical-problems-2",
+    "title": "Questions?",
+    "section": "Practical problems (2)",
+    "text": "Practical problems (2)\n\nOnce the permutation has been computed, we need to implement the elimination, making use of efficient computational kernels.\nIf in the elemination we will be able to get the elements into blocks, we will be able to use BLAS-3 computations.\nIt is done by supernodal data structures:\nIf adjacent rows have the same sparsity structure, they can be stored in blocks:\nAlso, we can use such structure in efficient computations!\n\nDetails in this survey"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#take-home-message",
+    "href": "lectures/lecture-11/lecture-11.html#take-home-message",
     "title": "Questions?",
     "section": "Take home message",
-    "text": "Take home message\n\nAbout parallel matrix-by-vector product and different blocking.\nCSR format for storage\nCache and parallel issues in sparse matrix processing\nReordering and blocking as a way to solve these issues"
+    "text": "Take home message\n\nSparse matrices & graphs ordering\nOrdering is important for LU fill-in: more details in the next lecture\nMarkowitz pivoting and minimal degree ordering\nOrderings from SciPy sparse package\nSeparators and how do they help in fill-in minimization\nNested dissection idea\nFiedler vector and spectral bipartitioning"
+  },
+  {
+    "objectID": "lectures/lecture-11/lecture-11.html#plan-for-the-next-lecture",
+    "href": "lectures/lecture-11/lecture-11.html#plan-for-the-next-lecture",
+    "title": "Questions?",
+    "section": "Plan for the next lecture",
+    "text": "Plan for the next lecture\n\nBasic iterative methods for solving large linear systems\nConvergence\nAcceleration"
   },
   {
     "objectID": "lectures/lecture-2/lecture-2.html#краткое-содержание-предыдущих-лекцийсеминаров",

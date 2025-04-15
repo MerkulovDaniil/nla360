@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lecture 8: Randomized linear algebra</title>
+<title>Лекция 8: Рандомизированная линейная алгебра</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -146,12 +146,12 @@ window.Quarto = {
 };
 </script>
 
-<meta property="og:title" content="Lecture 8: Randomized linear algebra">
+<meta property="og:title" content="Лекция 8: Рандомизированная линейная алгебра">
 <meta property="og:description" content="">
 <meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-8/gw_matexp.png">
 <meta property="og:image:height" content="900">
 <meta property="og:image:width" content="2124">
-<meta name="twitter:title" content="Lecture 8: Randomized linear algebra">
+<meta name="twitter:title" content="Лекция 8: Рандомизированная линейная алгебра">
 <meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-8/gw_matexp.png">
 <meta name="twitter:image-height" content="900">
@@ -205,60 +205,61 @@ window.Quarto = {
 </header>
 
 
-<section id="brief-recap-of-the-previous-lecture" class="level2">
-<h2 class="anchored" data-anchor-id="brief-recap-of-the-previous-lecture">Brief recap of the previous lecture</h2>
-<p>SVD and algorithms for its computations: divide-and-conquer, QR, Jacobi, bisection.</p>
+<section id="краткий-обзор-предыдущей-лекции" class="level2">
+<h2 class="anchored" data-anchor-id="краткий-обзор-предыдущей-лекции">Краткий обзор предыдущей лекции</h2>
+<p>SVD и алгоритмы для его вычисления: разделяй-и-властвуй, QR, Якоби, бисекция.</p>
 </section>
-<section id="todays-lecture" class="level2">
-<h2 class="anchored" data-anchor-id="todays-lecture">Todays lecture</h2>
-<p>Today, we will do a brief dive into the randomized NLA.</p>
-<p>A good read is (https://arxiv.org/pdf/2002.01387.pdf)</p>
+<section id="сегодняшняя-лекция" class="level2">
+<h2 class="anchored" data-anchor-id="сегодняшняя-лекция">Сегодняшняя лекция</h2>
+<p>Сегодня мы кратко погрузимся в рандомизированную линейную алгебру.</p>
+<p>Хорошим источником для чтения является (https://arxiv.org/pdf/2002.01387.pdf)</p>
 </section>
-<section id="random-numbers" class="level2">
-<h2 class="anchored" data-anchor-id="random-numbers">Random numbers</h2>
-<p>All the computations that we considered up to today were <strong>deterministic</strong>.</p>
-<p>However, reduction of complexity can be done by using randomized (stochastic) computation.</p>
-<p>Example: randomized matrix multiplication.</p>
+<section id="алгоритмы-бывают-детерминированными-и-рандомизированными" class="level2">
+<h2 class="anchored" data-anchor-id="алгоритмы-бывают-детерминированными-и-рандомизированными">Алгоритмы бывают детерминированными и рандомизированными</h2>
+<p>Все вычисления, которые мы рассматривали до сегодняшнего дня, были <strong>детерминированными</strong>.</p>
+<p>Однако снижение сложности может быть достигнуто с помощью рандомизированных (стохастических) вычислений.</p>
+<p>Пример: рандомизированное умножение матриц.</p>
 </section>
-<section id="checking-matrix-equality" class="level2">
-<h2 class="anchored" data-anchor-id="checking-matrix-equality">Checking matrix equality</h2>
-<p>We can check, if $ A B = C$ in <span class="math inline">\mathcal{O}(n^2)</span> operations.</p>
-<p>How?</p>
+<section id="оказывается-мы-можем-проверить-если-a-b-c-за-mathcalon2-операций." class="level2">
+<h2 class="anchored" data-anchor-id="оказывается-мы-можем-проверить-если-a-b-c-за-mathcalon2-операций.">Оказывается, мы можем проверить, если $ A B = C$ за <span class="math inline">\mathcal{O}(n^2)</span> операций.</h2>
+<p>Дано: <span class="math inline">A, B, C</span> — матрицы <span class="math inline">n \times n</span>.</p>
+<p>Задача: проверить, если $ A B = C$.</p>
+<p>Как?</p>
 </section>
-<section id="freivalds-algorithm" class="level2">
-<h2 class="anchored" data-anchor-id="freivalds-algorithm"><a href="https://en.wikipedia.org/wiki/Freivalds%27_algorithm">Freivalds algorithm</a></h2>
-<p>Checks by multiplying by random vectors!</p>
-<p>Complexity is <span class="math inline">k n^2</span>, probability is of failure is <span class="math inline">\frac{1}{2^k}</span>.</p>
+<section id="ответ-дает-алгоритм-фрейвальдса" class="level2">
+<h2 class="anchored" data-anchor-id="ответ-дает-алгоритм-фрейвальдса">Ответ дает <a href="https://en.wikipedia.org/wiki/Freivalds%27_algorithm">Алгоритм Фрейвальдса</a></h2>
+<p>В его основе – проверка на равенство матриц путем умножения на случайные векторы!</p>
+<p>Сложность составляет <span class="math inline">k n^2</span>, вероятность ошибки равна <span class="math inline">\frac{1}{2^k}</span>.</p>
 </section>
-<section id="matrix-multiplication" class="level2">
-<h2 class="anchored" data-anchor-id="matrix-multiplication">Matrix multiplication</h2>
-<p>But can we multiply matrices faster using randomization ideas?</p>
+<section id="а-что-мы-можем-сделать-с-умножением-матриц" class="level2">
+<h2 class="anchored" data-anchor-id="а-что-мы-можем-сделать-с-умножением-матриц">А что мы можем сделать с умножением матриц?</h2>
+<p>Но можем ли мы умножать матрицы быстрее, используя идеи рандомизации?</p>
 </section>
-<section id="randomized-matrix-multiplication" class="level2">
-<h2 class="anchored" data-anchor-id="randomized-matrix-multiplication">Randomized matrix multiplication</h2>
+<section id="можно-построить-быстрое-но-приближенное-умножение-матриц" class="level2">
+<h2 class="anchored" data-anchor-id="можно-построить-быстрое-но-приближенное-умножение-матриц">Можно построить быстрое, но приближенное умножение матриц</h2>
 <ul>
-<li>We know that matrix multiplication <span class="math inline">AB</span> costs <span class="math inline">O(mnp)</span> for matrices <span class="math inline">m \times p</span> and <span class="math inline">p \times n</span></li>
-<li>We can construct approximation of this product by sampling rows and columns of the multipliers</li>
+<li>Мы знаем, что умножение матриц <span class="math inline">AB</span> стоит <span class="math inline">O(mnp)</span> для матриц размеров <span class="math inline">m \times p</span> и <span class="math inline">p \times n</span></li>
+<li>Мы можем построить аппроксимацию этого произведения, выбирая строки и столбцы множителей</li>
 </ul>
-<p><strong>Q:</strong> how to sample them?</p>
-<p><strong>A:</strong> generate probabilities from their norms!</p>
+<p><strong>Вопрос:</strong> как их выбирать?</p>
+<p><strong>Ответ:</strong> генерировать вероятности из их норм!</p>
 <ul>
-<li>So the final approximation expression</li>
+<li>Итак, окончательное выражение аппроксимации</li>
 </ul>
 <p><span class="math display"> AB \approx \sum_{t=1}^k \frac{1}{kp_{i_t}} A^{(i_t)} B_{(i_t)}, </span></p>
-<p>where <span class="math inline">A^{(i_t)}</span> is a column of <span class="math inline">A</span> and <span class="math inline">B_{(i_t)}</span> is a row of <span class="math inline">B</span></p>
+<p>где <span class="math inline">A^{(i_t)}</span> - столбец <span class="math inline">A</span>, а <span class="math inline">B_{(i_t)}</span> - строка <span class="math inline">B</span></p>
 <ul>
-<li>Complexity reduction from <span class="math inline">O(mnp)</span> to <span class="math inline">O(mnk)</span></li>
+<li>Снижение сложности с <span class="math inline">O(mnp)</span> до <span class="math inline">O(mnk)</span></li>
 </ul>
-<div id="cell-9" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="52">
+<div id="cell-9" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">5</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="dv">10000</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">5</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.random.randn(n, p)</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.random.randn(p, m)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> A <span class="op">@</span> A.T</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> A <span class="op">@</span> B</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> randomized_matmul(A, B, k):</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    p1 <span class="op">=</span> A.shape[<span class="dv">1</span>]</span>
@@ -274,7 +275,7 @@ window.Quarto = {
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    A_sketched <span class="op">=</span> A[:, idx]<span class="op">*</span>np.sqrt(p1)<span class="op">/</span>np.sqrt(k)<span class="co">#* d[None, :]</span></span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    B_sketched <span class="op">=</span> B[idx, :]<span class="op">*</span>np.sqrt(p1)<span class="op">/</span>np.sqrt(k) <span class="co">#* d[:, None]</span></span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    C <span class="op">=</span> A_sketched <span class="op">@</span> B_sketched</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(d)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">#print(d)</span></span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> C</span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> randomized_matmul_topk(A, B, K):</span>
@@ -288,119 +289,116 @@ window.Quarto = {
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    C_approx <span class="op">=</span> A_top_k_cols <span class="op">@</span> B_top_k_rows</span>
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> C_approx</span>
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>num_items <span class="op">=</span> <span class="dv">3000</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>num_items <span class="op">=</span> <span class="dv">4000</span></span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>C_appr_samples <span class="op">=</span> randomized_matmul(A, B, num_items)</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(C_appr_samples, <span class="st">'appr'</span>)</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(C, <span class="st">'true'</span>)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co">#print(C_appr_samples, 'appr')</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="co">#print(C, 'true')</span></span>
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>C_appr_topk <span class="op">=</span> randomized_matmul_topk(A, B, num_items)</span>
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.linalg.norm(C_appr_topk <span class="op">-</span> C, <span class="dv">2</span>) <span class="op">/</span> np.linalg.norm(C, <span class="dv">2</span>))</span>
 <span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.linalg.norm(C_appr_samples <span class="op">-</span> C, <span class="dv">2</span>) <span class="op">/</span> np.linalg.norm(C, <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.018257418583505537
-[[-209.68265641]] appr
-[[10065.73675927]] true
-1.012091041179466
-1.020831327246555</code></pre>
+<pre><code>0.47962255089465017
+1.8999756830536187</code></pre>
 </div>
 </div>
 </section>
-<section id="approximation-error" class="level2">
-<h2 class="anchored" data-anchor-id="approximation-error">Approximation error</h2>
+<section id="оценка-ошибки-аппроксимации-потребует-знания-теории-вероятностей" class="level2">
+<h2 class="anchored" data-anchor-id="оценка-ошибки-аппроксимации-потребует-знания-теории-вероятностей">Оценка ошибки аппроксимации потребует знания теории вероятностей</h2>
 <p><span class="math display"> \mathbb{E} [\|AB - CR\|^2_F] = \frac{1}{k} \left(\sum_{i=1}^n \| A^{(i)} \|_2 \| B_{(i)} \|_2\right)^2   - \frac{1}{k}\|AB\|_F^2 </span></p>
 <ul>
-<li><p>Other sampling probabilities are possible</p></li>
-<li><p>Use approximation <span class="math display"> AB \approx ASD(SD)^\top B  = ACC^{\top}B</span> can replace sampling and scaling with another matrix that</p>
+<li><p>Возможны другие вероятности выборки</p></li>
+<li><p>Используйте аппроксимацию <span class="math display"> AB \approx ASD(SD)^\top B  = ACC^{\top}B</span> можно заменить выборку и масштабирование другой матрицей, которая</p>
 <ul>
-<li>reduces the dimension</li>
-<li>sufficiently accurately approximates</li>
+<li>уменьшает размерность</li>
+<li>достаточно точно аппроксимирует</li>
 </ul></li>
 </ul>
-<p><strong>Q:</strong> what matrices can be used?</p>
-<section id="stochastic-trace-estimator" class="level3">
-<h3 class="anchored" data-anchor-id="stochastic-trace-estimator">Stochastic trace estimator</h3>
-<p>Many problems can be written in the form of the trace estimation:</p>
+<p><strong>Вопрос:</strong> какие матрицы можно использовать?</p>
+</section>
+<section id="след-матрицы-тоже-можно-оценить" class="level2">
+<h2 class="anchored" data-anchor-id="след-матрицы-тоже-можно-оценить">След матрицы тоже можно оценить</h2>
+<p>Многие задачи могут быть записаны в форме оценки следа:</p>
 <p><span class="math display">\mathrm{Tr}(A) = \sum_{i} A_{ii}.</span></p>
-<p>Can we compute the trace of the matrix if we only have access to matrix-by-vector products?</p>
+<p>Можем ли мы вычислить след матрицы, если у нас есть доступ только к произведениям матрицы на вектор?</p>
 </section>
-</section>
-<section id="two-estimators" class="level2">
-<h2 class="anchored" data-anchor-id="two-estimators">Two estimators</h2>
-<p>The randomized trace estimators can be computed from the following formula:</p>
+<section id="есть-две-оценки-одна-с-меньшей-дисперсией-другая-с-большей" class="level2">
+<h2 class="anchored" data-anchor-id="есть-две-оценки-одна-с-меньшей-дисперсией-другая-с-большей">Есть две оценки – одна с меньшей дисперсией, другая с большей</h2>
+<p>Рандомизированные оценщики следа могут быть вычислены по следующей формуле:</p>
 <p><span class="math display">\mathrm{Tr}(A) = E_w w^* A w, \quad E ww^* = 1</span></p>
-<p>In order to sample, we pick <span class="math inline">k</span> independent samples of <span class="math inline">w_k</span>, get random variable <span class="math inline">X_k</span> and average the results.</p>
-<p><strong>Girard trace estimator</strong>: Sample <span class="math inline">w \sim N(0, 1)</span></p>
-<p>Then, <span class="math inline">\mathrm{Var} X_k = \frac{2}{k} \sum_{i, j=1}^n \vert A_{ij} \vert^2 = \frac{2}{k} \Vert A \Vert^2_F</span></p>
-<p><strong>Hutchinson trace estimator</strong>: Let <span class="math inline">w</span> be a Rademacher random vector (i.e., elements are sampled from the uniform distribution.</p>
-<p>It gives the minimal variance estimator.</p>
+<p>Для выборки мы берем <span class="math inline">k</span> независимых образцов <span class="math inline">w_k</span>, получаем случайную величину <span class="math inline">X_k</span> и усредняем результаты.</p>
+<p><strong>Оценщик следа Жирара</strong>: Выборка <span class="math inline">w \sim N(0, 1)</span></p>
+<p>Тогда, <span class="math inline">\mathrm{Var} X_k = \frac{2}{k} \sum_{i, j=1}^n \vert A_{ij} \vert^2 = \frac{2}{k} \Vert A \Vert^2_F</span></p>
+<p><strong>Оценщик следа Хатчинсона</strong>: Пусть <span class="math inline">w</span> будет случайным вектором Радемахера (т.е. элементы выбираются из равномерного распределения.</p>
+<p>Он дает оценщик с минимальной дисперсией.</p>
 </section>
-<section id="intdim" class="level2">
-<h2 class="anchored" data-anchor-id="intdim">Intdim</h2>
-<p>The variance of the trace can be estimated in terms of <strong>intrinsic dimension</strong> (intdim) for symmetric positive definite matrices.</p>
-<p>It is defined as <span class="math inline">\mathrm{intdim}(A) = \frac{\mathrm{Tr}(A)}{\Vert A \Vert_F}</span>. It is easy to show that</p>
+<section id="можно-строить-более-тонкие-оценки-на-основе-внутренней-размерности" class="level2">
+<h2 class="anchored" data-anchor-id="можно-строить-более-тонкие-оценки-на-основе-внутренней-размерности">Можно строить более тонкие оценки на основе внутренней размерности</h2>
+<p>Дисперсия следа может быть оценена в терминах <strong>внутренней размерности</strong> (intdim) для симметричных положительно определенных матриц.</p>
+<p>Она определяется как <span class="math inline">\mathrm{intdim}(A) = \frac{\mathrm{Tr}(A)}{\Vert A \Vert_F}</span>. Легко показать, что</p>
 <p><span class="math display">1 \leq \mathrm{intdim}(A) \leq ?.</span></p>
-<p>Then, the probability of the large deviation can be estimated as</p>
+<p>Тогда вероятность большого отклонения может быть оценена как</p>
 <p><span class="math display">P( \vert \overline{X}_k - \mathrm{Tr}(A) \vert \geq t \mathrm{Tr}(A)) \leq \frac{2}{k \mathrm{intdim}(A) t^2}</span></p>
 </section>
-<section id="better-bounds-for-spd-matrices" class="level2">
-<h2 class="anchored" data-anchor-id="better-bounds-for-spd-matrices">Better bounds for SPD matrices</h2>
-<p>If <span class="math inline">A</span> is SPD, then</p>
+<section id="лучшие-оценки-для-симметричных-положительно-определенных-матриц" class="level2">
+<h2 class="anchored" data-anchor-id="лучшие-оценки-для-симметричных-положительно-определенных-матриц">Лучшие оценки для симметричных положительно определенных матриц</h2>
+<p>Если <span class="math inline">A</span> - симметричная положительно определенная матрица, то</p>
 <p><span class="math display">P(\overline{X}_k \geq \tau \mathrm{Tr}(A) ) \leq \exp\left(-1/2 \mathrm{intdim}(A) (\sqrt{\tau} - 1)^2)\right) </span></p>
-<p>Similar inequality holds for the lower bound.</p>
-<p>This estimate is much better.</p>
-<p>An interesting (and often mislooked) property of stochastic estimator is that it comes with a stochastic variance estimate (from samples!)</p>
-<p>Warning: we still need <span class="math inline">\varepsilon^{-2}</span> samples to get to the accuracy <span class="math inline">\varepsilon</span> when using independent samples.</p>
-<section id="distances-between-languages-original-paper" class="level3">
-<h3 class="anchored" data-anchor-id="distances-between-languages-original-paper">Distances between languages (<a href="https://openreview.net/pdf?id=HyebplHYwB">original paper</a>)</h3>
+<p>Аналогичное неравенство справедливо и для нижней границы.</p>
+<p>Эта оценка намного лучше.</p>
+<p>Интересное (и часто упускаемое из виду) свойство стохастического оценщика заключается в том, что он поставляется со стохастической оценкой дисперсии (из выборки!)</p>
+<p>Предупреждение: нам все равно нужно <span class="math inline">\varepsilon^{-2}</span> выборок, чтобы достичь точности <span class="math inline">\varepsilon</span> при использовании независимых выборок.</p>
+<section id="пример-результата-где-применялось-надо-читать-исходную-статью-original-paper" class="level3">
+<h3 class="anchored" data-anchor-id="пример-результата-где-применялось-надо-читать-исходную-статью-original-paper">Пример результата, где применялось – надо читать исходную статью (<a href="https://openreview.net/pdf?id=HyebplHYwB">original paper</a>)</h3>
 <p><img src="./gw_matexp.png"></p>
 </section>
 </section>
-<section id="where-do-stochastic-methods-also-help" class="level2">
-<h2 class="anchored" data-anchor-id="where-do-stochastic-methods-also-help">Where do stochastic methods also help?</h2>
+<section id="где-еще-помогают-стохастические-методы" class="level2">
+<h2 class="anchored" data-anchor-id="где-еще-помогают-стохастические-методы">Где еще помогают стохастические методы?</h2>
 <ul>
 <li>SVD</li>
-<li>Linear systems</li>
+<li>Линейные системы</li>
 </ul>
 </section>
-<section id="randomized-svd-halko-et-al-2011" class="level2">
-<h2 class="anchored" data-anchor-id="randomized-svd-halko-et-al-2011">Randomized SVD (<a href="https://epubs.siam.org/doi/pdf/10.1137/090771806?casa_token=isi3yX3QdPEAAAAA:j-7Qk87vS0kjKqGMLYeX3xg4QxqqyM8s4wn-XGX-SLOS2BRChFDRTPX-x9Hf7ltfuZYg9xsA0zksw1U">Halko et al, 2011</a>)</h2>
+<section id="рандомизированный-svd-halko-et-al-2011" class="level2">
+<h2 class="anchored" data-anchor-id="рандомизированный-svd-halko-et-al-2011">Рандомизированный SVD (<a href="https://epubs.siam.org/doi/pdf/10.1137/090771806?casa_token=isi3yX3QdPEAAAAA:j-7Qk87vS0kjKqGMLYeX3xg4QxqqyM8s4wn-XGX-SLOS2BRChFDRTPX-x9Hf7ltfuZYg9xsA0zksw1U">Halko et al, 2011</a>)</h2>
 <ul>
-<li>Problem statement reminder</li>
+<li>Напоминание о постановке задачи</li>
 </ul>
 <p><span class="math display"> A \approx U\Sigma V^\top, </span></p>
-<p>where <span class="math inline">A</span> is of size <span class="math inline">m \times n</span>, <span class="math inline">U</span> is of size <span class="math inline">m \times k</span> and <span class="math inline">V</span> is of size <span class="math inline">n \times k</span>.</p>
+<p>где <span class="math inline">A</span> имеет размер <span class="math inline">m \times n</span>, <span class="math inline">U</span> имеет размер <span class="math inline">m \times k</span> и <span class="math inline">V</span> имеет размер <span class="math inline">n \times k</span>.</p>
 <ul>
-<li><p>We have already known that the complexity of rank-<span class="math inline">k</span> approximation is <span class="math inline">O(mnk)</span></p></li>
-<li><p>How can we reduce this complexity?</p></li>
-<li><p>Assume we know orthogonal matrix <span class="math inline">Q</span> of size <span class="math inline">m \times k</span> such that</p></li>
+<li><p>Мы уже знаем, что сложность аппроксимации ранга <span class="math inline">k</span> составляет <span class="math inline">O(mnk)</span></p></li>
+<li><p>Как мы можем уменьшить эту сложность?</p></li>
+<li><p>Предположим, что мы знаем ортогональную матрицу <span class="math inline">Q</span> размера <span class="math inline">m \times k</span> такую, что</p></li>
 </ul>
 <p><span class="math display">A \approx Q Q^{\top}A </span></p>
 <ul>
-<li>In other words, columns of <span class="math inline">Q</span> represent orthogonal basis in the column space of matrix <span class="math inline">A</span></li>
-<li>Then the following deterministic steps can give the factors <span class="math inline">U</span>, <span class="math inline">\Sigma</span> and <span class="math inline">V</span> corresponding of SVD of matrix <span class="math inline">A</span>
+<li>Другими словами, столбцы <span class="math inline">Q</span> представляют ортогональный базис в пространстве столбцов матрицы <span class="math inline">A</span></li>
+<li>Тогда следующие детерминированные шаги могут дать факторы <span class="math inline">U</span>, <span class="math inline">\Sigma</span> и <span class="math inline">V</span>, соответствующие SVD матрицы <span class="math inline">A</span>
 <ul>
-<li>Form <span class="math inline">k \times n</span> matrix <span class="math inline">B = Q^{\top}A</span></li>
-<li>Compute SVD of small matrix <span class="math inline">B = \hat{U}\Sigma V^{\top}</span></li>
-<li>Update left singular vectors <span class="math inline">U = Q\hat{U}</span></li>
+<li>Формируем матрицу <span class="math inline">B = Q^{\top}A</span> размера <span class="math inline">k \times n</span></li>
+<li>Вычисляем SVD малой матрицы <span class="math inline">B = \hat{U}\Sigma V^{\top}</span></li>
+<li>Обновляем левые сингулярные векторы <span class="math inline">U = Q\hat{U}</span></li>
 </ul></li>
-<li>If <span class="math inline">k \ll \min(m, n)</span> then these steps can be performed fast</li>
-<li>If <span class="math inline">Q</span> forms exact basis in column space of <span class="math inline">A</span>, then <span class="math inline">U</span>, <span class="math inline">\Sigma</span> and <span class="math inline">V</span> are also exact!</li>
-<li>So, how to compose matrix <span class="math inline">Q</span>?</li>
+<li>Если <span class="math inline">k \ll \min(m, n)</span>, то эти шаги можно выполнить быстро</li>
+<li>Если <span class="math inline">Q</span> образует точный базис в пространстве столбцов <span class="math inline">A</span>, то <span class="math inline">U</span>, <span class="math inline">\Sigma</span> и <span class="math inline">V</span> также будут точными!</li>
+<li>Итак, как составить матрицу <span class="math inline">Q</span>?</li>
 </ul>
-<section id="randomized-approximation-of-basis-in-column-space-of-a" class="level3">
-<h3 class="anchored" data-anchor-id="randomized-approximation-of-basis-in-column-space-of-a">Randomized approximation of basis in column space of <span class="math inline">A</span></h3>
+<section id="рандомизированная-аппроксимация-базиса-в-пространстве-столбцов-a" class="level3">
+<h3 class="anchored" data-anchor-id="рандомизированная-аппроксимация-базиса-в-пространстве-столбцов-a">Рандомизированная аппроксимация базиса в пространстве столбцов <span class="math inline">A</span></h3>
 <ul>
-<li>The main approach
+<li>Основной подход
 <ul>
-<li>Generate <span class="math inline">k + p</span> Gaussian vectors of size <span class="math inline">m</span> and form matrix <span class="math inline">G</span></li>
-<li>Compute <span class="math inline">Y = AG</span></li>
-<li>Compute QR decomposition of <span class="math inline">Y</span> and use the resulting matrix <span class="math inline">Q</span> as an approximation of the basis</li>
+<li>Сгенерировать <span class="math inline">k + p</span> гауссовых векторов размера <span class="math inline">m</span> и сформировать матрицу <span class="math inline">G</span></li>
+<li>Вычислить <span class="math inline">Y = AG</span></li>
+<li>Вычислить QR-разложение <span class="math inline">Y</span> и использовать полученную матрицу <span class="math inline">Q</span> как аппроксимацию базиса</li>
 </ul></li>
-<li>Parameter <span class="math inline">p</span> is called <strong>oversampling</strong> parameter and is needed to improve approximation of the leading <span class="math inline">k</span> left singular vectors later</li>
-<li>Computing of <span class="math inline">Y</span> can be done in parallel</li>
-<li>Here we need only matvec function for matrix <span class="math inline">A</span> rather than its elements as a 2D array - black-box concept!</li>
-<li>Instead of Gaussian random matrix one can use more structured but still random matrix that can be multiplied by <span class="math inline">A</span> fast</li>
+<li>Параметр <span class="math inline">p</span> называется параметром <strong>переизбыточности</strong> и нужен для улучшения аппроксимации ведущих <span class="math inline">k</span> левых сингулярных векторов</li>
+<li>Вычисление <span class="math inline">Y</span> может быть выполнено параллельно</li>
+<li>Здесь нам нужна только функция умножения матрицы <span class="math inline">A</span> на вектор, а не её элементы в виде 2D массива - концепция черного ящика!</li>
+<li>Вместо гауссовой случайной матрицы можно использовать более структурированную, но все еще случайную матрицу, которую можно быстро умножить на <span class="math inline">A</span></li>
 </ul>
-<div id="cell-20" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="4">
+<div id="cell-20" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -439,8 +437,8 @@ window.Quarto = {
 <span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"$\sigma_i / \sigma_0$"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
 <span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> plt.xlabel(<span class="st">"Index of singular value"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Error from randomized SVD 1.7704601563939492e-11
-Error from exact SVD 1.195330542835496e-11</code></pre>
+<pre><code>Error from randomized SVD 2.159802807908629e-11
+Error from exact SVD 1.3779850607705733e-11</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
@@ -469,28 +467,28 @@ Error from exact SVD 1.195330542835496e-11</code></pre>
 </div>
 </div>
 </section>
-<section id="convergence-theorem" class="level3">
-<h3 class="anchored" data-anchor-id="convergence-theorem">Convergence theorem</h3>
-<p>The averaged error of the presented algorithm, where <span class="math inline">k</span> is target rank and <span class="math inline">p</span> is oversampling parameter, is the following - in Frobenius norm</p>
+<section id="можно-получить-нетривиальные-оценки-сходимости" class="level3">
+<h3 class="anchored" data-anchor-id="можно-получить-нетривиальные-оценки-сходимости">Можно получить нетривиальные оценки сходимости</h3>
+<p>Усредненная ошибка представленного алгоритма, где <span class="math inline">k</span> - целевой ранг, а <span class="math inline">p</span> - параметр избыточной выборки, следующая - в норме Фробениуса</p>
 <p><span class="math display"> \mathbb{E}\|A - QQ^{\top}A \|_F \leq \left( 1 + \frac{k}{p-1} \right)^{1/2}\left( \sum_{j=k+1}^{\min(m, n)} \sigma^2_j \right)^{1/2}  </span></p>
 <ul>
-<li>in spectral norm</li>
+<li>в спектральной норме</li>
 </ul>
 <p><span class="math display"> \mathbb{E}\|A - QQ^{\top}A \|_2 \leq \left( 1 + \sqrt{\frac{k}{p-1}} \right)\sigma_{k+1} + \frac{e\sqrt{k+p}}{p}\left( \sum_{j=k+1}^{\min(m, n)} \sigma^2_j \right)^{1/2} </span></p>
-<p>The expectation is taken w.r.t. random matrix <span class="math inline">G</span> generated in the method described above.</p>
-<p>Compare these upper bounds with Eckart-Young theorem. Are these bounds good?</p>
+<p>Математическое ожидание берется относительно случайной матрицы <span class="math inline">G</span>, сгенерированной в методе, описанном выше.</p>
+<p>Сравните эти верхние границы с теоремой Экарта-Янга. Хороши ли эти границы?</p>
 </section>
 </section>
-<section id="accuracy-enhanced-randomized-svd" class="level2">
-<h2 class="anchored" data-anchor-id="accuracy-enhanced-randomized-svd">Accuracy enhanced randomized SVD</h2>
+<section id="умножив-несколько-раз-можно-оценить-больше-сингулярных-значений" class="level2">
+<h2 class="anchored" data-anchor-id="умножив-несколько-раз-можно-оценить-больше-сингулярных-значений">Умножив несколько раз, можно оценить больше сингулярных значений</h2>
 <ul>
-<li>Main idea: power iteration</li>
-<li>If <span class="math inline">A = U \Sigma V^\top</span>, then $A^{(q)} = (AA<sup>{})</sup>qA = U <sup>{2q+1}V</sup>$, where <span class="math inline">q</span> some small natural number, e.g.&nbsp;1 or 2</li>
-<li>Then we sample from <span class="math inline">A^{(q)}</span>, not from <span class="math inline">A</span></li>
+<li>Основная идея: степенной метод</li>
+<li>Если <span class="math inline">A = U \Sigma V^\top</span>, то $A^{(q)} = (AA<sup>{})</sup>qA = U <sup>{2q+1}V</sup>$, где <span class="math inline">q</span> - некоторое небольшое натуральное число, например 1 или 2</li>
+<li>Затем мы делаем выборку из <span class="math inline">A^{(q)}</span>, а не из <span class="math inline">A</span></li>
 </ul>
 <p><span class="math display"> Y = (AA^{\top})^qAG \qquad Q, R = \mathtt{qr}(Y) </span></p>
 <ul>
-<li>The main reason: if singular values of <span class="math inline">A</span> decays slowly, the singular values of <span class="math inline">A^{(q)}</span> will decay faster</li>
+<li>Основная причина: если сингулярные значения <span class="math inline">A</span> убывают медленно, то сингулярные значения <span class="math inline">A^{(q)}</span> будут убывать быстрее</li>
 </ul>
 <div id="cell-24" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span></span>
@@ -514,12 +512,11 @@ Error from exact SVD 1.195330542835496e-11</code></pre>
 </div>
 </div>
 </div>
-<section id="loss-of-accuracy-with-rounding-errors" class="level3">
-<h3 class="anchored" data-anchor-id="loss-of-accuracy-with-rounding-errors">Loss of accuracy with rounding errors</h3>
-<ul>
-<li>Compose <span class="math inline">A^{(q)}</span> naively leads to condition number grows and loss of accuracy</li>
-</ul>
-<p><strong>Q:</strong> how can we battle with this issue?</p>
+</section>
+<section id="потеря-точности-из-за-ошибок-округления-но-мы-сможем-ее-исправить" class="level2">
+<h2 class="anchored" data-anchor-id="потеря-точности-из-за-ошибок-округления-но-мы-сможем-ее-исправить">Потеря точности из-за ошибок округления, но мы сможем ее исправить</h2>
+<p>Наивное составление <span class="math inline">A^{(q)}</span> приводит к росту числа обусловленности и потере точности</p>
+<p><strong>Q:</strong> как мы можем бороться с этой проблемой?</p>
 <p><strong>A:</strong> sequential orthogonalization!</p>
 <div id="cell-27" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> more_accurate_randomized_svd(A, rank, p, q):</span>
@@ -588,137 +585,100 @@ Error from exact SVD 249.3503301291079</code></pre>
 352 ms ± 43.3 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</code></pre>
 </div>
 </div>
-</section>
-<section id="convergence-theorem-1" class="level3">
-<h3 class="anchored" data-anchor-id="convergence-theorem-1">Convergence theorem</h3>
-<p>The presented above method provides the following upper bound</p>
+<section id="здесь-тоже-есть-теорема-сходимости" class="level3">
+<h3 class="anchored" data-anchor-id="здесь-тоже-есть-теорема-сходимости">Здесь тоже есть теорема сходимости</h3>
+<p>Представленный выше метод обеспечивает следующую верхнюю границу</p>
 <p><span class="math display"> \mathbb{E}\|A - QQ^{\top}A \|_2 \leq \left[\left( 1 + \sqrt{\frac{k}{p-1}} \right)\sigma^{2q+1}_{k+1} + \frac{e\sqrt{k+p}}{p}\left( \sum_{j=k+1}^{\min(m, n)} \sigma^{2(2q+1)}_j \right)^{1/2}\right]^{1/(2q+1)} </span></p>
-<p>Consider the worst case, where no lowrank structure exists in the given matrix.</p>
-<p><strong>Q:</strong> what is the degree of suboptimality w.r.t. Eckart-Young theorem?</p>
+<p>Рассмотрим наихудший случай, когда в данной матрице не существует структуры низкого ранга.</p>
+<p><strong>Вопрос:</strong> какова степень субоптимальности по отношению к теореме Экарта-Янга?</p>
 </section>
-<section id="summary-on-randomized-svd" class="level3">
-<h3 class="anchored" data-anchor-id="summary-on-randomized-svd">Summary on randomized SVD</h3>
+<section id="резюме-по-рандомизированному-svd" class="level3">
+<h3 class="anchored" data-anchor-id="резюме-по-рандомизированному-svd">Резюме по рандомизированному SVD</h3>
 <ul>
-<li>Efficient method to get approximate SVD</li>
-<li>Simple to implement</li>
-<li>It can be extended to one-pass method, where matrix <span class="math inline">A</span> is needed only to construct <span class="math inline">Q</span></li>
-<li>It requires only matvec with target matrix</li>
+<li>Эффективный метод для получения приближенного SVD</li>
+<li>Прост в реализации</li>
+<li>Может быть расширен до однопроходного метода, где матрица <span class="math inline">A</span> нужна только для построения <span class="math inline">Q</span></li>
+<li>Требует только умножение матрицы на вектор с целевой матрицей</li>
 </ul>
 </section>
 </section>
-<section id="kaczmarz-method-to-solve-linear-systems" class="level2">
-<h2 class="anchored" data-anchor-id="kaczmarz-method-to-solve-linear-systems">Kaczmarz method to solve linear systems</h2>
+<section id="метод-качмажа-kaczmarz-method-для-решения-линейных-систем-позволяет-приближенно-решать-не-считая-даже-все-строки" class="level2">
+<h2 class="anchored" data-anchor-id="метод-качмажа-kaczmarz-method-для-решения-линейных-систем-позволяет-приближенно-решать-не-считая-даже-все-строки">Метод Качмажа (Kaczmarz method) для решения линейных систем позволяет приближенно решать, не считая даже все строки</h2>
 <ul>
-<li>We have already discussed how to solve overdetermined linear systems <span class="math inline">Ax = f</span> in the least-squares manner
+<li>Мы уже обсудили, как решать переопределенные линейные системы <span class="math inline">Ax = f</span> в смысле наименьших квадратов
 <ul>
-<li>pseudoinverse matrix</li>
-<li>QR decomposition</li>
+<li>псевдообратная матрица</li>
+<li>QR разложение</li>
 </ul></li>
-<li>One more approach is based on iterative projections a.k.a. <strong>Kaczmarz method</strong> or <strong>algebraic reconstruction technique</strong> in compoutational tomography domain</li>
-<li>Instead of solving all equations, pick one randomly, which reads</li>
+<li>Еще один подход основан на итеративных проекциях, известный как <strong>метод Качмажа</strong> или <strong>алгебраический метод реконструкции</strong> в области вычислительной томографии</li>
+<li>Вместо решения всех уравнений, выбираем одно случайно, которое имеет вид</li>
 </ul>
 <p><span class="math display">a^{\top}_i x = f_i,</span></p>
-<p>and given an approximation <span class="math inline">x_k</span> try to find <span class="math inline">x_{k+1}</span> as</p>
+<p>и имея приближение <span class="math inline">x_k</span>, пытаемся найти <span class="math inline">x_{k+1}</span> как</p>
 <p><span class="math display">x_{k+1} = \arg \min_x \frac12 \Vert x - x_k \Vert^2_2, \quad \mbox{s.t.} \quad  a^{\top}_i x = f_i.</span></p>
 <ul>
-<li>A simple analysis gives</li>
+<li>Простой анализ дает</li>
 </ul>
 <p><span class="math display">x_{k+1} = x_k - \frac{(a_i, x_k) - f_i}{(a_i, a_i)} a_i. </span></p>
 <ul>
-<li>A cheap update, but the analysis is quite complicated.</li>
-<li>You can recognize in this method stochastic gradient descent with specific step size equal to <span class="math inline">\frac{1}{\|a_i\|_2^2}</span> for every sample</li>
+<li>Это недорогое обновление, но анализ довольно сложный.</li>
+<li>В этом методе можно узнать стохастический градиентный спуск с определенным размером шага, равным <span class="math inline">\frac{1}{\|a_i\|_2^2}</span> для каждого образца</li>
 </ul>
 </section>
-<section id="convergence-theorem-2" class="level2">
-<h2 class="anchored" data-anchor-id="convergence-theorem-2">Convergence theorem</h2>
+<section id="теорема-сходимости-была-доказана-очень-недавно" class="level2">
+<h2 class="anchored" data-anchor-id="теорема-сходимости-была-доказана-очень-недавно">Теорема сходимости была доказана очень недавно</h2>
 <ul>
-<li>Assume we generate <span class="math inline">i</span> according to the distribution over the all available indices proportional to norms of the rows, i.e.&nbsp;<span class="math inline">\mathbb{P}[i = k] = \frac{\|a_k\|_2^2}{\| A \|^2_F}</span>. This method is called Randomized Kaczmarz method (RKM)</li>
-<li>Why sampling strategy is important here?</li>
-<li>Investigation of the best sampling is provided <a href="https://scholar.harvard.edu/files/yuelu/files/randkac_globalsip14.pdf">here</a></li>
-<li>If the overdetermined linear system is <strong>consistent</strong>, then</li>
+<li>Предположим, что мы генерируем <span class="math inline">i</span> согласно распределению по всем доступным индексам пропорционально нормам строк, т.е. <span class="math inline">\mathbb{P}[i = k] = \frac{\|a_k\|_2^2}{\| A \|^2_F}</span>. Этот метод называется рандомизированным методом Качмажа (RKM)</li>
+<li>Почему стратегия выборки здесь важна?</li>
+<li>Исследование наилучшей выборки представлено <a href="https://scholar.harvard.edu/files/yuelu/files/randkac_globalsip14.pdf">здесь</a></li>
+<li>Если переопределенная линейная система <strong>совместна</strong>, то</li>
 </ul>
 <p><span class="math display"> \mathbb{E}[\|x_{k+1} - x^*\|^2_2] \leq \left(1 - \frac{1}{\kappa^2_F(A)}\right) \mathbb{E}[\|x_{k} - x^*\|^2_2], </span></p>
-<p>where <span class="math inline">\kappa_F(A) = \frac{\| A \|_F}{\sigma_{\min}(A)}</span> and <span class="math inline">\sigma_{\min}(A)</span> is a minimal non-zero singular value of <span class="math inline">A</span>. This result was presented in (<a href="http://people.eecs.berkeley.edu/~brecht/cs294docs/week1/09.Strohmer.pdf">Strohmer and Vershynin, 2009</a>)</p>
+<p>где <span class="math inline">\kappa_F(A) = \frac{\| A \|_F}{\sigma_{\min}(A)}</span> и <span class="math inline">\sigma_{\min}(A)</span> - минимальное ненулевое сингулярное число матрицы <span class="math inline">A</span>. Этот результат был представлен в работе (<a href="http://people.eecs.berkeley.edu/~brecht/cs294docs/week1/09.Strohmer.pdf">Strohmer and Vershynin, 2009</a>)</p>
 <ul>
-<li>If the overdetermined linear system is <strong>inconsistent</strong>, then</li>
+<li>Если переопределенная линейная система <strong>несовместна</strong>, то</li>
 </ul>
 <p><span class="math display"> \mathbb{E}[\|x_{k+1} - x^*\|^2_2] \leq \left(1 - \frac{1}{\kappa^2_F(A)}\right) \mathbb{E}[\|x_{k} - x^*\|^2_2] + \frac{\|r^*\|_2^2}{\| A \|^2_F}, </span></p>
-<p>where <span class="math inline">r^* = Ax^* - f</span></p>
-<section id="inconsistent-overdetermined-linear-system" class="level3">
-<h3 class="anchored" data-anchor-id="inconsistent-overdetermined-linear-system">Inconsistent overdetermined linear system</h3>
-<ul>
-<li><p>It was shown in (<a href="https://arxiv.org/pdf/0902.0958.pdf">Needell, 2010</a>) that RKM does not converge to <span class="math inline">A^{\dagger}f</span></p></li>
-<li><p>To address this issue Randomized extended Kaczmarz method was proposed in (<a href="https://arxiv.org/pdf/1205.5770.pdf">A Zouzias, N Freris, 2013</a>)</p></li>
-<li><p>The main idea is to use two steps of RKM:</p>
-<ul>
-<li>the first step is for system <span class="math inline">A^\top z = 0</span> starting from <span class="math inline">z_k</span></li>
-</ul>
-<p><span class="math display"> z^{k+1} = z^{k} - \frac{a^\top_{:, j} z^k}{\| a_{:, j} \|_2^2}a_{:, j}  </span></p>
-<ul>
-<li>the second step is for system <span class="math inline">Ax = f - z_{k+1}</span> starting from <span class="math inline">x_k</span></li>
-</ul>
-<p><span class="math display">x^{k+1} = x^k - \frac{a_{i,:}x_k - f_i + z^{k+1}_i}{\|a_{i,:}\|_2^2}a^{\top}_{i,:} </span></p></li>
-</ul>
-<p>Here <span class="math inline">a_{:, j}</span> denotes the <span class="math inline">j</span>-th column of <span class="math inline">A</span> and <span class="math inline">a_{i, :}</span> denotes the <span class="math inline">i</span>-th row of <span class="math inline">A</span></p>
-<ul>
-<li>If <span class="math inline">z^0 \in f + \mathrm{range}(A)</span> and <span class="math inline">x^0 \in \mathrm{range}(A^\top)</span>, then REK converges exponentially to <span class="math inline">A^{\dagger}f</span></li>
-</ul>
+<p>где <span class="math inline">r^* = Ax^* - f</span></p>
 </section>
-</section>
-<section id="sampling-and-sketching" class="level2">
-<h2 class="anchored" data-anchor-id="sampling-and-sketching">Sampling and sketching</h2>
+<section id="хотелось-бы-поговорить-о-скетчинге-но-это-уже-другая-история" class="level2">
+<h2 class="anchored" data-anchor-id="хотелось-бы-поговорить-о-скетчинге-но-это-уже-другая-история">Хотелось бы поговорить о скетчинге, но это уже другая история</h2>
 <ul>
-<li>Sampling of a particular row can be considered as a particular case of more general approach called <strong>sketching</strong></li>
-<li>Idea: replace matrix <span class="math inline">A</span> with another matrix <span class="math inline">SA</span>, where matrix <span class="math inline">SA</span> has significantly smaller number of rows but preserves some important properties of matrix <span class="math inline">A</span></li>
-<li>Possible choices:
+<li>Выборка определенной строки может рассматриваться как частный случай более общего подхода, называемого <strong>скетчингом</strong></li>
+<li>Идея: заменить матрицу <span class="math inline">A</span> другой матрицей <span class="math inline">SA</span>, где матрица <span class="math inline">SA</span> имеет значительно меньшее количество строк, но сохраняет некоторые важные свойства матрицы <span class="math inline">A</span></li>
+<li>Возможные варианты:
 <ul>
-<li>random projection</li>
-<li>random row selection</li>
+<li>случайная проекция</li>
+<li>случайный выбор строк</li>
 </ul></li>
-<li>Example: linear least squares problem <span class="math inline">\|Ax - b\|_2^2 \to \min_x</span> transforms to <span class="math inline">\| (SA)y - Sb \|_2^2 \to \min_y</span> and we expect that <span class="math inline">x \approx y</span></li>
-<li><a href="https://pdos.csail.mit.edu/~petar/papers/blendenpik-v1.pdf">Blendenpick</a> solver is based on that idea and outperforms LAPACK routine</li>
-<li>More details see in <a href="https://researcher.watson.ibm.com/researcher/files/us-dpwoodru/wNow3.pdf">Sketching as a Tool for Numerical Linear Algebra</a> by D. Woodruff</li>
+<li>Пример: задача линейных наименьших квадратов <span class="math inline">\|Ax - b\|_2^2 \to \min_x</span> преобразуется в <span class="math inline">\| (SA)y - Sb \|_2^2 \to \min_y</span>, и мы ожидаем, что <span class="math inline">x \approx y</span></li>
+<li>Решатель <a href="https://pdos.csail.mit.edu/~petar/papers/blendenpik-v1.pdf">Blendenpick</a> основан на этой идее и превосходит по производительности процедуру LAPACK</li>
+<li>Более подробную информацию см. в работе <a href="https://researcher.watson.ibm.com/researcher/files/us-dpwoodru/wNow3.pdf">Sketching as a Tool for Numerical Linear Algebra</a> автора D. Woodruff</li>
 </ul>
-</section>
-<section id="coherence" class="level2">
-<h2 class="anchored" data-anchor-id="coherence">Coherence</h2>
-<p>The key idea is the coherence of the matrix.</p>
-<p>Let <span class="math inline">A</span> be <span class="math inline">n \times r</span> and <span class="math inline">U</span> be an orthogonal matrix whose columns form the basis of the column space of <span class="math inline">A</span>.</p>
-<p>Then, coherence is defined as</p>
-<p><span class="math display">\mu(A) = \max \Vert U_{i, *} \Vert^2</span></p>
-<p>Coherence is always smaller than <span class="math inline">1</span> and bigger than <span class="math inline">\frac{r}{n}</span>, it has nothing to do with the condition number.</p>
-<p>What does it mean?</p>
-</section>
-<section id="coherence-1" class="level2">
-<h2 class="anchored" data-anchor-id="coherence-1">Coherence</h2>
-<p>Small coherence means, that sampling rows uniformly gives a good preconditioner (will be covered later in the course, and why it is important)</p>
-<p>One can do <span class="math inline">S A = QR</span>, and look at the condition number of <span class="math inline">AR^{-1}</span>.</p>
-<section id="summary-on-randomized-methods-in-solving-linear-systems" class="level3">
-<h3 class="anchored" data-anchor-id="summary-on-randomized-methods-in-solving-linear-systems">Summary on randomized methods in solving linear systems</h3>
+<section id="резюме-по-рандомизированным-методам-решения-линейных-систем" class="level3">
+<h3 class="anchored" data-anchor-id="резюме-по-рандомизированным-методам-решения-линейных-систем">Резюме по рандомизированным методам решения линейных систем</h3>
 <ul>
-<li>Easy to use family of methods</li>
-<li>Especially useful in problems with streaming data</li>
-<li>Existing theoretical bounds for convergence</li>
-<li>Many interpretations in different domains (SGD in deep learning, ART in computational tomography)</li>
+<li>Семейство методов, простых в использовании</li>
+<li>Особенно полезны в задачах с потоковыми данными</li>
+<li>Существуют теоретические границы сходимости</li>
+<li>Множество интерпретаций в различных областях (SGD в глубоком обучении, ART в вычислительной томографии)</li>
 </ul>
 </section>
-<section id="summary-on-randomized-matmul" class="level3">
-<h3 class="anchored" data-anchor-id="summary-on-randomized-matmul">Summary on randomized matmul</h3>
+<section id="резюме-по-рандомизированному-матричному-умножению" class="level3">
+<h3 class="anchored" data-anchor-id="резюме-по-рандомизированному-матричному-умножению">Резюме по рандомизированному матричному умножению</h3>
 <ul>
-<li>Simple method to get approximation of result</li>
-<li>Can be used if the high accuracy is not crucial</li>
-<li>Especially useful for large dense matrices</li>
+<li>Простой метод для получения приближенного результата</li>
+<li>Может использоваться, если высокая точность не критична</li>
+<li>Особенно полезен для больших плотных матриц</li>
 </ul>
 </section>
 </section>
-<section id="next-lecture" class="level2">
-<h2 class="anchored" data-anchor-id="next-lecture">Next lecture</h2>
+<section id="следующая-лекция" class="level2">
+<h2 class="anchored" data-anchor-id="следующая-лекция">Следующая лекция</h2>
 <ul>
-<li>We start <strong>sparse and/or structured</strong> NLA.</li>
+<li>Мы начинаем изучение <strong>разреженной и/или структурированной</strong> численной линейной алгебры.</li>
 </ul>
-</section>
-<section id="questions" class="level1">
-<h1>Questions?</h1>
+<p>Вопросы?</p>
 
 
 </section>
