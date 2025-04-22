@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lecture 11: Sparse direct solvers</title>
+<title>Лекция 10: Прямые методы решения разреженных линейных систем</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -146,14 +146,14 @@ window.Quarto = {
 };
 </script>
 
-<meta property="og:title" content="Lecture 11: Sparse direct solvers">
+<meta property="og:title" content="Лекция 10: Прямые методы решения разреженных линейных систем">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-11/lecture-11_files/figure-html/cell-5-output-2.png">
+<meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-10/lecture-10_files/figure-html/cell-5-output-2.png">
 <meta property="og:image:height" content="418">
 <meta property="og:image:width" content="457">
-<meta name="twitter:title" content="Lecture 11: Sparse direct solvers">
+<meta name="twitter:title" content="Лекция 10: Прямые методы решения разреженных линейных систем">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-11/lecture-11_files/figure-html/cell-5-output-2.png">
+<meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-10/lecture-10_files/figure-html/cell-5-output-2.png">
 <meta name="twitter:image-height" content="418">
 <meta name="twitter:image-width" content="457">
 <meta name="twitter:card" content="summary_large_image">
@@ -205,49 +205,28 @@ window.Quarto = {
 </header>
 
 
-<section id="recap-of-the-previous-part" class="level2">
-<h2 class="anchored" data-anchor-id="recap-of-the-previous-part">Recap of the previous part</h2>
+<section id="краткий-обзор-предыдущей-части" class="level2">
+<h2 class="anchored" data-anchor-id="краткий-обзор-предыдущей-части">Краткий обзор предыдущей части</h2>
 <ul>
-<li>Distributed memory for huge dense matrices</li>
-<li>Sparse matrix formats (COO, CSR, CSC)</li>
-<li>Matrix-by-vector product</li>
-<li>Inefficiency of sparse matrix processing</li>
-<li>Approaches to reduce cache misses</li>
+<li>Распределенная память для огромных плотных матриц</li>
+<li>Форматы разреженных матриц (COO, CSR, CSC)</li>
+<li>Произведение матрицы на вектор</li>
+<li>Неэффективность обработки разреженных матриц</li>
+<li>Подходы к уменьшению промахов кэша</li>
 </ul>
 </section>
-<section id="plan-for-this-week-how-to-solve-large-sparse-linear-systems" class="level2">
-<h2 class="anchored" data-anchor-id="plan-for-this-week-how-to-solve-large-sparse-linear-systems">Plan for this week: how to solve large sparse linear systems</h2>
+<section id="прямые-методы-для-разреженных-матриц-lu-разложение" class="level2">
+<h2 class="anchored" data-anchor-id="прямые-методы-для-разреженных-матриц-lu-разложение">Прямые методы для разреженных матриц: LU разложение</h2>
 <ul>
-<li>Direct methods (start today and continue in the next lecture)
-<ul>
-<li>LU decomposition</li>
-<li>Number of reordering techniques to minimize fill-in</li>
-</ul></li>
-<li>Krylov methods</li>
-</ul>
-</section>
-<section id="plan-for-today" class="level2">
-<h2 class="anchored" data-anchor-id="plan-for-today">Plan for today</h2>
-<p>Sparse direct solvers:</p>
-<ul>
-<li>LU decomposition of sparse matrices</li>
-<li>fill-in of <span class="math inline">L</span> and <span class="math inline">U</span> factors</li>
-<li>nested dissection</li>
-<li>spectral clustering in details</li>
-</ul>
-</section>
-<section id="direct-methods-for-sparse-matrix-lu-decomposition" class="level2">
-<h2 class="anchored" data-anchor-id="direct-methods-for-sparse-matrix-lu-decomposition">Direct methods for sparse matrix: LU decomposition</h2>
-<ul>
-<li><p>Why sparse linear systems can be solved faster, what is the technique?</p></li>
-<li><p>In the LU factorization of the matrix <span class="math inline">A</span> the factors <span class="math inline">L</span> and <span class="math inline">U</span> can be also sparse:</p></li>
+<li><p>Почему разреженные линейные системы можно решать быстрее, какова методика?</p></li>
+<li><p>В LU разложении матрицы <span class="math inline">A</span> множители <span class="math inline">L</span> и <span class="math inline">U</span> также могут быть разреженными:</p></li>
 </ul>
 <p><span class="math display">A = L U</span></p>
 <ul>
-<li>And solving linear systems with <strong>sparse</strong> triangular matrices is very easy.</li>
+<li>И решение линейных систем с <strong>разреженными</strong> треугольными матрицами очень простое.</li>
 </ul>
-<p><span style="color:red"> Note that the inverse matrix to sparse matrix is not sparse! </span></p>
-<div id="cell-6" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="13">
+<p><span style="color:red"> Обратите внимание, что обратная матрица к разреженной матрице не является разреженной! </span></p>
+<div id="cell-4" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> spsp</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">4</span></span>
@@ -276,10 +255,10 @@ window.Quarto = {
 </div>
 </div>
 </section>
-<section id="and-the-factors" class="level2">
-<h2 class="anchored" data-anchor-id="and-the-factors">And the factors…</h2>
-<p><span class="math inline">L</span> and <span class="math inline">U</span> are typically sparse. In the tridiagonal case they are even bidiagonal!</p>
-<div id="cell-8" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="15">
+<section id="и-множители" class="level2">
+<h2 class="anchored" data-anchor-id="и-множители">И множители…</h2>
+<p><span class="math inline">L</span> и <span class="math inline">U</span> обычно разреженные. В трехдиагональном случае они даже бидиагональные!</p>
+<div id="cell-6" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.sparse.linalg <span class="im">import</span> splu</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> splu(a.tocsc())<span class="co">#, permc_spec="NATURAL")</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(T.L.toarray())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -290,8 +269,8 @@ window.Quarto = {
  [ 0.  -0.5 -0.5  1. ]]</code></pre>
 </div>
 </div>
-<p>Interesting to note that <code>splu</code> without <code>permc_spec</code> will produce permutations which will not yield the bidiagonal factor:</p>
-<div id="cell-10" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="6">
+<p>Интересно отметить, что <code>splu</code> без параметра <code>permc_spec</code> будет создавать перестановки, которые не дадут бидиагональный множитель:</p>
+<div id="cell-8" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.sparse.linalg <span class="im">import</span> splu</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> splu(a.tocsc())</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(T.L.todense())</span>
@@ -318,7 +297,7 @@ window.Quarto = {
 <section id="d-case" class="level2">
 <h2 class="anchored" data-anchor-id="d-case">2D-case</h2>
 <p>From a matrix that comes as a discretization of a two-dimensional problem everything is much worse:</p>
-<div id="cell-12" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="20">
+<div id="cell-10" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;fragment&quot;}" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> spsp</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse.linalg</span>
@@ -341,24 +320,24 @@ window.Quarto = {
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-11_files/figure-html/cell-5-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-10_files/figure-html/cell-5-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>For correct permutation in 2D case the number of nonzeros in <span class="math inline">L</span> factor grows as <span class="math inline">\mathcal{O}(N \log N)</span>. But complexity is <span class="math inline">\mathcal{O}(N^{3/2})</span>.</p>
+<p>Для правильной перестановки в двумерном случае количество ненулевых элементов в множителе <span class="math inline">L</span> растет как <span class="math inline">\mathcal{O}(N \log N)</span>. Но сложность составляет <span class="math inline">\mathcal{O}(N^{3/2})</span>.</p>
 </section>
-<section id="main-challenge-how-to-make-factors-l-and-u-as-sparse-as-possible" class="level2">
-<h2 class="anchored" data-anchor-id="main-challenge-how-to-make-factors-l-and-u-as-sparse-as-possible">Main challenge: how to make factors <span class="math inline">L</span> and <span class="math inline">U</span> as sparse as possible?</h2>
+<section id="основная-задача-как-сделать-множители-l-и-u-максимально-разреженными" class="level2">
+<h2 class="anchored" data-anchor-id="основная-задача-как-сделать-множители-l-и-u-максимально-разреженными">Основная задача: как сделать множители <span class="math inline">L</span> и <span class="math inline">U</span> максимально разреженными?</h2>
 </section>
-<section id="main-tool-to-analyze-factors-sparsity-graph-theory" class="level2">
-<h2 class="anchored" data-anchor-id="main-tool-to-analyze-factors-sparsity-graph-theory">Main tool to analyze factors sparsity: graph theory</h2>
+<section id="основной-инструмент-для-анализа-разреженности-множителей-теория-графов" class="level2">
+<h2 class="anchored" data-anchor-id="основной-инструмент-для-анализа-разреженности-множителей-теория-графов">Основной инструмент для анализа разреженности множителей: теория графов</h2>
 <ul>
-<li><p>The number of nonzeros in LU decomposition has a deep connection to the graph theory.</p></li>
-<li><p><code>networkx package</code> can be used to visualize graphs, given only the adjacency matrix.</p></li>
-<li><p>It may even recover to some extend the graph structure.</p></li>
+<li><p>Количество ненулевых элементов в LU-разложении имеет глубокую связь с теорией графов.</p></li>
+<li><p>Пакет <code>networkx</code> может использоваться для визуализации графов, имея только матрицу смежности.</p></li>
+<li><p>Он даже может в некоторой степени восстановить структуру графа.</p></li>
 </ul>
-<div id="cell-16" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="13">
+<div id="cell-14" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">3</span></span>
@@ -372,51 +351,51 @@ window.Quarto = {
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-11_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-10_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="what-is-fill-in" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-fill-in">What is fill-in?</h2>
+<section id="что-такое-заполнение" class="level2">
+<h2 class="anchored" data-anchor-id="что-такое-заполнение">Что такое заполнение?</h2>
 <ul>
-<li><p>The fill-in of a matrix are those entries which change from an initial zero to a nonzero value during the execution of an algorithm.</p></li>
-<li><p>The fill-in is different for different permutations. So, before factorization we need to find reordering which produces the smallest fill-in.</p></li>
+<li><p>Заполнение матрицы - это те элементы, которые изменяются с нулевого на ненулевое значение во время выполнения алгоритма.</p></li>
+<li><p>Заполнение различно для разных перестановок. Поэтому перед факторизацией нам нужно найти такое переупорядочение, которое даёт наименьшее заполнение.</p></li>
 </ul>
-<p><strong>Example</strong></p>
+<p><strong>Пример</strong></p>
 <p><span class="math display">A = \begin{bmatrix} * &amp; * &amp; * &amp; * &amp; *\\ * &amp; * &amp; 0 &amp; 0 &amp; 0 \\ * &amp; 0  &amp; * &amp; 0 &amp; 0 \\ * &amp; 0 &amp; 0&amp; * &amp; 0 \\ * &amp; 0 &amp; 0&amp; 0 &amp; * \end{bmatrix} </span></p>
-<p>If we eliminate elements from the top to the bottom, then we will obtain dense matrix. However, we could maintain sparsity if elimination was done from the bottom to the top.</p>
+<p>Если мы исключаем элементы сверху вниз, то получим плотную матрицу. Однако мы могли бы сохранить разреженность, если бы исключение выполнялось снизу вверх.</p>
 </section>
-<section id="example-of-dense-factors-after-lu" class="level2">
-<h2 class="anchored" data-anchor-id="example-of-dense-factors-after-lu">Example of dense factors after LU</h2>
-<p>Given matrix <span class="math inline">A=A^*&gt;0</span> we calculate its Cholesky decomposition <span class="math inline">A = LL^*</span>.</p>
-<p>Factor <span class="math inline">L</span> can be dense even if <span class="math inline">A</span> is sparse:</p>
+<section id="пример-плотных-множителей-после-lu-разложения" class="level2">
+<h2 class="anchored" data-anchor-id="пример-плотных-множителей-после-lu-разложения">Пример плотных множителей после LU-разложения</h2>
+<p>Для матрицы <span class="math inline">A=A^*&gt;0</span> мы вычисляем её разложение Холецкого <span class="math inline">A = LL^*</span>.</p>
+<p>Множитель <span class="math inline">L</span> может быть плотным, даже если <span class="math inline">A</span> разреженная:</p>
 <p><span class="math display">
 \begin{bmatrix} * &amp; * &amp; * &amp; * \\ * &amp; * &amp;  &amp;  \\ * &amp;  &amp; * &amp;  \\ * &amp;  &amp;  &amp; * \end{bmatrix} =
 \begin{bmatrix} * &amp;  &amp;  &amp;  \\ * &amp; * &amp;  &amp;  \\ * &amp; * &amp; * &amp;  \\ * &amp; * &amp; * &amp; * \end{bmatrix}
 \begin{bmatrix} * &amp; * &amp; * &amp; * \\  &amp; * &amp; * &amp; * \\  &amp;  &amp; * &amp; * \\  &amp;  &amp;  &amp; * \end{bmatrix}
 </span></p>
-<p>How to make factors sparse, i.e.&nbsp;to minimize the <strong>fill-in</strong>?</p>
+<p>Как сделать множители разреженными, т.е. минимизировать <strong>заполнение</strong>?</p>
 </section>
-<section id="why-permutations-can-reduce-fill-in-here-the-example" class="level2">
-<h2 class="anchored" data-anchor-id="why-permutations-can-reduce-fill-in-here-the-example">Why permutations can reduce fill-in? Here the example…</h2>
-<p>We need to find a permutation of indices so that factors are sparse, i.e.&nbsp;we build Cholesky factorisation of <span class="math inline">PAP^\top</span>, where <span class="math inline">P</span> is a permutation matrix.</p>
-<p>For the example from the previous slide</p>
+<section id="почему-перестановки-могут-уменьшить-заполнение-вот-пример" class="level2">
+<h2 class="anchored" data-anchor-id="почему-перестановки-могут-уменьшить-заполнение-вот-пример">Почему перестановки могут уменьшить заполнение? Вот пример…</h2>
+<p>Нам нужно найти перестановку индексов так, чтобы множители были разреженными, т.е. мы строим разложение Холецкого для <span class="math inline">PAP^\top</span>, где <span class="math inline">P</span> - матрица перестановки.</p>
+<p>Для примера из предыдущего слайда</p>
 <p><span class="math display">
 P \begin{bmatrix} * &amp; * &amp; * &amp; * \\ * &amp; * &amp;  &amp;  \\ * &amp;  &amp; * &amp;  \\ * &amp;  &amp;  &amp; * \end{bmatrix} P^\top =
 \begin{bmatrix} * &amp;  &amp;  &amp; *  \\  &amp; * &amp;  &amp; * \\  &amp;  &amp; * &amp; * \\ * &amp; * &amp; * &amp; * \end{bmatrix} =
 \begin{bmatrix} * &amp;  &amp;  &amp;  \\  &amp; * &amp;  &amp;  \\  &amp;  &amp; * &amp;  \\ * &amp; * &amp; * &amp; * \end{bmatrix}
 \begin{bmatrix} * &amp;  &amp;  &amp; *  \\  &amp; * &amp;  &amp; * \\  &amp;  &amp; * &amp; * \\  &amp; &amp;  &amp; * \end{bmatrix}
 </span></p>
-<p>where</p>
+<p>где</p>
 <p><span class="math display">
 P = \begin{bmatrix}  &amp;  &amp;  &amp; 1 \\  &amp;  &amp; 1 &amp;  \\  &amp; 1 &amp;  &amp;  \\ 1 &amp;  &amp;  &amp;  \end{bmatrix}
 </span></p>
 <ul>
-<li>Arrowhead form of the matrix gives sparse factors in LU decomposition</li>
+<li>Форма матрицы в виде стрелки дает разреженные множители в LU-разложении</li>
 </ul>
-<div id="cell-20" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="13">
+<div id="cell-18" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> spsp</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse.linalg <span class="im">as</span> spsplin</span>
@@ -444,7 +423,7 @@ P = \begin{bmatrix}  &amp;  &amp;  &amp; 1 \\  &amp;  &amp; 1 &amp;  \\  &amp; 1
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-11_files/figure-html/cell-7-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-10_files/figure-html/cell-7-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -454,7 +433,7 @@ P = \begin{bmatrix}  &amp;  &amp;  &amp; 1 \\  &amp;  &amp; 1 &amp;  \\  &amp; 1
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-11_files/figure-html/cell-7-output-4.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-10_files/figure-html/cell-7-output-4.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -464,7 +443,7 @@ P = \begin{bmatrix}  &amp;  &amp;  &amp; 1 \\  &amp;  &amp; 1 &amp;  \\  &amp; 1
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-11_files/figure-html/cell-7-output-6.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-10_files/figure-html/cell-7-output-6.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -474,193 +453,193 @@ Row permutation: [1 3 2 0]</code></pre>
 </div>
 </div>
 </section>
-<section id="block-version-of-appropriate-sparsity-pattern-arrowhead-structure" class="level2">
-<h2 class="anchored" data-anchor-id="block-version-of-appropriate-sparsity-pattern-arrowhead-structure">Block version of appropriate sparsity pattern (arrowhead structure)</h2>
+<section id="блочная-версия-подходящей-структуры-разреженности-структура-в-виде-стрелки" class="level2">
+<h2 class="anchored" data-anchor-id="блочная-версия-подходящей-структуры-разреженности-структура-в-виде-стрелки">Блочная версия подходящей структуры разреженности (структура в виде стрелки)</h2>
 <p><span class="math display">
 PAP^\top = \begin{bmatrix} A_{11} &amp;  &amp; A_{13} \\  &amp; A_{22} &amp; A_{23} \\ A_{31} &amp; A_{32} &amp; A_{33}\end{bmatrix}
 </span></p>
-<p>then</p>
+<p>тогда</p>
 <p><span class="math display">
 PAP^\top = \begin{bmatrix} A_{11} &amp; 0 &amp; 0 \\ 0 &amp; A_{22} &amp; 0 \\ A_{31} &amp; A_{32} &amp; A_{33} - A_{31}A_{11}^{-1} A_{13} - A_{32}A_{22}^{-1}A_{23} \end{bmatrix} \begin{bmatrix}  I &amp; 0 &amp; A_{11}^{-1}A_{13} \\ 0 &amp; I &amp; A_{22}^{-1}A_{23} \\ 0 &amp; 0 &amp; I\end{bmatrix}
 </span></p>
 <ul>
-<li>Block $ A_{33} - A_{31}A_{11}^{-1} A_{13} - A_{32}A_{22}^{-1}A_{23}$ is Schur complement for block diagonal matrix <span class="math inline">\begin{bmatrix} A_{11} &amp; 0 \\ 0 &amp; A_{22} \end{bmatrix}</span></li>
-<li>We reduce problem to solving smaller linear systems with <span class="math inline">A_{11}</span> and <span class="math inline">A_{22}</span></li>
+<li>Блок $ A_{33} - A_{31}A_{11}^{-1} A_{13} - A_{32}A_{22}^{-1}A_{23}$ является дополнением Шура для блочно-диагональной матрицы <span class="math inline">\begin{bmatrix} A_{11} &amp; 0 \\ 0 &amp; A_{22} \end{bmatrix}</span></li>
+<li>Мы сводим задачу к решению систем линейных уравнений меньшего размера с матрицами <span class="math inline">A_{11}</span> и <span class="math inline">A_{22}</span></li>
 </ul>
 </section>
-<section id="what-we-can-do-to-minimize-fill-in" class="level2">
-<h2 class="anchored" data-anchor-id="what-we-can-do-to-minimize-fill-in">What we can do to minimize fill-in?</h2>
+<section id="что-мы-можем-сделать-для-минимизации-заполнения" class="level2">
+<h2 class="anchored" data-anchor-id="что-мы-можем-сделать-для-минимизации-заполнения">Что мы можем сделать для минимизации заполнения?</h2>
 <ul>
-<li><p>Reordering the rows and the columns of the sparse matrix in order to reduce the number of nonzeros in <span class="math inline">L</span> and <span class="math inline">U</span> factors is called <strong>fill-in</strong> minimization.</p></li>
-<li><p>Unfortunately, <a href="http://i.stanford.edu/pub/cstr/reports/cs/tr/75/531/CS-TR-75-531.pdf">this paper</a> by Rose and Tarjan in 1975 proves that fill-in minimization problem is <strong>NP-complete</strong>.</p></li>
-<li><p>But, many heuristics exist:</p>
+<li><p>Переупорядочение строк и столбцов разреженной матрицы с целью уменьшения количества ненулевых элементов в множителях <span class="math inline">L</span> и <span class="math inline">U</span> называется минимизацией <strong>заполнения</strong> (fill-in).</p></li>
+<li><p>К сожалению, <a href="http://i.stanford.edu/pub/cstr/reports/cs/tr/75/531/CS-TR-75-531.pdf">эта статья</a> Роуза и Тарьяна 1975 года доказывает, что задача минимизации заполнения является <strong>NP-полной</strong>.</p></li>
+<li><p>Но существует множество эвристик:</p>
 <ul>
-<li><strong>Markowitz pivoting</strong> - order by the product of nonzeros in column and row and stability constraint</li>
-<li><strong>Minimum degree ordering</strong> - order by the degree of the vertex</li>
-<li><strong>Cuthill–McKee algorithm</strong> (and reverse Cuthill-McKee) - reorder to minimize the bandwidth (does not exploit graph representation).</li>
-<li><strong>Nested dissection</strong>: split the graph into two with minimal number of vertices on the separator (set of vertices removed after we separate the graph into two distinct connected graphs). <br> Complexity of the algorithm depends on the size of the graph separator. For 1D Laplacian separator contains only 1 vertex, in 2D - <span class="math inline">\sqrt{N}</span> vertices.</li>
+<li><strong>Выбор ведущего элемента по Марковицу</strong> - упорядочение по произведению ненулевых элементов в столбце и строке с ограничением устойчивости</li>
+<li><strong>Упорядочение по минимальной степени</strong> - упорядочение по степени вершины</li>
+<li><strong>Алгоритм Катхилла-Макки</strong> (и обратный Катхилла-Макки) - переупорядочение для минимизации ширины ленты (не использует представление графа).</li>
+<li><strong>Вложенное разбиение</strong>: разделение графа на две части с минимальным числом вершин на разделителе (набор вершин, удаляемых после разделения графа на два отдельных связных графа). <br> Сложность алгоритма зависит от размера разделителя графа. Для одномерного лапласиана разделитель содержит только 1 вершину, в двумерном случае - <span class="math inline">\sqrt{N}</span> вершин.</li>
 </ul></li>
 </ul>
-<section id="how-can-we-find-permutation" class="level3">
-<h3 class="anchored" data-anchor-id="how-can-we-find-permutation">How can we find permutation?</h3>
+<section id="как-найти-перестановку" class="level3">
+<h3 class="anchored" data-anchor-id="как-найти-перестановку">Как найти перестановку?</h3>
 <ul>
-<li>Key idea comes from graph theory</li>
-<li>Sparse matrix can be treated as an <strong>adjacency matrix</strong> of a certain graph: the vertices <span class="math inline">(i, j)</span> are connected, if the corresponding matrix element is non-zero.</li>
+<li>Ключевая идея приходит из теории графов</li>
+<li>Разреженную матрицу можно рассматривать как <strong>матрицу смежности</strong> определенного графа: вершины <span class="math inline">(i, j)</span> соединены, если соответствующий элемент матрицы ненулевой.</li>
 </ul>
 </section>
-<section id="example" class="level3">
-<h3 class="anchored" data-anchor-id="example">Example</h3>
-<p>Graphs of <span class="math inline">\begin{bmatrix} * &amp; * &amp; * &amp; * \\ * &amp; * &amp;  &amp;  \\ * &amp;  &amp; * &amp;  \\ * &amp;  &amp;  &amp; * \end{bmatrix}</span> and <span class="math inline">\begin{bmatrix} * &amp;  &amp;  &amp; *  \\  &amp; * &amp;  &amp; * \\  &amp;  &amp; * &amp; * \\ * &amp; * &amp; * &amp; * \end{bmatrix}</span> have the following form:</p>
-<p><img src="graph_dense.png" width="300" align="center"> and <img src="graph_sparse.png" width="300" align="center"></p>
+<section id="пример" class="level3">
+<h3 class="anchored" data-anchor-id="пример">Пример</h3>
+<p>Графы матриц <span class="math inline">\begin{bmatrix} * &amp; * &amp; * &amp; * \\ * &amp; * &amp;  &amp;  \\ * &amp;  &amp; * &amp;  \\ * &amp;  &amp;  &amp; * \end{bmatrix}</span> и <span class="math inline">\begin{bmatrix} * &amp;  &amp;  &amp; *  \\  &amp; * &amp;  &amp; * \\  &amp;  &amp; * &amp; * \\ * &amp; * &amp; * &amp; * \end{bmatrix}</span> имеют следующий вид:</p>
+<p><img src="graph_dense.png" width="300" align="center"> и <img src="graph_sparse.png" width="300" align="center"></p>
 <ul>
-<li>Why the second ordering is better than the first one?</li>
+<li>Почему второй порядок лучше, чем первый?</li>
 </ul>
 </section>
 </section>
-<section id="fill-in-upper-bound-minimization-markowitz-pivoting" class="level2">
-<h2 class="anchored" data-anchor-id="fill-in-upper-bound-minimization-markowitz-pivoting">Fill-in upper bound minimization: Markowitz pivoting</h2>
+<section id="минимизация-верхней-границы-заполнения-выбор-ведущего-элемента-по-марковицу" class="level2">
+<h2 class="anchored" data-anchor-id="минимизация-верхней-границы-заполнения-выбор-ведущего-элемента-по-марковицу">Минимизация верхней границы заполнения: выбор ведущего элемента по Марковицу</h2>
 <ul>
-<li>General purpose approach to ordering the elements of sparse matrix that will be eliminated</li>
-<li>The Markowitz merit for every non-zero element with indices <span class="math inline">(i, j)</span> is computed as <span class="math inline">(r_i - 1)(c_j - 1)</span>, where <span class="math inline">r_i</span> is number of nonzeros elements in the <span class="math inline">i</span>-th row and <span class="math inline">c_j</span> is a number of non-zero elements in the <span class="math inline">j</span>-th column</li>
-<li>This value is an upper abound on the fill-in after eliminating the <span class="math inline">(i, j)</span> element. <strong>Why?</strong></li>
-<li>We can order elements with respect to these values, select the one with minimum value, eliminate it and update matrix. What about stability?</li>
-<li>Then re-compute these values and repeat the procedure</li>
-<li>This method gives us the permutations of rows and columns and sparse factors</li>
-<li>Main drawback is efficient supporting number of nnz in every row and column after matrix update without complete re-calculating</li>
-<li>More details can be found in book <a href="https://oxford.universitypressscholarship.com/view/10.1093/acprof:oso/9780198508380.001.0001/acprof-9780198508380">Direct Methods for Sparse Matrices by I. S. Duff, A. M. Erisman, and J. K. Reid</a></li>
-<li>De facto standard approach in solving Linear programming (LP) problems and their MILP modifications</li>
+<li>Универсальный подход к упорядочиванию элементов разреженной матрицы, которые будут исключены</li>
+<li>Показатель Марковица для каждого ненулевого элемента с индексами <span class="math inline">(i, j)</span> вычисляется как <span class="math inline">(r_i - 1)(c_j - 1)</span>, где <span class="math inline">r_i</span> - количество ненулевых элементов в <span class="math inline">i</span>-й строке, а <span class="math inline">c_j</span> - количество ненулевых элементов в <span class="math inline">j</span>-м столбце</li>
+<li>Это значение является верхней границей заполнения после исключения элемента <span class="math inline">(i, j)</span>. <strong>Почему?</strong></li>
+<li>Мы можем упорядочить элементы относительно этих значений, выбрать элемент с минимальным значением, исключить его и обновить матрицу. А как насчет устойчивости?</li>
+<li>Затем пересчитать эти значения и повторить процедуру</li>
+<li>Этот метод дает нам перестановки строк и столбцов и разреженные множители</li>
+<li>Основной недостаток - эффективное отслеживание количества ненулевых элементов в каждой строке и столбце после обновления матрицы без полного пересчета</li>
+<li>Более подробную информацию можно найти в книге <a href="https://oxford.universitypressscholarship.com/view/10.1093/acprof:oso/9780198508380.001.0001/acprof-9780198508380">Direct Methods for Sparse Matrices by I. S. Duff, A. M. Erisman, and J. K. Reid</a></li>
+<li>Де-факто стандартный подход при решении задач линейного программирования (LP) и их MILP-модификаций</li>
 </ul>
 </section>
-<section id="what-if-consider-only-neighbours-we-get-minimal-degree-ordering" class="level2">
-<h2 class="anchored" data-anchor-id="what-if-consider-only-neighbours-we-get-minimal-degree-ordering">What if consider only neighbours? We get minimal degree ordering!</h2>
+<section id="что-если-рассматривать-только-соседей-получаем-упорядочение-по-минимальной-степени" class="level2">
+<h2 class="anchored" data-anchor-id="что-если-рассматривать-только-соседей-получаем-упорядочение-по-минимальной-степени">Что если рассматривать только соседей? Получаем упорядочение по минимальной степени!</h2>
 <ul>
-<li><p>The idea is to eliminate rows and/or columns with fewer non-zeros, update fill-in and then repeat. How it relates to Markowitz pivoting?</p></li>
-<li><p>Efficient implementation is an issue (adding/removing elements).</p></li>
-<li><p>Current champion is “approximate minimal degree” by Amestoy, Davis, Duff.</p></li>
-<li><p>It is <strong>suboptimal</strong> even for 2D PDE problems</p></li>
-<li><p>SciPy sparse package <a href="https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.sparse.linalg.splu.html">uses</a> minimal ordering approach for different matrices (<span class="math inline">A^{\top}A</span>, <span class="math inline">A + A^{\top}</span>)</p></li>
+<li><p>Идея заключается в исключении строк и/или столбцов с меньшим количеством ненулевых элементов, обновлении заполнения и повторении процесса. Как это связано с выбором ведущего элемента по Марковицу?</p></li>
+<li><p>Эффективная реализация является проблемой (добавление/удаление элементов).</p></li>
+<li><p>Текущий лидер - “приближенная минимальная степень” от Аместоя, Дэвиса, Даффа.</p></li>
+<li><p>Это <strong>неоптимально</strong> даже для задач с двумерными дифференциальными уравнениями в частных производных</p></li>
+<li><p>Пакет SciPy sparse <a href="https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.sparse.linalg.splu.html">использует</a> подход минимального упорядочения для различных матриц (<span class="math inline">A^{\top}A</span>, <span class="math inline">A + A^{\top}</span>)</p></li>
 </ul>
 </section>
-<section id="but-in-these-methods-we-ignore-the-knowledge-of-good-structure-for-sparse-lu-lets-exploit-it-explicitly-in-the-method" class="level2">
-<h2 class="anchored" data-anchor-id="but-in-these-methods-we-ignore-the-knowledge-of-good-structure-for-sparse-lu-lets-exploit-it-explicitly-in-the-method">But in these methods we ignore the knowledge of good structure for sparse LU! Let’s exploit it explicitly in the method!</h2>
+<section id="но-в-этих-методах-мы-игнорируем-знание-о-хорошей-структуре-для-разреженного-lu-давайте-явно-используем-его-в-методе" class="level2">
+<h2 class="anchored" data-anchor-id="но-в-этих-методах-мы-игнорируем-знание-о-хорошей-структуре-для-разреженного-lu-давайте-явно-используем-его-в-методе">Но в этих методах мы игнорируем знание о хорошей структуре для разреженного LU! Давайте явно используем его в методе!</h2>
 </section>
-<section id="how-to-formalize-reduction-to-block-arrowhead-form" class="level2">
-<h2 class="anchored" data-anchor-id="how-to-formalize-reduction-to-block-arrowhead-form">How to formalize reduction to block arrowhead form?</h2>
-<p><strong>Definition.</strong> A <strong>separator</strong> in a graph <span class="math inline">G</span> is a set <span class="math inline">S</span> of vertices whose removal leaves at least two connected components.</p>
-<p>Separator <span class="math inline">S</span> gives the following ordering for an <span class="math inline">N</span>-vertex graph <span class="math inline">G</span>: - Find a separator <span class="math inline">S</span>, whose removal leaves connected components <span class="math inline">T_1</span>, <span class="math inline">T_2</span>, <span class="math inline">\ldots</span>, <span class="math inline">T_k</span> - Number the vertices of <span class="math inline">S</span> from <span class="math inline">N − |S| + 1</span> to <span class="math inline">N</span> - Recursively, number the vertices of each component: <span class="math inline">T_1</span> from <span class="math inline">1</span> to <span class="math inline">|T_1|</span>, <span class="math inline">T_2</span> from <span class="math inline">|T_1| + 1</span> to <span class="math inline">|T_1| + |T_2|</span>, etc - If a component is small enough, enumeration in this component is arbitrarily</p>
-<section id="separator-and-block-arrowhead-structure-example" class="level3">
-<h3 class="anchored" data-anchor-id="separator-and-block-arrowhead-structure-example">Separator and block arrowhead structure: example</h3>
-<p>Separator for the 2D Laplacian matrix</p>
+<section id="как-формализовать-сведение-к-блочной-форме-со-стрелкой" class="level2">
+<h2 class="anchored" data-anchor-id="как-формализовать-сведение-к-блочной-форме-со-стрелкой">Как формализовать сведение к блочной форме со стрелкой?</h2>
+<p><strong>Определение.</strong> <strong>Сепаратор</strong> в графе <span class="math inline">G</span> - это множество <span class="math inline">S</span> вершин, удаление которых оставляет как минимум две несвязные компоненты.</p>
+<p>Сепаратор <span class="math inline">S</span> дает следующий порядок для графа <span class="math inline">G</span> с <span class="math inline">N</span> вершинами: - Найти сепаратор <span class="math inline">S</span>, удаление которого оставляет связные компоненты <span class="math inline">T_1</span>, <span class="math inline">T_2</span>, <span class="math inline">\ldots</span>, <span class="math inline">T_k</span> - Пронумеровать вершины <span class="math inline">S</span> от <span class="math inline">N − |S| + 1</span> до <span class="math inline">N</span> - Рекурсивно пронумеровать вершины каждой компоненты: <span class="math inline">T_1</span> от <span class="math inline">1</span> до <span class="math inline">|T_1|</span>, <span class="math inline">T_2</span> от <span class="math inline">|T_1| + 1</span> до <span class="math inline">|T_1| + |T_2|</span> и т.д. - Если компонента достаточно мала, нумерация в этой компоненте произвольна</p>
+<section id="сепаратор-и-блочная-структура-со-стрелкой-пример" class="level3">
+<h3 class="anchored" data-anchor-id="сепаратор-и-блочная-структура-со-стрелкой-пример">Сепаратор и блочная структура со стрелкой: пример</h3>
+<p>Сепаратор для двумерной матрицы Лапласа</p>
 <p><span class="math display">
 A_{2D} = I \otimes A_{1D} + A_{1D} \otimes I, \quad A_{1D} = \mathrm{tridiag}(-1, 2, -1),
 </span></p>
-<p>is as follows</p>
+<p>выглядит следующим образом</p>
 <p><img src="separator.png" width="300"> </p>
-<p>Once we have enumerated first indices in <span class="math inline">\alpha</span>, then in <span class="math inline">\beta</span> and separators indices in <span class="math inline">\sigma</span> we get the following matrix</p>
+<p>Как только мы пронумеровали сначала индексы в <span class="math inline">\alpha</span>, затем в <span class="math inline">\beta</span> и индексы сепаратора в <span class="math inline">\sigma</span>, мы получаем следующую матрицу</p>
 <p><span class="math display">
 PAP^\top = \begin{bmatrix} A_{\alpha\alpha} &amp;  &amp; A_{\alpha\sigma} \\  &amp; A_{\beta\beta} &amp; A_{\beta\sigma} \\ A_{\sigma\alpha} &amp; A_{\sigma\beta} &amp; A_{\sigma\sigma}\end{bmatrix}
 </span></p>
-<p>which has arrowhrad structure.</p>
+<p>которая имеет структуру стрелки.</p>
 <ul>
-<li>Thus, the problem of finding <strong>permutation</strong> was reduced to the problem of finding <strong>graph separator</strong>!</li>
+<li>Таким образом, задача нахождения <strong>перестановки</strong> была сведена к задаче нахождения <strong>сепаратора графа</strong>!</li>
 </ul>
 </section>
 </section>
-<section id="the-method-of-recursive-reduction-to-block-arrowhead-structure-nested-dissection" class="level2">
-<h2 class="anchored" data-anchor-id="the-method-of-recursive-reduction-to-block-arrowhead-structure-nested-dissection">The method of recursive reduction to block arrowhead structure – Nested dissection</h2>
+<section id="метод-рекурсивного-сведения-к-блочной-структуре-со-стрелкой-вложенное-разбиение" class="level2">
+<h2 class="anchored" data-anchor-id="метод-рекурсивного-сведения-к-блочной-структуре-со-стрелкой-вложенное-разбиение">Метод рекурсивного сведения к блочной структуре со стрелкой – Вложенное разбиение</h2>
 <ul>
-<li><p>For blocks <span class="math inline">A_{\alpha\alpha}</span>, <span class="math inline">A_{\beta\beta}</span> we continue splitting recursively.</p></li>
-<li><p>When the recursion is done, we need to eliminate blocks <span class="math inline">A_{\sigma\alpha}</span> and <span class="math inline">A_{\sigma\beta}</span>.</p></li>
-<li><p>This makes block in the position of <span class="math inline">A_{\sigma\sigma}\in\mathbb{R}^{n\times n}</span> dense.</p></li>
+<li><p>Для блоков <span class="math inline">A_{\alpha\alpha}</span>, <span class="math inline">A_{\beta\beta}</span> мы продолжаем разбиение рекурсивно.</p></li>
+<li><p>Когда рекурсия завершена, нам нужно исключить блоки <span class="math inline">A_{\sigma\alpha}</span> и <span class="math inline">A_{\sigma\beta}</span>.</p></li>
+<li><p>Это делает блок в позиции <span class="math inline">A_{\sigma\sigma}\in\mathbb{R}^{n\times n}</span> плотным.</p></li>
 </ul>
-<p>Calculation of Cholesky of this block costs <span class="math inline">\mathcal{O}(n^3) = \mathcal{O}(N^{3/2})</span>, where <span class="math inline">N = n^2</span> is the total number of nodes.</p>
-<p>So, the complexity is <span class="math inline">\mathcal{O}(N^{3/2})</span></p>
+<p>Вычисление разложения Холецкого для этого блока стоит <span class="math inline">\mathcal{O}(n^3) = \mathcal{O}(N^{3/2})</span>, где <span class="math inline">N = n^2</span> - общее количество узлов.</p>
+<p>Таким образом, сложность составляет <span class="math inline">\mathcal{O}(N^{3/2})</span></p>
 </section>
-<section id="packages-for-nested-dissection" class="level2">
-<h2 class="anchored" data-anchor-id="packages-for-nested-dissection">Packages for nested dissection</h2>
+<section id="пакеты-для-вложенного-разбиения" class="level2">
+<h2 class="anchored" data-anchor-id="пакеты-для-вложенного-разбиения">Пакеты для вложенного разбиения</h2>
 <ul>
 <li>MUltifrontal Massively Parallel sparse direct Solver (<a href="http://mumps.enseeiht.fr/">MUMPS</a>)</li>
 <li><a href="https://www.pardiso-project.org/">Pardiso</a></li>
-<li><a href="http://faculty.cse.tamu.edu/davis/suitesparse.html">Umfpack as part of SuiteSparse</a></li>
+<li><a href="http://faculty.cse.tamu.edu/davis/suitesparse.html">Umfpack как часть SuiteSparse</a></li>
 </ul>
-<p>All of them have interfaces for C/C++, Fortran and Matlab</p>
-<section id="nested-dissection-summary" class="level3">
-<h3 class="anchored" data-anchor-id="nested-dissection-summary">Nested dissection summary</h3>
+<p>Все они имеют интерфейсы для C/C++, Fortran и Matlab</p>
+<section id="краткое-описание-вложенного-разбиения" class="level3">
+<h3 class="anchored" data-anchor-id="краткое-описание-вложенного-разбиения">Краткое описание вложенного разбиения</h3>
 <ul>
-<li>Enumeration: find a separator.</li>
-<li>Divide-and-conquer paradigm</li>
-<li>Recursively process two subsets of vertices after separation</li>
-<li>In theory, nested dissection gives optimal complexity.</li>
-<li>In practice, it beats others only for very large problems.</li>
-</ul>
-</section>
-</section>
-<section id="separators-in-practice" class="level2">
-<h2 class="anchored" data-anchor-id="separators-in-practice">Separators in practice</h2>
-<ul>
-<li><p>Computing separators is not a <strong>trivial task</strong>.</p></li>
-<li><p>Graph partitioning heuristics has been an active research area for many years, often motivated by partitioning for parallel computation.</p></li>
-</ul>
-<p>Existing approaches:</p>
-<ul>
-<li>Spectral partitioning (uses eigenvectors of Laplacian matrix of graph) - more details below</li>
-<li>Geometric partitioning (for meshes with specified vertex coordinates) <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.31.4886&amp;rep=rep1&amp;type=pdf">review and analysis</a></li>
-<li>Iterative-swapping (<a href="http://xilinx.asia/_hdl/4/eda.ee.ucla.edu/EE201A-04Spring/kl.pdf">(Kernighan-Lin, 1970)</a>, <a href="https://dl.acm.org/citation.cfm?id=809204">(Fiduccia-Matheysses, 1982</a>)</li>
-<li>Breadth-first search <a href="http://www.cs.princeton.edu/courses/archive/fall06/cos528/handouts/sepplanar.pdf">(Lipton, Tarjan 1979)</a></li>
-<li>Multilevel recursive bisection (heuristic, currently most practical) (<a href="https://people.csail.mit.edu/jshun/6886-s18/lectures/lecture13-1.pdf">review</a> and <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.499.4130&amp;rep=rep1&amp;type=pdf">paper</a>). Package for such kind of partitioning is called METIS, written in C, and available <a href="http://glaros.dtc.umn.edu/gkhome/views/metis">here</a></li>
+<li>Нумерация: найти сепаратор.</li>
+<li>Парадигма “разделяй и властвуй”</li>
+<li>Рекурсивная обработка двух подмножеств вершин после разделения</li>
+<li>В теории вложенное разбиение дает оптимальную сложность.</li>
+<li>На практике оно превосходит другие методы только для очень больших задач.</li>
 </ul>
 </section>
-<section id="one-of-the-ways-to-construct-separators-spectral-graph-partitioning" class="level2">
-<h2 class="anchored" data-anchor-id="one-of-the-ways-to-construct-separators-spectral-graph-partitioning">One of the ways to construct separators – spectral graph partitioning</h2>
+</section>
+<section id="сепараторы-на-практике" class="level2">
+<h2 class="anchored" data-anchor-id="сепараторы-на-практике">Сепараторы на практике</h2>
 <ul>
-<li><p>The idea of spectral partitioning goes back to Miroslav Fiedler, who studied connectivity of graphs (<a href="https://dml.cz/bitstream/handle/10338.dmlcz/101168/CzechMathJ_23-1973-2_11.pdf">paper</a>).</p></li>
-<li><p>We need to split the vertices into two sets.</p></li>
-<li><p>Consider +1/-1 labeling of vertices and <strong>the cost</strong></p></li>
+<li><p>Вычисление сепараторов - <strong>нетривиальная задача</strong>.</p></li>
+<li><p>Эвристики разбиения графов являются активной областью исследований на протяжении многих лет, часто мотивированные разбиением для параллельных вычислений.</p></li>
 </ul>
-<p><span class="math display">E_c(x) = \sum_{j} \sum_{i \in N(j)} (x_i - x_j)^2, \quad N(j) \text{ denotes set of neighbours of a node } j. </span></p>
+<p>Существующие подходы:</p>
 <ul>
-<li>We need a balanced partition, thus</li>
+<li>Спектральное разбиение (использует собственные векторы матрицы Лапласа графа) - подробнее ниже</li>
+<li>Геометрическое разбиение (для сеток с заданными координатами вершин) <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.31.4886&amp;rep=rep1&amp;type=pdf">обзор и анализ</a></li>
+<li>Итеративный обмен (<a href="http://xilinx.asia/_hdl/4/eda.ee.ucla.edu/EE201A-04Spring/kl.pdf">(Kernighan-Lin, 1970)</a>, <a href="https://dl.acm.org/citation.cfm?id=809204">(Fiduccia-Matheysses, 1982</a>)</li>
+<li>Поиск в ширину <a href="http://www.cs.princeton.edu/courses/archive/fall06/cos528/handouts/sepplanar.pdf">(Lipton, Tarjan 1979)</a></li>
+<li>Многоуровневое рекурсивное бисекционирование (эвристика, в настоящее время наиболее практичная) (<a href="https://people.csail.mit.edu/jshun/6886-s18/lectures/lecture13-1.pdf">обзор</a> и <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.499.4130&amp;rep=rep1&amp;type=pdf">статья</a>). Пакет для такого рода разбиения называется METIS, написан на C и доступен <a href="http://glaros.dtc.umn.edu/gkhome/views/metis">здесь</a></li>
+</ul>
+</section>
+<section id="один-из-способов-построения-сепараторов-спектральное-разбиение-графа" class="level2">
+<h2 class="anchored" data-anchor-id="один-из-способов-построения-сепараторов-спектральное-разбиение-графа">Один из способов построения сепараторов – спектральное разбиение графа</h2>
+<ul>
+<li><p>Идея спектрального разбиения восходит к Мирославу Фидлеру, который изучал связность графов (<a href="https://dml.cz/bitstream/handle/10338.dmlcz/101168/CzechMathJ_23-1973-2_11.pdf">статья</a>).</p></li>
+<li><p>Нам нужно разделить вершины на два множества.</p></li>
+<li><p>Рассмотрим маркировку вершин значениями +1/-1 и <strong>стоимость</strong></p></li>
+</ul>
+<p><span class="math display">E_c(x) = \sum_{j} \sum_{i \in N(j)} (x_i - x_j)^2, \quad N(j) \text{ обозначает множество соседей узла } j. </span></p>
+<ul>
+<li>Нам нужно сбалансированное разбиение, поэтому</li>
 </ul>
 <p><span class="math display">\sum_i x_i =  0 \quad \Longleftrightarrow \quad x^\top e = 0, \quad e = \begin{bmatrix}1 &amp; \dots &amp; 1\end{bmatrix}^\top,</span></p>
-<p>and since we have +1/-1 labels, we have</p>
+<p>и поскольку у нас метки +1/-1, имеем</p>
 <p><span class="math display">\sum_i x^2_i = n \quad \Longleftrightarrow \quad \|x\|_2^2 = n.</span></p>
 </section>
-<section id="graph-laplacian" class="level2">
-<h2 class="anchored" data-anchor-id="graph-laplacian">Graph Laplacian</h2>
-<p>Cost <span class="math inline">E_c</span> can be written as (check why)</p>
+<section id="лапласиан-графа" class="level2">
+<h2 class="anchored" data-anchor-id="лапласиан-графа">Лапласиан графа</h2>
+<p>Стоимость <span class="math inline">E_c</span> может быть записана как (проверьте почему)</p>
 <p><span class="math display">E_c = (Lx, x)</span></p>
-<p>where <span class="math inline">L</span> is the <strong>graph Laplacian</strong>, which is defined as a symmetric matrix with</p>
-<p><span class="math display">L_{ii} = \mbox{degree of node $i$},</span></p>
-<p><span class="math display">L_{ij} = -1, \quad \mbox{if $i \ne j$  and there is an edge},</span></p>
-<p>and <span class="math inline">0</span> otherwise.</p>
+<p>где <span class="math inline">L</span> - это <strong>лапласиан графа</strong>, который определяется как симметричная матрица с</p>
+<p><span class="math display">L_{ii} = \mbox{степень вершины $i$},</span></p>
+<p><span class="math display">L_{ij} = -1, \quad \mbox{если $i \ne j$ и существует ребро},</span></p>
+<p>и <span class="math inline">0</span> в остальных случаях.</p>
 <ul>
-<li>Rows of <span class="math inline">L</span> sum to zero, thus there is an eigenvalue <span class="math inline">0</span> and gives trivial eigenvector of all ones.</li>
-<li>Eigenvalues are non-negative (why?).</li>
+<li>Сумма элементов в строках <span class="math inline">L</span> равна нулю, поэтому существует собственное значение <span class="math inline">0</span>, которому соответствует тривиальный собственный вектор из всех единиц.</li>
+<li>Собственные значения неотрицательны (почему?).</li>
 </ul>
 </section>
-<section id="partitioning-as-an-optimization-problem" class="level2">
-<h2 class="anchored" data-anchor-id="partitioning-as-an-optimization-problem">Partitioning as an optimization problem</h2>
+<section id="разбиение-как-задача-оптимизации" class="level2">
+<h2 class="anchored" data-anchor-id="разбиение-как-задача-оптимизации">Разбиение как задача оптимизации</h2>
 <ul>
-<li><p>Minimization of <span class="math inline">E_c</span> with the mentioned constraints leads to a partitioning that tries to minimize number of edges in a separator, while keeping the partition balanced.</p></li>
-<li><p>We now relax the integer quadratic programming to the continuous quadratic programming</p></li>
+<li><p>Минимизация <span class="math inline">E_c</span> с указанными ограничениями приводит к разбиению, которое пытается минимизировать количество рёбер в сепараторе, сохраняя при этом сбалансированность разбиения.</p></li>
+<li><p>Теперь мы ослабляем целочисленное квадратичное программирование до непрерывного квадратичного программирования</p></li>
 </ul>
 <p><span class="math display">E_c(x) = (Lx, x)\to \min_{\substack{x^\top e =0, \\ \|x\|_2^2 = n}}</span></p>
 </section>
-<section id="from-fiedler-vector-to-separator" class="level2">
-<h2 class="anchored" data-anchor-id="from-fiedler-vector-to-separator">From Fiedler vector to separator</h2>
+<section id="от-вектора-фидлера-к-разделителю" class="level2">
+<h2 class="anchored" data-anchor-id="от-вектора-фидлера-к-разделителю">От вектора Фидлера к разделителю</h2>
 <ul>
-<li>The solution to the minimization problem is given by the eigenvector (called Fiedler vector) corresponding to the second smallest eigenvalue of the graph Laplacian. Indeed,</li>
+<li>Решение задачи минимизации даётся собственным вектором (называемым вектором Фидлера), соответствующим второму наименьшему собственному значению лапласиана графа. Действительно,</li>
 </ul>
 <p><span class="math display">
-    \min_{\substack{x^\top e =0, \\ \|x\|_2^2 = n}} (Lx, x) = n \cdot \min_{{x^\top e =0}} \frac{(Lx, x)}{(x, x)} = n \cdot \min_{{x^\top e =0}} R(x), \quad R(x) \text{ is the Rayleigh quotient}
+    \min_{\substack{x^\top e =0, \\ \|x\|_2^2 = n}} (Lx, x) = n \cdot \min_{{x^\top e =0}} \frac{(Lx, x)}{(x, x)} = n \cdot \min_{{x^\top e =0}} R(x), \quad R(x) \text{ это отношение Рэлея}
 </span></p>
 <ul>
-<li><p>Since <span class="math inline">e</span> is the eigenvector, corresponding to the smallest eigenvalue, on the space <span class="math inline">x^\top e =0</span> we get the second minimal eigevalue.</p></li>
-<li><p>The sign <span class="math inline">x_i</span> indicates the partitioning.</p></li>
-<li><p>In computations, we need to find out, how to find this second minimal eigenvalue –– we at least know about power method, but it finds the largest. We will discuss iterative methods for eigenvalue problems later in our course.</p></li>
-<li><p>This is the main goal of the iterative methods for large-scale linear problems, and can be achieved via few matrix-by-vector products.</p></li>
+<li><p>Поскольку <span class="math inline">e</span> является собственным вектором, соответствующим наименьшему собственному значению, на пространстве <span class="math inline">x^\top e =0</span> мы получаем второе минимальное собственное значение.</p></li>
+<li><p>Знак <span class="math inline">x_i</span> указывает на разбиение.</p></li>
+<li><p>В вычислениях нам нужно выяснить, как найти это второе минимальное собственное значение — мы по крайней мере знаем о степенном методе, но он находит наибольшее. Мы обсудим итерационные методы для задач на собственные значения позже в нашем курсе.</p></li>
+<li><p>Это основная цель итерационных методов для крупномасштабных линейных задач, и она может быть достигнута с помощью нескольких произведений матрицы на вектор.</p></li>
 </ul>
-<div id="cell-39" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="14">
+<div id="cell-37" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -676,12 +655,12 @@ Number of edges = 78</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-11_files/figure-html/cell-8-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-10_files/figure-html/cell-8-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="cell-40" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="16">
+<div id="cell-38" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse.linalg <span class="im">as</span> spsplin</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>Laplacian <span class="op">=</span> nx.laplacian_matrix(kn).asfptype()</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>plt.spy(Laplacian, markersize<span class="op">=</span><span class="dv">5</span>)</span>
@@ -693,7 +672,7 @@ Number of edges = 78</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-11_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-10_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -701,7 +680,7 @@ Number of edges = 78</code></pre>
 <pre><code>The 2 smallest eigenvalues = [2.52665709e-17 4.68525227e-01 9.09247664e-01]</code></pre>
 </div>
 </div>
-<div id="cell-41" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="17">
+<div id="cell-39" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.scatter(np.arange(len(eigvec[:, 1])), np.sign(eigvec[:, 1]))</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>plt.scatter(np.arange(<span class="bu">len</span>(eigvec[:, <span class="dv">1</span>])), eigvec[:, <span class="dv">1</span>])</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -710,7 +689,7 @@ Number of edges = 78</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-11_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-10_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -718,90 +697,82 @@ Number of edges = 78</code></pre>
 <pre><code>Sum of elements in Fiedler vector = -8.493206138382448e-15</code></pre>
 </div>
 </div>
-<div id="cell-42" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="18">
+<div id="cell-40" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;slide&quot;}" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>nx.draw_networkx(kn, node_color<span class="op">=</span>np.sign(eigvec[:, <span class="dv">1</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-11_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-10_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<section id="summary-on-demo" class="level3">
-<h3 class="anchored" data-anchor-id="summary-on-demo">Summary on demo</h3>
+<section id="резюме-по-демонстрации" class="level3">
+<h3 class="anchored" data-anchor-id="резюме-по-демонстрации">Резюме по демонстрации</h3>
 <ul>
-<li>Here we call SciPy sparse function to find fixed number of eigenvalues (and eigenvectors) that are smallest (other options are possible)</li>
-<li>Details of the underlying method we will discuss soon</li>
-<li>Fiedler vector gives simple separation of the graph</li>
-<li>To separate graph on more than two parts you should use eigenvectors of laplacian as feature vectors and run some clustering algorithm, e.g.&nbsp;<span class="math inline">k</span>-means</li>
+<li>Здесь мы вызываем функцию SciPy sparse для нахождения фиксированного числа собственных значений (и собственных векторов), которые являются наименьшими (возможны и другие варианты)</li>
+<li>Детали используемого метода мы обсудим в ближайшее время</li>
+<li>Вектор Фидлера дает простое разделение графа</li>
+<li>Чтобы разделить граф на более чем две части, вы должны использовать собственные векторы лапласиана как векторы признаков и запустить какой-нибудь алгоритм кластеризации, например, <span class="math inline">k</span>-средних</li>
 </ul>
 </section>
 </section>
-<section id="from-fiedler-vector-to-separator-1" class="level2">
-<h2 class="anchored" data-anchor-id="from-fiedler-vector-to-separator-1">From Fiedler vector to separator</h2>
+<section id="от-вектора-фидлера-к-разделителю-1" class="level2">
+<h2 class="anchored" data-anchor-id="от-вектора-фидлера-к-разделителю-1">От вектора Фидлера к разделителю</h2>
 <ul>
-<li>Elements of eigenvector <span class="math inline">v</span> corresponding to the second smallest eigenvalue of the Laplacian indicate the partitioning of vertices</li>
-<li>If we select some small positive <span class="math inline">\tau &gt;0</span>, then we can split the vertices in three groups
+<li>Элементы собственного вектора <span class="math inline">v</span>, соответствующего второму наименьшему собственному значению лапласиана, указывают на разбиение вершин</li>
+<li>Если мы выберем некоторое малое положительное <span class="math inline">\tau &gt;0</span>, то мы можем разделить вершины на три группы
 <ul>
 <li><span class="math inline">v_i &lt; -\tau</span></li>
 <li><span class="math inline">v_i \in [-\tau, \tau]</span></li>
 <li><span class="math inline">v_i &gt; \tau</span></li>
 </ul></li>
-<li>After that the separator is composed with the vertices corresponding to elements of <span class="math inline">v</span> such that <span class="math inline">v_i \in [-\tau, \tau]</span></li>
-<li>The size of separator can be tuned by the magnitude of <span class="math inline">\tau</span></li>
-<li>The distribution of elements in <span class="math inline">v</span> is important to identify the size of separator</li>
+<li>После этого разделитель состоит из вершин, соответствующих элементам <span class="math inline">v</span> таким, что <span class="math inline">v_i \in [-\tau, \tau]</span></li>
+<li>Размер разделителя можно регулировать величиной <span class="math inline">\tau</span></li>
+<li>Распределение элементов в <span class="math inline">v</span> важно для определения размера разделителя</li>
 </ul>
-<section id="fiedler-vector-and-algebraic-connectivity-of-a-graph" class="level3">
-<h3 class="anchored" data-anchor-id="fiedler-vector-and-algebraic-connectivity-of-a-graph">Fiedler vector and algebraic connectivity of a graph</h3>
-<p><strong>Definition.</strong> The algebraic connectivity of a graph is the second-smallest eigenvalue of the Laplacian matrix.</p>
-<p><strong>Claim.</strong> The algebraic connectivity of a graph is greater than 0 if and only if a graph is a connected graph.</p>
+<section id="вектор-фидлера-и-алгебраическая-связность-графа" class="level3">
+<h3 class="anchored" data-anchor-id="вектор-фидлера-и-алгебраическая-связность-графа">Вектор Фидлера и алгебраическая связность графа</h3>
+<p><strong>Определение.</strong> Алгебраическая связность графа - это второе наименьшее собственное значение матрицы Лапласиана.</p>
+<p><strong>Утверждение.</strong> Алгебраическая связность графа больше 0 тогда и только тогда, когда граф является связным.</p>
 </section>
 </section>
-<section id="practical-problems" class="level2">
-<h2 class="anchored" data-anchor-id="practical-problems">Practical problems</h2>
-<p>Computing bisection recursively is expensive.</p>
-<p>As an alternative, one typically computes <strong>multilevel bisection</strong> that consists of 3 phases.</p>
+<section id="практические-проблемы" class="level2">
+<h2 class="anchored" data-anchor-id="практические-проблемы">Практические проблемы</h2>
+<p>Рекурсивное вычисление бисекции является дорогостоящим.</p>
+<p>В качестве альтернативы обычно вычисляют <strong>многоуровневую бисекцию</strong>, которая состоит из 3 фаз.</p>
 <ul>
-<li>Graph coarsening: From a given graph, we join vertices into larger nodes, and get sequences of graphs <span class="math inline">G_1, \ldots, G_m</span>.</li>
-<li>At the coarse level, we do high-quality bisection</li>
-<li>Then, we do <strong>uncoarsening</strong>: we propagate the splitting from <span class="math inline">G_k</span> to <span class="math inline">G_{k-1}</span> and improve the quality of the split by local optimization algorithms (refinement).</li>
+<li>Огрубление графа: Из данного графа мы объединяем вершины в более крупные узлы и получаем последовательности графов <span class="math inline">G_1, \ldots, G_m</span>.</li>
+<li>На грубом уровне мы выполняем высококачественную бисекцию</li>
+<li>Затем мы выполняем <strong>разукрупнение</strong>: мы распространяем разделение от <span class="math inline">G_k</span> к <span class="math inline">G_{k-1}</span> и улучшаем качество разделения с помощью алгоритмов локальной оптимизации (уточнение).</li>
 </ul>
 </section>
-<section id="practical-problems-2" class="level2">
-<h2 class="anchored" data-anchor-id="practical-problems-2">Practical problems (2)</h2>
+<section id="практические-проблемы-2" class="level2">
+<h2 class="anchored" data-anchor-id="практические-проблемы-2">Практические проблемы (2)</h2>
 <ul>
-<li><p>Once the permutation has been computed, we need to implement the elimination, making use of efficient computational kernels.</p></li>
-<li><p>If in the elemination we will be able to get the elements into <strong>blocks</strong>, we will be able to use BLAS-3 computations.</p></li>
-<li><p>It is done by <strong>supernodal</strong> data structures:</p></li>
-<li><p>If adjacent rows have the same sparsity structure, they can be stored in <strong>blocks</strong>:</p></li>
-<li><p>Also, we can use such structure in efficient computations!</p></li>
+<li><p>После вычисления перестановки нам необходимо реализовать исключение, используя эффективные вычислительные ядра.</p></li>
+<li><p>Если в процессе исключения мы сможем сгруппировать элементы в <strong>блоки</strong>, мы сможем использовать вычисления BLAS-3.</p></li>
+<li><p>Это делается с помощью <strong>суперузловых</strong> структур данных:</p></li>
+<li><p>Если соседние строки имеют одинаковую структуру разреженности, их можно хранить в <strong>блоках</strong>:</p></li>
+<li><p>Также мы можем использовать такую структуру в эффективных вычислениях!</p></li>
 </ul>
-<p><a href="https://arxiv.org/pdf/1907.05309.pdf">Details in this survey</a></p>
+<p><a href="https://arxiv.org/pdf/1907.05309.pdf">Подробности в этом обзоре</a></p>
 </section>
-<section id="take-home-message" class="level2">
-<h2 class="anchored" data-anchor-id="take-home-message">Take home message</h2>
+<section id="основные-выводы" class="level2">
+<h2 class="anchored" data-anchor-id="основные-выводы">Основные выводы</h2>
 <ul>
-<li>Sparse matrices &amp; graphs ordering</li>
-<li>Ordering is important for LU fill-in: more details in the next lecture</li>
-<li>Markowitz pivoting and minimal degree ordering</li>
-<li>Orderings from SciPy sparse package</li>
-<li>Separators and how do they help in fill-in minimization</li>
-<li>Nested dissection idea</li>
-<li>Fiedler vector and spectral bipartitioning</li>
+<li>Разреженные матрицы и упорядочивание графов</li>
+<li>Упорядочивание важно для заполнения при LU-разложении: подробнее в следующей лекции</li>
+<li>Выбор ведущего элемента по Марковицу и упорядочивание минимальной степени</li>
+<li>Методы упорядочивания из пакета SciPy sparse</li>
+<li>Сепараторы и как они помогают в минимизации заполнения</li>
+<li>Идея вложенного разбиения</li>
+<li>Вектор Фидлера и спектральное разбиение на части</li>
 </ul>
 </section>
-<section id="plan-for-the-next-lecture" class="level2">
-<h2 class="anchored" data-anchor-id="plan-for-the-next-lecture">Plan for the next lecture</h2>
-<ul>
-<li>Basic iterative methods for solving large linear systems</li>
-<li>Convergence</li>
-<li>Acceleration</li>
-</ul>
-</section>
-<section id="questions" class="level1">
-<h1>Questions?</h1>
-<div id="cell-51" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}" data-execution_count="1">
+<section id="вопросы" class="level1">
+<h1>Вопросы?</h1>
+<div id="cell-48" class="cell" data-slideshow="{&quot;slide_type&quot;:&quot;skip&quot;}" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    styles <span class="op">=</span> <span class="bu">open</span>(<span class="st">"./styles/custom.css"</span>, <span class="st">"r"</span>).read()</span>
@@ -1266,4 +1237,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.dev/MerkulovDaniil/nla360/blob/main/lectures/lecture-11/lecture-11.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.dev/MerkulovDaniil/nla360/blob/main/lectures/lecture-10/lecture-10.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>
