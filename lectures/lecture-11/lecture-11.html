@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.29">
+<meta name="generator" content="quarto-1.7.30">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lecture 12. Intro to iterative methods</title>
+<title>Лекция 11. Введение в итерационные методы</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -72,7 +72,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-de070a7b0ab54f8780927367ac907214.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap-db5381e954ba3bce59660fe51b887b8f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
@@ -148,14 +148,14 @@ window.Quarto = {
 };
 </script>
 
-<meta property="og:title" content="Lecture 12. Intro to iterative methods">
+<meta property="og:title" content="Лекция 11. Введение в итерационные методы">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-12/lecture-12_files/figure-html/cell-2-output-2.png">
+<meta property="og:image" content="https://nla360.fmin.xyz/lectures/lecture-11/lecture-11_files/figure-html/cell-2-output-2.png">
 <meta property="og:image:height" content="454">
 <meta property="og:image:width" content="620">
-<meta name="twitter:title" content="Lecture 12. Intro to iterative methods">
+<meta name="twitter:title" content="Лекция 11. Введение в итерационные методы">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-12/lecture-12_files/figure-html/cell-2-output-2.png">
+<meta name="twitter:image" content="https://nla360.fmin.xyz/lectures/lecture-11/lecture-11_files/figure-html/cell-2-output-2.png">
 <meta name="twitter:image-height" content="454">
 <meta name="twitter:image-width" content="620">
 <meta name="twitter:card" content="summary_large_image">
@@ -207,94 +207,94 @@ window.Quarto = {
 </header>
 
 
-<section id="previous-lecture" class="level2">
-<h2 class="anchored" data-anchor-id="previous-lecture">Previous lecture</h2>
+<section id="предыдущая-лекция" class="level2">
+<h2 class="anchored" data-anchor-id="предыдущая-лекция">Предыдущая лекция</h2>
 <ul>
-<li>Direct methods for LU</li>
-<li>Graph separators</li>
+<li>Прямые методы для LU</li>
+<li>Сепараторы графов</li>
 </ul>
 </section>
-<section id="the-main-topics-for-today" class="level1">
-<h1>The main topics for today</h1>
-<p>Concept of <strong>iterative methods</strong> for linear systems: - Richardson iteration and its convergence - Chebyshev iteration</p>
+<section id="основные-темы-на-сегодня" class="level1">
+<h1>Основные темы на сегодня</h1>
+<p>Концепция <strong>итерационных методов</strong> для линейных систем: - Итерация Ричардсона и её сходимость - Итерация Чебышева</p>
 </section>
-<section id="iterative-methods" class="level1">
-<h1>Iterative methods</h1>
+<section id="итерационные-методы" class="level1">
+<h1>Итерационные методы</h1>
 <ul>
-<li><p>If we want to achieve <span class="math inline">\mathcal{O}(N)</span> complexity of solving sparse linear systems, then direct solvers are not appropriate.</p></li>
-<li><p>If we want to solve partial eigenproblem, the full eigendecomposition is too costly.</p></li>
-<li><p>For both problems we will use iterative, Krylov subspace solvers, which treat the matrix as a <strong>black-box</strong> linear operator.</p></li>
+<li><p>Если мы хотим достичь сложности <span class="math inline">\mathcal{O}(N)</span> при решении разреженных линейных систем, то прямые решатели не подходят.</p></li>
+<li><p>Если мы хотим решить частичную задачу на собственные значения, полное разложение на собственные значения слишком затратно.</p></li>
+<li><p>Для обеих задач мы будем использовать итерационные решатели подпространств Крылова, которые рассматривают матрицу как линейный оператор по принципу <strong>черного ящика</strong>.</p></li>
 </ul>
-<section id="matrix-as-a-black-box" class="level2">
-<h2 class="anchored" data-anchor-id="matrix-as-a-black-box">Matrix as a black box</h2>
+<section id="матрица-как-черный-ящик" class="level2">
+<h2 class="anchored" data-anchor-id="матрица-как-черный-ящик">Матрица как черный ящик</h2>
 <ul>
-<li><p>We have now an absolutely different view on a matrix: matrix is now a <strong>linear operator</strong>, that acts on a vector,<br>
-and this action can be computed in <span class="math inline">\mathcal{O}(N)</span> operations.</p></li>
-<li><p><strong>This is the only information</strong> we know about the matrix: the <span style="color:red"> matrix-by-vector product (matvec) </span></p></li>
-<li><p>Can we solve linear systems using only matvecs?</p></li>
-<li><p>Of course, we can multiply by the colums of the identity matrix, and recover the full matrix, but it is not what we need.</p></li>
+<li><p>Теперь у нас совершенно другой взгляд на матрицу: матрица теперь <strong>линейный оператор</strong>, который действует на вектор,<br>
+и это действие может быть вычислено за <span class="math inline">\mathcal{O}(N)</span> операций.</p></li>
+<li><p><strong>Это единственная информация</strong>, которую мы знаем о матрице: <span style="color:red"> произведение матрицы на вектор (матвек) </span></p></li>
+<li><p>Можем ли мы решать линейные системы, используя только матвеки?</p></li>
+<li><p>Конечно, мы можем умножать на столбцы единичной матрицы и восстановить полную матрицу, но это не то, что нам нужно.</p></li>
 </ul>
 </section>
-<section id="richardson-iteration" class="level2">
-<h2 class="anchored" data-anchor-id="richardson-iteration">Richardson iteration</h2>
-<p>The simplest idea is the <strong>“simple iteration method”</strong> or <strong>Richardson iteration</strong>.</p>
+<section id="итерация-ричардсона" class="level2">
+<h2 class="anchored" data-anchor-id="итерация-ричардсона">Итерация Ричардсона</h2>
+<p>Самая простая идея - это <strong>“метод простой итерации”</strong> или <strong>итерация Ричардсона</strong>.</p>
 <p><span class="math display">Ax = f,</span> <span class="math display">\tau  (Ax - f) = 0,</span> <span class="math display">x - \tau (Ax - f) = x,</span> <span class="math display">x_{k+1} = x_k - \tau (Ax_k - f),</span></p>
-<p>where <span class="math inline">\tau</span> is the <strong>iteration parameter</strong>, which can be always chosen such that the method <strong>converges</strong>.</p>
+<p>где <span class="math inline">\tau</span> - это <strong>итерационный параметр</strong>, который всегда можно выбрать так, чтобы метод <strong>сходился</strong>.</p>
 </section>
-<section id="connection-to-odes" class="level2">
-<h2 class="anchored" data-anchor-id="connection-to-odes">Connection to ODEs</h2>
+<section id="связь-с-оду" class="level2">
+<h2 class="anchored" data-anchor-id="связь-с-оду">Связь с ОДУ</h2>
 <ul>
-<li><p>The Richardson iteration has a deep connection to the Ordinary Differential Equations (ODE).</p></li>
-<li><p>Consider a time-dependent problem</p></li>
+<li><p>Итерация Ричардсона имеет глубокую связь с Обыкновенными Дифференциальными Уравнениями (ОДУ).</p></li>
+<li><p>Рассмотрим зависящую от времени задачу</p></li>
 </ul>
 <p><span class="math display">\frac{dy}{dt} + A y = f, \quad y(0) = y_0.</span></p>
 <ul>
-<li>Then <span class="math inline">y(t) \rightarrow A^{-1} f</span> as <span class="math inline">t \rightarrow \infty</span>, and the <strong>Euler scheme</strong> reads</li>
+<li>Тогда <span class="math inline">y(t) \rightarrow A^{-1} f</span> при <span class="math inline">t \rightarrow \infty</span>, и <strong>схема Эйлера</strong> имеет вид</li>
 </ul>
 <p><span class="math display">\frac{y_{k+1} - y_k}{\tau} = -A y_k + f.</span></p>
-<p>which leads to the Richardson iteration</p>
+<p>что приводит к итерации Ричардсона</p>
 <p><span class="math display">
     y_{k+1} = y_k - \tau(Ay_k -f)
 </span></p>
 </section>
-<section id="convergence-of-the-richardson-method" class="level2">
-<h2 class="anchored" data-anchor-id="convergence-of-the-richardson-method">Convergence of the Richardson method</h2>
+<section id="сходимость-метода-ричардсона" class="level2">
+<h2 class="anchored" data-anchor-id="сходимость-метода-ричардсона">Сходимость метода Ричардсона</h2>
 <ul>
-<li>Let <span class="math inline">x_*</span> be the solution; introduce an error <span class="math inline">e_k = x_{k} - x_*</span>, then</li>
+<li>Пусть <span class="math inline">x_*</span> - решение; введем ошибку <span class="math inline">e_k = x_{k} - x_*</span>, тогда</li>
 </ul>
 <p><span class="math display">
      e_{k+1} = (I - \tau A) e_k,
 </span></p>
-<p>therefore if <span class="math inline">\Vert I - \tau A \Vert &lt; 1</span> in any norm, the iteration converges.</p>
+<p>следовательно, если <span class="math inline">\Vert I - \tau A \Vert &lt; 1</span> в любой норме, итерация сходится.</p>
 <ul>
-<li><p>For symmetric positive definite case it is always possible to select <span class="math inline">\tau</span> such that the method converges.</p></li>
-<li><p>What about the non-symmetric case? Below demo will be presented…</p></li>
+<li><p>Для симметричного положительно определенного случая всегда возможно выбрать <span class="math inline">\tau</span> так, чтобы метод сходился.</p></li>
+<li><p>А как насчет несимметричного случая? Ниже будет представлена демонстрация…</p></li>
 </ul>
 </section>
-<section id="optimal-parameter-choice" class="level2">
-<h2 class="anchored" data-anchor-id="optimal-parameter-choice">Optimal parameter choice</h2>
+<section id="оптимальный-выбор-параметра" class="level2">
+<h2 class="anchored" data-anchor-id="оптимальный-выбор-параметра">Оптимальный выбор параметра</h2>
 <ul>
-<li>The choise of <span class="math inline">\tau</span> that minimizes <span class="math inline">\|I - \tau A\|_2</span> for <span class="math inline">A = A^* &gt; 0</span> is (prove it!)</li>
+<li>Выбор <span class="math inline">\tau</span>, который минимизирует <span class="math inline">\|I - \tau A\|_2</span> для <span class="math inline">A = A^* &gt; 0</span> равен (докажите это!)</li>
 </ul>
 <p><span class="math display">
   \tau_\mathrm{opt} = \frac{2}{\lambda_{\min} + \lambda_{\max}}.
 </span></p>
-<p>where <span class="math inline">\lambda_{\min}</span> is the minimal eigenvalue, and <span class="math inline">\lambda_{\max}</span> is the maximal eigenvalue of the matrix <span class="math inline">A</span>.</p>
+<p>где <span class="math inline">\lambda_{\min}</span> - минимальное собственное значение, а <span class="math inline">\lambda_{\max}</span> - максимальное собственное значение матрицы <span class="math inline">A</span>.</p>
 <ul>
-<li>So, to find optimal parameter, we need to know the <strong>bounds of the spectrum</strong> of the matrix <span class="math inline">A</span>, and we can compute it by using <strong>power method</strong>.</li>
+<li>Таким образом, чтобы найти оптимальный параметр, нам нужно знать <strong>границы спектра</strong> матрицы <span class="math inline">A</span>, и мы можем вычислить их, используя <strong>степенной метод</strong>.</li>
 </ul>
 </section>
-<section id="condition-number-and-convergence-speed" class="level2">
-<h2 class="anchored" data-anchor-id="condition-number-and-convergence-speed">Condition number and convergence speed</h2>
-<p>Even with the optimal parameter choice, the error at the next step satisfies</p>
+<section id="число-обусловленности-и-скорость-сходимости" class="level2">
+<h2 class="anchored" data-anchor-id="число-обусловленности-и-скорость-сходимости">Число обусловленности и скорость сходимости</h2>
+<p>Даже при оптимальном выборе параметра, ошибка на следующем шаге удовлетворяет</p>
 <p><span class="math display">\|e_{k+1}\|_2 \leq q \|e_k\|_2 , \quad\rightarrow \quad \|e_k\|_2 \leq q^{k} \|e_0\|_2,</span></p>
-<p>where</p>
+<p>где</p>
 <p><span class="math display">
    q = \frac{\lambda_{\max} - \lambda_{\min}}{\lambda_{\max} + \lambda_{\min}} = \frac{\mathrm{cond}(A) - 1}{\mathrm{cond}(A)+1},
 </span></p>
-<p><span class="math display">\mathrm{cond}(A) = \frac{\lambda_{\max}}{\lambda_{\min}} \quad \text{for} \quad A=A^*&gt;0</span></p>
-<p>is the condition number of <span class="math inline">A</span>.</p>
-<p>Let us do some demo…</p>
+<p><span class="math display">\mathrm{cond}(A) = \frac{\lambda_{\max}}{\lambda_{\min}} \quad \text{для} \quad A=A^*&gt;0</span></p>
+<p>является числом обусловленности матрицы <span class="math inline">A</span>.</p>
+<p>Давайте проведем демонстрацию…</p>
 <div id="cell-11" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -345,24 +345,23 @@ Theoretical factor: 0.9999803389964071</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-12_files/figure-html/cell-2-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-11_files/figure-html/cell-2-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <ul>
-<li><p>Thus, for <strong>ill-conditioned</strong> matrices the error of the simple iteration method decays very slowly.<br></p></li>
-<li><p>This is another reason why <strong>condition number</strong> is so important:</p>
+<li><p>Таким образом, для <strong>плохо обусловленных</strong> матриц ошибка метода простой итерации убывает очень медленно.<br></p></li>
+<li><p>Это еще одна причина, почему <strong>число обусловленности</strong> так важно:</p>
 <ul>
-<li>Besides the bound on the error in the solution, it also gives an estimate of the number of iterations for the iterative methods.</li>
+<li>Помимо оценки погрешности решения, оно также дает оценку количества итераций для итерационных методов.</li>
 </ul></li>
-<li><p>Main questions for the iterative method is how to make the matrix <strong>better conditioned</strong>.</p></li>
-<li><p>The answer is <span style="color:red"> use preconditioners</span>. Preconditioners will be discussed in further lectures.</p></li>
+<li><p>Главный вопрос для итерационного метода - как сделать матрицу <strong>лучше обусловленной</strong>.</p></li>
 </ul>
-<section id="consider-non-hermitian-matrix-a" class="level3">
-<h3 class="anchored" data-anchor-id="consider-non-hermitian-matrix-a">Consider non-hermitian matrix <span class="math inline">A</span></h3>
-<p>Possible cases of Richardson iteration behaviour: - convergence - divergence - almost stable trajectory</p>
-<p><strong>Q:</strong> how can we identify our case <strong>before</strong> running iterative method?</p>
+<section id="рассмотрим-неэрмитову-матрицу-a" class="level3">
+<h3 class="anchored" data-anchor-id="рассмотрим-неэрмитову-матрицу-a">Рассмотрим неэрмитову матрицу <span class="math inline">A</span></h3>
+<p>Возможные случаи поведения итерации Ричардсона: - сходимость - расходимость - почти стабильная траектория</p>
+<p><strong>Вопрос:</strong> как мы можем определить наш случай <strong>до</strong> запуска итерационного метода?</p>
 <div id="cell-14" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># B = np.random.randn(2, 2)</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">2</span>], [<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>]])</span>
@@ -398,7 +397,7 @@ Theoretical factor: 0.9999803389964071</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-12_files/figure-html/cell-4-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-11_files/figure-html/cell-4-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -416,97 +415,97 @@ Theoretical factor: 0.9999803389964071</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-12_files/figure-html/cell-5-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-11_files/figure-html/cell-5-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 </section>
 </section>
-<section id="better-iterative-methods" class="level2">
-<h2 class="anchored" data-anchor-id="better-iterative-methods">Better iterative methods</h2>
-<p>But before preconditioners, we can use <strong>better iterative methods</strong>.</p>
-<p>There is a whole <strong>zoo</strong> of iterative methods, but we need to know just few of them.</p>
+<section id="улучшенные-итерационные-методы" class="level2">
+<h2 class="anchored" data-anchor-id="улучшенные-итерационные-методы">Улучшенные итерационные методы</h2>
+<p>Но прежде чем перейти к предобуславливателям, мы можем использовать <strong>улучшенные итерационные методы</strong>.</p>
+<p>Существует целый <strong>зоопарк</strong> итерационных методов, но нам нужно знать лишь некоторые из них.</p>
 </section>
-<section id="attempt-1-the-steepest-descent-method" class="level2">
-<h2 class="anchored" data-anchor-id="attempt-1-the-steepest-descent-method">Attempt 1: The steepest descent method</h2>
+<section id="попытка-1-метод-наискорейшего-спуска" class="level2">
+<h2 class="anchored" data-anchor-id="попытка-1-метод-наискорейшего-спуска">Попытка 1: Метод наискорейшего спуска</h2>
 <ul>
-<li>Suppose we <strong>change</strong> <span class="math inline">\tau</span> every step, i.e.&nbsp;</li>
+<li>Предположим, что мы <strong>меняем</strong> <span class="math inline">\tau</span> на каждом шаге, т.е.</li>
 </ul>
 <p><span class="math display">
    x_{k+1} = x_k - \tau_k (A x_k - f).
 </span></p>
 <ul>
-<li>A possible choice of <span class="math inline">\tau_k</span> is such that it minimizes norm of the current residual</li>
+<li>Возможный выбор <span class="math inline">\tau_k</span> - такой, который минимизирует норму текущего остатка</li>
 </ul>
 <p><span class="math display"> \tau_k = \arg\min_{\tau} \|A(x_k - \tau_k (A x_k - f)) - f\|_2^2.</span></p>
 <ul>
-<li>This problem can be solved analytically (derive this solution!)</li>
+<li>Эта задача может быть решена аналитически (выведите это решение!)</li>
 </ul>
 <p><span class="math display"> \tau_k = \frac{r_k^{\top}r_k}{r_k^{\top}Ar_k}, \quad r_k = Ax_k - f </span></p>
 <ul>
-<li><p>This method is called <strong>the steepest descent</strong>.</p></li>
-<li><p>However, it still converges similarly to the Richardson iteration.</p></li>
+<li><p>Этот метод называется <strong>метод наискорейшего спуска</strong>.</p></li>
+<li><p>Однако, он все еще сходится аналогично итерации Ричардсона.</p></li>
 </ul>
 </section>
-<section id="attempt-2-chebyshev-iteration" class="level2">
-<h2 class="anchored" data-anchor-id="attempt-2-chebyshev-iteration">Attempt 2: Chebyshev iteration</h2>
-<p>Another way to find <span class="math inline">\tau_k</span> is to consider</p>
+<section id="попытка-2-итерация-чебышева" class="level2">
+<h2 class="anchored" data-anchor-id="попытка-2-итерация-чебышева">Попытка 2: Итерация Чебышева</h2>
+<p>Другой способ найти <span class="math inline">\tau_k</span> - это рассмотреть</p>
 <p><span class="math display">e_{k+1} = (I - \tau_k A) e_k = (I - \tau_k A) (I - \tau_{k-1} A)  e_{k-1} = \ldots = p(A) e_0, </span></p>
-<p>where <span class="math inline">p(A)</span> is a <strong>matrix polynomial</strong> (simplest matrix function)</p>
+<p>где <span class="math inline">p(A)</span> - это <strong>матричный многочлен</strong> (простейшая матричная функция)</p>
 <p><span class="math display">
    p(A) = (I - \tau_k A) \ldots (I - \tau_0 A),
 </span></p>
-<p>and <span class="math inline">p(0) = 1</span>.</p>
+<p>и <span class="math inline">p(0) = 1</span>.</p>
 </section>
-<section id="optimal-choice-of-time-steps" class="level2">
-<h2 class="anchored" data-anchor-id="optimal-choice-of-time-steps">Optimal choice of time steps</h2>
-<p>The error is written as</p>
+<section id="оптимальный-выбор-временных-шагов" class="level2">
+<h2 class="anchored" data-anchor-id="оптимальный-выбор-временных-шагов">Оптимальный выбор временных шагов</h2>
+<p>Ошибка записывается как</p>
 <p><span class="math display">e_{k+1} = p(A) e_0, </span></p>
-<p>and hence</p>
+<p>и, следовательно,</p>
 <p><span class="math display">\|e_{k+1}\| \leq \|p(A)\| \|e_0\|, </span></p>
-<p>where <span class="math inline">p(0) = 1</span> and <span class="math inline">p(A)</span> is a <strong>matrix polynomial</strong>.</p>
-<p>To get better <strong>error reduction</strong>, we need to minimize</p>
+<p>где <span class="math inline">p(0) = 1</span> и <span class="math inline">p(A)</span> - это <strong>матричный многочлен</strong>.</p>
+<p>Для получения лучшего <strong>уменьшения ошибки</strong>, нам нужно минимизировать</p>
 <p><span class="math display">\Vert p(A) \Vert</span></p>
-<p>over all possible polynomials <span class="math inline">p(x)</span> of degree <span class="math inline">k+1</span> such that <span class="math inline">p(0)=1</span>. We will use <span class="math inline">\|\cdot\|_2</span>.</p>
+<p>по всем возможным многочленам <span class="math inline">p(x)</span> степени <span class="math inline">k+1</span> таким, что <span class="math inline">p(0)=1</span>. Мы будем использовать <span class="math inline">\|\cdot\|_2</span>.</p>
 </section>
-<section id="polynomials-least-deviating-from-zeros" class="level2">
-<h2 class="anchored" data-anchor-id="polynomials-least-deviating-from-zeros">Polynomials least deviating from zeros</h2>
-<p>Important special case: <span class="math inline">A = A^* &gt; 0</span>.</p>
-<p>Then <span class="math inline">A = U \Lambda U^*</span>,</p>
-<p>and</p>
+<section id="многочлены-наименее-отклоняющиеся-от-нуля" class="level2">
+<h2 class="anchored" data-anchor-id="многочлены-наименее-отклоняющиеся-от-нуля">Многочлены, наименее отклоняющиеся от нуля</h2>
+<p>Важный частный случай: <span class="math inline">A = A^* &gt; 0</span>.</p>
+<p>Тогда <span class="math inline">A = U \Lambda U^*</span>,</p>
+<p>и</p>
 <p><span class="math display">\Vert p(A) \Vert_2 = \Vert U p(\Lambda) U^* \Vert_2 = \Vert p(\Lambda) \Vert_2 = \max_i |p(\lambda_i)| \overset{!}{\leq}
 \max_{\lambda_\min \leq \lambda {\leq} \lambda_\max} |p(\lambda)|.</span></p>
-<p>The latter inequality is the only approximation. Here we make a <span style="color:red"> crucial assumption </span> that we do not want to benefit from distribution of spectra between <span class="math inline">\lambda_\min</span> and <span class="math inline">\lambda_\max</span>.</p>
-<p>Thus, we need to find a polynomial such that <span class="math inline">p(0) = 1</span>, that has the least possible deviation from <span class="math inline">0</span> on <span class="math inline">[\lambda_\min, \lambda_\max]</span>.</p>
+<p>Последнее неравенство является единственным приближением. Здесь мы делаем <span style="color:red"> ключевое предположение </span>, что мы не хотим извлекать выгоду из распределения спектра между <span class="math inline">\lambda_\min</span> и <span class="math inline">\lambda_\max</span>.</p>
+<p>Таким образом, нам нужно найти многочлен такой, что <span class="math inline">p(0) = 1</span>, который имеет наименьшее возможное отклонение от <span class="math inline">0</span> на <span class="math inline">[\lambda_\min, \lambda_\max]</span>.</p>
 </section>
-<section id="polynomials-least-deviating-from-zeros-2" class="level2">
-<h2 class="anchored" data-anchor-id="polynomials-least-deviating-from-zeros-2">Polynomials least deviating from zeros (2)</h2>
-<p>We can do the affine transformation of the interval <span class="math inline">[\lambda_\min, \lambda_\max]</span> to the interval <span class="math inline">[-1, 1]</span>:</p>
+<section id="многочлены-наименее-отклоняющиеся-от-нуля-2" class="level2">
+<h2 class="anchored" data-anchor-id="многочлены-наименее-отклоняющиеся-от-нуля-2">Многочлены, наименее отклоняющиеся от нуля (2)</h2>
+<p>Мы можем выполнить аффинное преобразование интервала <span class="math inline">[\lambda_\min, \lambda_\max]</span> в интервал <span class="math inline">[-1, 1]</span>:</p>
 <p><span class="math display">
 \xi = \frac{{\lambda_\max + \lambda_\min - (\lambda_\min-\lambda_\max)x}}{2}, \quad x\in [-1, 1].
 </span></p>
-<p>The problem is then reduced to the problem of finding the <strong>polynomial least deviating from zero</strong> on an interval <span class="math inline">[-1, 1]</span>.</p>
+<p>Задача тогда сводится к проблеме нахождения <strong>многочлена, наименее отклоняющегося от нуля</strong> на интервале <span class="math inline">[-1, 1]</span>.</p>
 </section>
-<section id="exact-solution-chebyshev-polynomials" class="level2">
-<h2 class="anchored" data-anchor-id="exact-solution-chebyshev-polynomials">Exact solution: Chebyshev polynomials</h2>
-<p>The exact solution to this problem is given by the famous <strong>Chebyshev polynomials</strong> of the form</p>
+<section id="точное-решение-многочлены-чебышёва" class="level2">
+<h2 class="anchored" data-anchor-id="точное-решение-многочлены-чебышёва">Точное решение: многочлены Чебышёва</h2>
+<p>Точное решение этой задачи даётся знаменитыми <strong>многочленами Чебышёва</strong> вида</p>
 <p><span class="math display">T_n(x) =  \cos (n \arccos x)</span></p>
 </section>
-<section id="what-do-you-need-to-know-about-chebyshev-polynomials" class="level2">
-<h2 class="anchored" data-anchor-id="what-do-you-need-to-know-about-chebyshev-polynomials">What do you need to know about Chebyshev polynomials</h2>
+<section id="что-нужно-знать-о-многочленах-чебышёва" class="level2">
+<h2 class="anchored" data-anchor-id="что-нужно-знать-о-многочленах-чебышёва">Что нужно знать о многочленах Чебышёва</h2>
 <ol type="1">
-<li><p>This is a polynomial!</p></li>
-<li><p>We can express <span class="math inline">T_n</span> from <span class="math inline">T_{n-1}</span> and <span class="math inline">T_{n-2}</span>:</p></li>
+<li><p>Это многочлен!</p></li>
+<li><p>Мы можем выразить <span class="math inline">T_n</span> через <span class="math inline">T_{n-1}</span> и <span class="math inline">T_{n-2}</span>:</p></li>
 </ol>
 <p><span class="math display">T_n(x) = 2x T_{n-1}(x) - T_{n-2}(x), \quad T_0(x)=1, \quad T_1(x)=x</span></p>
 <ol start="3" type="1">
-<li><p><span class="math inline">|T_n(x)| \leq 1</span> on <span class="math inline">x \in [-1, 1]</span>.</p></li>
-<li><p>It has <span class="math inline">(n+1)</span> <strong>alternation points</strong>, where the maximal absolute value is achieved (this is the sufficient and necessary condition for the <strong>optimality</strong>) (Chebyshev alternance theorem, no proof here).</p></li>
-<li><p>The <strong>roots</strong> are just</p></li>
+<li><p><span class="math inline">|T_n(x)| \leq 1</span> на <span class="math inline">x \in [-1, 1]</span>.</p></li>
+<li><p>Он имеет <span class="math inline">(n+1)</span> <strong>точек альтернанса</strong>, где достигается максимальное абсолютное значение (это достаточное и необходимое условие для <strong>оптимальности</strong>) (теорема об альтернансе Чебышёва, доказательство здесь не приводится).</p></li>
+<li><p><strong>Корни</strong> имеют вид</p></li>
 </ol>
 <p><span class="math display">n \arccos x_k = \frac{\pi}{2} + \pi k, \quad \rightarrow\quad x_k = \cos \frac{\pi(2k + 1)}{2n}, \; k = 0, \ldots,n-1</span></p>
-<p>We can plot them…</p>
+<p>Мы можем их построить…</p>
 <div id="cell-25" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -525,21 +524,21 @@ Theoretical factor: 0.9999803389964071</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-12_files/figure-html/cell-6-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-11_files/figure-html/cell-6-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="convergence-of-the-chebyshev-accelerated-richardson-iteration" class="level2">
-<h2 class="anchored" data-anchor-id="convergence-of-the-chebyshev-accelerated-richardson-iteration">Convergence of the Chebyshev-accelerated Richardson iteration</h2>
-<p>Note that <span class="math inline">p(x) = (1-\tau_n x)\dots (1-\tau_0 x)</span>, hence roots of <span class="math inline">p(x)</span> are <span class="math inline">1/\tau_i</span> and that we additionally need to map back from <span class="math inline">[-1,1]</span> to <span class="math inline">[\lambda_\min, \lambda_\max]</span>. This results into</p>
+<section id="сходимость-метода-ричардсона-с-ускорением-чебышёва" class="level2">
+<h2 class="anchored" data-anchor-id="сходимость-метода-ричардсона-с-ускорением-чебышёва">Сходимость метода Ричардсона с ускорением Чебышёва</h2>
+<p>Заметим, что <span class="math inline">p(x) = (1-\tau_n x)\dots (1-\tau_0 x)</span>, следовательно, корни <span class="math inline">p(x)</span> равны <span class="math inline">1/\tau_i</span>, и нам дополнительно нужно отобразить интервал <span class="math inline">[-1,1]</span> обратно в <span class="math inline">[\lambda_\min, \lambda_\max]</span>. Это приводит к формуле</p>
 <p><span class="math display">\tau_i = \frac{2}{\lambda_\max + \lambda_\min - (\lambda_\max - \lambda_\min)x_i}, \quad x_i = \cos \frac{\pi(2i + 1)}{2n}\quad i=0,\dots,n-1</span></p>
-<p>The convergence (we only give the result without the proof) is now given by</p>
+<p>Сходимость (мы приводим только результат без доказательства) теперь задается выражением</p>
 <p><span class="math display">
    e_{k+1} \leq C q^k e_0, \quad q = \frac{\sqrt{\mathrm{cond}(A)}-1}{\sqrt{\mathrm{cond}(A)}+1},
 </span></p>
-<p>which is better than in the Richardson iteration.</p>
+<p>что лучше, чем в методе Ричардсона.</p>
 <div id="cell-27" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -596,13 +595,13 @@ Theoretical factor: 0.9999803389964071</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-12_files/figure-html/cell-7-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-11_files/figure-html/cell-7-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<section id="what-happened-with-great-chebyshev-iterations" class="level3">
-<h3 class="anchored" data-anchor-id="what-happened-with-great-chebyshev-iterations">What happened with great Chebyshev iterations?</h3>
+<section id="что-случилось-с-замечательными-итерациями-чебышева" class="level3">
+<h3 class="anchored" data-anchor-id="что-случилось-с-замечательными-итерациями-чебышева">Что случилось с замечательными итерациями Чебышева?</h3>
 <div id="cell-29" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>niters <span class="op">=</span> <span class="dv">64</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>roots <span class="op">=</span> [np.cos((np.pi <span class="op">*</span> (<span class="dv">2</span> <span class="op">*</span> i <span class="op">+</span> <span class="dv">1</span>)) <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> niters)) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(niters)]</span>
@@ -650,93 +649,93 @@ Theoretical factor: 0.9999803389964071</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-12_files/figure-html/cell-8-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-11_files/figure-html/cell-8-output-2.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="lecture-12_files/figure-html/cell-8-output-3.png" class="img-fluid figure-img"></p>
+<p><img src="lecture-11_files/figure-html/cell-8-output-3.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <ul>
-<li>Permutation of roots of Chebyshev polynomial has crucial effect on convergence</li>
-<li>On the optimal permutation you can read in paper (V. Lebedev, S. Finogenov 1971) (<a href="http://www.mathnet.ru/links/42ab1a270ad179d43359ef8fab53422c/zvmmf6870.pdf">ru</a>, <a href="https://www.sciencedirect.com/science/article/abs/pii/0041555371901698?via%3Dihub">en</a>)</li>
+<li>Перестановка корней многочлена Чебышева имеет решающее влияние на сходимость</li>
+<li>Об оптимальной перестановке вы можете прочитать в статье (В. Лебедев, С. Финогенов 1971) (<a href="http://www.mathnet.ru/links/42ab1a270ad179d43359ef8fab53422c/zvmmf6870.pdf">ru</a>, <a href="https://www.sciencedirect.com/science/article/abs/pii/0041555371901698?via%3Dihub">en</a>)</li>
 </ul>
 </section>
-<section id="chebfun-project" class="level3">
-<h3 class="anchored" data-anchor-id="chebfun-project"><a href="http://www.chebfun.org/">Chebfun</a> project</h3>
+<section id="chebfun-проект" class="level3">
+<h3 class="anchored" data-anchor-id="chebfun-проект"><a href="http://www.chebfun.org/">Chebfun</a> проект</h3>
 <ul>
-<li>Opensource project for numerical computing (<a href="https://github.com/chebpy/chebpy">Python</a> and <a href="https://github.com/chebfun/chebfun">Matlab</a> interfaces)</li>
-<li>It is based on numerical algorithms working with piecewise polynomial interpolants and Chebyshev polynomials</li>
-<li>This project was initiated by Nick Trefethen and his student Zachary Battles in 2002, see <a href="http://www.chebfun.org/publications/chebfun_paper.pdf">paper on chebfun project in SISC</a></li>
-<li>Chebfun toolbox focuses mostly on the following problems
+<li>Проект с открытым исходным кодом для численных вычислений (<a href="https://github.com/chebpy/chebpy">Python</a> и <a href="https://github.com/chebfun/chebfun">Matlab</a> интерфейсы)</li>
+<li>Основан на численных алгоритмах, работающих с кусочно-полиномиальными интерполянтами и многочленами Чебышева</li>
+<li>Этот проект был инициирован Ником Трефетеном и его студентом Захари Баттлсом в 2002 году, см. <a href="http://www.chebfun.org/publications/chebfun_paper.pdf">статью о проекте chebfun в SISC</a></li>
+<li>Инструментарий Chebfun в основном фокусируется на следующих задачах
 <ul>
-<li>Approximation</li>
-<li>Quadrature</li>
-<li>ODE</li>
-<li>PDE</li>
-<li>Rootfinding</li>
-<li>1D global optimization</li>
+<li>Аппроксимация</li>
+<li>Квадратуры</li>
+<li>Обыкновенные дифференциальные уравнения</li>
+<li>Уравнения в частных производных</li>
+<li>Поиск корней</li>
+<li>Глобальная оптимизация в одномерном случае</li>
 </ul></li>
 </ul>
 </section>
 </section>
-<section id="beyond-chebyshev" class="level2">
-<h2 class="anchored" data-anchor-id="beyond-chebyshev">Beyond Chebyshev</h2>
+<section id="а-что-есть-кроме-чебышева" class="level2">
+<h2 class="anchored" data-anchor-id="а-что-есть-кроме-чебышева">А что есть кроме Чебышева?</h2>
 <ul>
-<li><p>We have made an important assumption about the spectrum: it is contained within an interval over the real line (and we need to know the bounds)</p></li>
-<li><p>If the spectrum is contained within <strong>two intervals</strong>, and we know the bounds, we can also put the optimization problem for the <strong>optimal polynomial</strong>.</p></li>
+<li><p>Мы сделали важное предположение о спектре: он содержится в интервале на вещественной прямой (и нам нужно знать границы)</p></li>
+<li><p>Если спектр содержится в <strong>двух интервалах</strong>, и мы знаем границы, мы также можем поставить задачу оптимизации для <strong>оптимального многочлена</strong>.</p></li>
 </ul>
 </section>
-<section id="spectrum-of-the-matrix-contained-in-multiple-segments" class="level2">
-<h2 class="anchored" data-anchor-id="spectrum-of-the-matrix-contained-in-multiple-segments">Spectrum of the matrix contained in multiple segments</h2>
+<section id="спектр-матрицы-содержащийся-в-нескольких-сегментах" class="level2">
+<h2 class="anchored" data-anchor-id="спектр-матрицы-содержащийся-в-нескольких-сегментах">Спектр матрицы, содержащийся в нескольких сегментах</h2>
 <ul>
-<li><p>For the case of <strong>two segments</strong> the best polynomial is given by <strong><a href="https://www.encyclopediaofmath.org/index.php/Zolotarev_polynomials">Zolotarev polynomials</a></strong> (expressed in terms of elliptic functions). Original paper was published in 1877, see details <a href="http://gpntb.dlibrary.org/ru/nodes/4245-zolotarev-e-prilozhenie-ellipticheskih-funktsiy-k-voprosam-o-funktsiyah-naimenee-i-naibolee-otklonyayuschihsya-ot-nulya-spb-1877">here</a></p></li>
-<li><p>For the case of <strong>more than two segments</strong> the best polynomial can be expressed in terms of <strong>hyperelliptic functions</strong></p></li>
+<li><p>Для случая <strong>двух сегментов</strong> наилучший многочлен задается <strong><a href="https://www.encyclopediaofmath.org/index.php/Zolotarev_polynomials">многочленами Золотарева</a></strong> (выраженными в терминах эллиптических функций). Оригинальная работа была опубликована в 1877 году, подробности <a href="http://gpntb.dlibrary.org/ru/nodes/4245-zolotarev-e-prilozhenie-ellipticheskih-funktsiy-k-voprosam-o-funktsiyah-naimenee-i-naibolee-otklonyayuschihsya-ot-nulya-spb-1877">здесь</a></p></li>
+<li><p>Для случая <strong>более чем двух сегментов</strong> наилучший многочлен может быть выражен в терминах <strong>гиперэллиптических функций</strong></p></li>
 </ul>
 </section>
-<section id="how-can-we-make-it-better" class="level2">
-<h2 class="anchored" data-anchor-id="how-can-we-make-it-better">How can we make it better</h2>
+<section id="как-мы-можем-улучшить-это" class="level2">
+<h2 class="anchored" data-anchor-id="как-мы-можем-улучшить-это">Как мы можем улучшить это</h2>
 <ul>
-<li><p>The implementation of the Chebyshev acceleration requires the knowledge of the spectrum.</p></li>
-<li><p>It only stores the <strong>previous vector</strong> <span class="math inline">x_k</span> and computes the new correction vector</p></li>
+<li><p>Реализация ускорения Чебышева требует знания спектра.</p></li>
+<li><p>Она хранит только <strong>предыдущий вектор</strong> <span class="math inline">x_k</span> и вычисляет новый вектор коррекции</p></li>
 </ul>
 <p><span class="math display">r_k = A x_k - f.</span></p>
 <ul>
-<li><p>It belongs to the class of <strong>two-term</strong> iterative methods, i.e.&nbsp;it approximates <span class="math inline">x_{k+1}</span> using 2 vectors: <span class="math inline">x_k</span> and <span class="math inline">r_k</span>.</p></li>
-<li><p>It appears that if we <strong>store more vectors</strong>, then we can go without the spectrum estimation (and better convergence in practice)!</p></li>
+<li><p>Это относится к классу <strong>двухчленных</strong> итерационных методов, т.е. он аппроксимирует <span class="math inline">x_{k+1}</span>, используя 2 вектора: <span class="math inline">x_k</span> и <span class="math inline">r_k</span>.</p></li>
+<li><p>Оказывается, что если мы <strong>храним больше векторов</strong>, то мы можем обойтись без оценки спектра (и получить лучшую сходимость на практике)!</p></li>
 </ul>
 </section>
-<section id="crucial-point-krylov-subspace" class="level2">
-<h2 class="anchored" data-anchor-id="crucial-point-krylov-subspace">Crucial point: Krylov subspace</h2>
-<p>The Chebyshev method produces the approximation of the form</p>
+<section id="ключевой-момент-подпространство-крылова" class="level2">
+<h2 class="anchored" data-anchor-id="ключевой-момент-подпространство-крылова">Ключевой момент: подпространство Крылова</h2>
+<p>Метод Чебышева производит приближение вида</p>
 <p><span class="math display">x_{k+1} = x_0 + p(A) r_0,</span></p>
-<p>i.e.&nbsp;it lies in the <strong>Krylov subspace</strong> of the matrix which is defined as</p>
+<p>т.е. оно лежит в <strong>подпространстве Крылова</strong> матрицы, которое определяется как</p>
 <p><span class="math display">
    \mathcal{K}_k(A, r_0) = \mathrm{Span}(r_0, Ar_0, A^2 r_0, \ldots, A^{k-1}r_0 )
 </span></p>
-<p>The most natural approach then is to find the vector in this <strong>linear subspace</strong> that minimizes certain <strong>norm of the error</strong></p>
+<p>Наиболее естественный подход - найти вектор в этом <strong>линейном подпространстве</strong>, который минимизирует определенную <strong>норму ошибки</strong></p>
 </section>
-<section id="idea-of-krylov-methods" class="level2">
-<h2 class="anchored" data-anchor-id="idea-of-krylov-methods">Idea of Krylov methods</h2>
-<p>The idea is to minimize given functional: - Energy norm of error for systems with hermitian positive-definite matrices (CG method). - Residual norm for systems with general matrices (MINRES and GMRES methods). - Rayleigh quotient for eigenvalue problems (Lanczos method).</p>
-<p>To make methods practical one has to 1. Orthogonalize vectors <span class="math inline">A^i r_0</span> of the Krylov subspace for stability (Lanczos process). 2. Derive recurrent formulas to decrease complexity.</p>
-<p>We will consider these methods in details on the next lecture.</p>
+<section id="идея-методов-крылова" class="level2">
+<h2 class="anchored" data-anchor-id="идея-методов-крылова">Идея методов Крылова</h2>
+<p>Идея заключается в минимизации заданного функционала: - Энергетической нормы ошибки для систем с эрмитовыми положительно-определенными матрицами (метод CG). - Нормы невязки для систем с произвольными матрицами (методы MINRES и GMRES). - Отношения Рэлея для задач на собственные значения (метод Ланцоша).</p>
+<p>Чтобы сделать методы практичными, необходимо: 1. Ортогонализировать векторы <span class="math inline">A^i r_0</span> подпространства Крылова для обеспечения устойчивости (процесс Ланцоша). 2. Вывести рекуррентные формулы для уменьшения вычислительной сложности.</p>
+<p>Мы рассмотрим эти методы подробно на следующей лекции.</p>
 </section>
-<section id="take-home-message" class="level2">
-<h2 class="anchored" data-anchor-id="take-home-message">Take home message</h2>
+<section id="основные-выводы" class="level2">
+<h2 class="anchored" data-anchor-id="основные-выводы">Основные выводы</h2>
 <ul>
-<li>Main idea of iterative methods</li>
-<li>Richardson iteration: hermitian and non-hermitian case</li>
-<li>Chebyshev acceleration</li>
-<li>Definition of Krylov subspace</li>
+<li>Основная идея итерационных методов</li>
+<li>Итерация Ричардсона: эрмитов и неэрмитов случай</li>
+<li>Ускорение Чебышева</li>
+<li>Определение подпространства Крылова</li>
 </ul>
-<section id="questions" class="level3">
-<h3 class="anchored" data-anchor-id="questions">Questions?</h3>
+<section id="вопросы" class="level3">
+<h3 class="anchored" data-anchor-id="вопросы">Вопросы?</h3>
 <div id="cell-39" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> css_styling():</span>
@@ -1160,4 +1159,4 @@ Theoretical factor: 0.9999803389964071</code></pre>
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.dev/MerkulovDaniil/nla360/blob/main/lectures/lecture-12/lecture-12.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.dev/MerkulovDaniil/nla360/blob/main/lectures/lecture-11/lecture-11.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>
